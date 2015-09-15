@@ -23,11 +23,18 @@
 // Global variables
 int th = 0;	// Azimuth of view angle
 int ph = 0;	// Elevation of view angle
-double dim = 60;   // Dimension of the viewing volume or what can be seen on the screen
+int mode = 0; // Projection mode
+double dim = 60; // Dimension of the viewing volume or what can be seen on the screen
+int n = 50000; // Number of data points
+int l = 0; // Movement
+int axes = 0; // Display axes
 /*  Lorenz Parameters  */
 double s  = 10;
 double b  = 2.6666;
 double r  = 28;
+float vertices[50000][3]; // Array that stores x, y, z values from the lorenz equation
+int vertexColors[50000][3]; // Array that stores the colors for the x, y, z values from the lorenz equation
+
 
 /*
  *  Convenience routine to output raster text
@@ -76,48 +83,72 @@ void drawAxes(){
 }
 
 /*
+ * Function that creates the points for the lorenz attractor
+ */
+void createLorenzPoints(){
+		int i;
+		/*  Coordinates  */
+		double x = 1;
+		double y = 1;
+		double z = 1;
+		/*  Time step  */
+		double dt = 0.001;
+		/*
+		*  Integrate 50,000 steps (50 time units with dt = 0.001)
+		*  Explicit Euler integration
+		*/
+		for (i=0;i<50000;i++)
+		{
+			double dx = s*(y-x);
+			double dy = x*(r-z)-y;
+			double dz = x*y - b*z;
+			x += dt*dx;
+			y += dt*dy;
+			z += dt*dz;
+			// Add the x, y, z values to an array
+			vertices[i][0] = x;
+			vertices[i][1] = y;
+			vertices[i][2] = z;
+			//Set the color of the vertices to either red, green, or blue
+			if(i < 16666){
+				// Red
+				vertexColors[i][0] = 1;
+				vertexColors[i][1] = 0;
+				vertexColors[i][2] = 0;
+			}else if(i >= 16666 && i < 33333){
+				// Green
+				vertexColors[i][0] = 0;
+				vertexColors[i][1] = 1;
+				vertexColors[i][2] = 0;
+			}else{
+				// Blue
+				vertexColors[i][0] = 0;
+				vertexColors[i][1] = 0;
+				vertexColors[i][2] = 1;
+			}
+		}
+}
+
+/*
+ * Function that traces the lorenz attractor
+ */
+void traceLorenz(){
+	glBegin(GL_POINTS);
+	glPointSize(10);
+	glColor3d(vertexColors[l][0], vertexColors[l][1], vertexColors[l][2]);
+	glVertex3f(vertices[l][0], vertices[l][1], vertices[l][2]);
+	glEnd();
+}
+/*
  * Function that draws the lorenz attractor
  */
 void drawLorenz(){
-
 	int i;
-	/*  Coordinates  */
-	double x = 1;
-	double y = 1;
-	double z = 1;
-	/*  Time step  */
-	double dt = 0.001;
-	// Draw and connect the points for the lorenz attractor
 	glBegin(GL_LINE_STRIP);
-	/*
-	*  Integrate 50,000 steps (50 time units with dt = 0.001)
-	*  Explicit Euler integration
-	*/
-	for (i=0;i<50000;i++)
-	{
-		double dx = s*(y-x);
-		double dy = x*(r-z)-y;
-		double dz = x*y - b*z;
-		x += dt*dx;
-		y += dt*dy;
-		z += dt*dz;
-		//Set the color of the vertices to either red, green, or blue
-		if(i < 16666){
-			glColor3d(1, 0, 0);
-		}else if(i >= 16666 && i < 33333){
-			glColor3d(0, 1, 0);
-		}else{
-			glColor3d(0, 0, 1);
-		}
-		// Draw a vertex with the new lorenz points
-		glVertex3f(x, y, z);
+	for(i = 0;i < n;i++){
+		glColor3d(vertexColors[i][0], vertexColors[i][1], vertexColors[i][2]);
+		glVertex3f(vertices[i][0], vertices[i][1], vertices[i][2]);
 	}
-	glEnd();
-	// Draw point (10 pixels) in red that goes through the lorenz attractor points
-	glColor3f(1,0,0);
-	glPointSize(10);
-	glBegin(GL_POINTS);
-	glVertex3d(x, y, z);
 	glEnd();
 }
 /*
@@ -135,9 +166,19 @@ void display()
 	// Enable Z-buffering
 	glEnable(GL_DEPTH_TEST);
 	// Call the function that draws the lorenz attractor
-	drawLorenz();
+	if(mode == 1){
+		// Reset the trace to the first lorenz point
+		l = 0;
+		drawLorenz();
+	}else{
+		traceLorenz();
+	}
 	// Call the function to draw the x, y, z axes
-	drawAxes();
+	if(axes == 1){
+		drawAxes();
+	}
+	// Set the color to white
+	glColor3f(1.0, 1.0, 1.0);
 	// Specify the coordinates for the raster position
 	// Also keeps the bitmap characters on the screen while resizing the window
 	glWindowPos2i(5,5);
@@ -184,6 +225,28 @@ void key(unsigned char ch,int x,int y)
 		s  = 10;
 		b  = 2.6666;
 		r  = 28;
+	}
+	// Switch display mode
+	else if (ch == 'm'){
+		mode = 1 - mode;
+	}
+	// Toggle axes
+	else if (ch == 'a'){
+		axes = 1-axes;
+	}
+	// View down X-axis
+	else if(ch == 'x'){
+		ph = 0;
+		th = -90;
+	}
+	// View down Y-axis
+	else if(ch == 'y'){
+		th = 0;
+		ph = 90;
+	}
+	// View down Z-axis
+	else if(ch == 'z'){
+		th = ph = 0;
 	}
 	// Increase the value of the s parameter of the Lorenz Attractor
 	else if(ch == 'S'){
@@ -239,10 +302,15 @@ void special(int key,int x,int y)
 }
 
 /*
- *  GLUT calls this toutine when there is nothing else to do
+ *  GLUT calls this routine when there is nothing else to do
  */
 void idle()
 {
+	if(l < 50000){
+		l += 1;
+	}else{
+		l = 0;
+	}
 	// Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
 }
@@ -260,8 +328,6 @@ void ErrCheck(char* where)
  * Create the initial states
  */
 void init(){
-	// Set the color of the points to white
-	glColor3f(1.0, 1.0, 1.0);
 	// Request double buffered, true color window with Z buffering
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 }
@@ -271,26 +337,28 @@ void init(){
  */
 int main(int argc,char* argv[])
 {
-   // Initialize GLUT
-   glutInit(&argc,argv);
-   // Request 500 x 500 pixel window
-   glutInitWindowSize(500,500);
-   // Create window
-   glutCreateWindow("Lorenz Attractor");
-   // Tell GLUT to call "key" when a key is pressed
-   glutKeyboardFunc(key);
-   // Tell GLUT to call "special" when an arrow key is pressed
-   glutSpecialFunc(special);
-   // Register function used to display scene
-   glutDisplayFunc(display);
-   // Register the reshape function that handles window resizing
-   glutReshapeFunc(reshape);
-   // Tell GLUT to call "idle" when nothing else is going on
-   glutIdleFunc(idle);
-   // Set the initial opengl states
-   init();
-   // Pass control to GLUT for events
-   glutMainLoop();
-   // Return code
-   return 0;
+	//Create the points need to draw the lorenz attractor
+	createLorenzPoints();
+	// Initialize GLUT
+	glutInit(&argc,argv);
+	// Request 500 x 500 pixel window
+	glutInitWindowSize(500,500);
+	// Create window
+	glutCreateWindow("Lorenz Attractor");
+	// Tell GLUT to call "key" when a key is pressed
+	glutKeyboardFunc(key);
+	// Tell GLUT to call "special" when an arrow key is pressed
+	glutSpecialFunc(special);
+	// Register function used to display scene
+	glutDisplayFunc(display);
+	// Register the reshape function that handles window resizing
+	glutReshapeFunc(reshape);
+	// Tell GLUT to call "idle" when nothing else is going on
+	glutIdleFunc(idle);
+	// Set the initial opengl states
+	init();
+	// Pass control to GLUT for events
+	glutMainLoop();
+	// Return code
+	return 0;
 }
