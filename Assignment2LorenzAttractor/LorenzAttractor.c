@@ -16,14 +16,18 @@
  * 3) Put x, y, z axis into graphic *Completed*
  * 4) The lorenz attractor should not be distorted when resizing the window *Completed*
  * 5) Add ability to rotate object *Completed*
- * 6) Allow one or more parameters from the lorenz equations to be modified
+ * 6) Allow one or more parameters from the lorenz equations to be modified *Completed*
  * 7) Provide a line trace of the sequence of the attractor
  */
 
 // Global variables
 int th = 0;	// Azimuth of view angle
 int ph = 0;	// Elevation of view angle
-double dim = 50;   // Dimension of the viewing volume or what can be seen on the screen
+double dim = 60;   // Dimension of the viewing volume or what can be seen on the screen
+/*  Lorenz Parameters  */
+double s  = 10;
+double b  = 2.6666;
+double r  = 28;
 
 /*
  *  Convenience routine to output raster text
@@ -48,7 +52,7 @@ void Print(const char* format , ...)
  * Function that draws the x, y, z axes
  */
 void drawAxes(){
-	double len = 40;  //  Length of axes
+	double len = 50;  //  Length of axes
 	// Set the color to white
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINES);
@@ -75,10 +79,7 @@ void drawAxes(){
  * Function that draws the lorenz attractor
  */
 void drawLorenz(){
-	/*  Lorenz Parameters  */
-	double s  = 10;
-	double b  = 2.6666;
-	double r  = 28;
+
 	int i;
 	/*  Coordinates  */
 	double x = 1;
@@ -112,19 +113,27 @@ void drawLorenz(){
 		glVertex3f(x, y, z);
 	}
 	glEnd();
+	// Draw point (10 pixels) in red that goes through the lorenz attractor points
+	glColor3f(1,0,0);
+	glPointSize(10);
+	glBegin(GL_POINTS);
+	glVertex3d(x, y, z);
+	glEnd();
 }
 /*
  * This function is called by GLUT to display the scene
  */
 void display()
 {
-	// Clear the image
-	glClear(GL_COLOR_BUFFER_BIT);
+	// Erase the window and the depth buffer
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// Reset previous transforms
 	glLoadIdentity();
 	// Set view angle
 	glRotated(ph,1,0,0);
 	glRotated(th,0,1,0);
+	// Enable Z-buffering
+	glEnable(GL_DEPTH_TEST);
 	// Call the function that draws the lorenz attractor
 	drawLorenz();
 	// Call the function to draw the x, y, z axes
@@ -153,7 +162,7 @@ void reshape(int width,int height)
    glLoadIdentity();
    // Orthogonal projection box adjusted for the
    // aspect ratio of the window
-   glOrtho(-dim*w2h,+dim*w2h, -dim,+dim, -dim,+dim);
+   glOrtho(-dim * w2h, +dim * w2h, -dim, +dim, -dim, +dim);
    // Switch to manipulating the model matrix
    glMatrixMode(GL_MODELVIEW);
    // Undo previous transformations
@@ -163,10 +172,45 @@ void reshape(int width,int height)
 /*
  *  GLUT calls this routine when a key is pressed
  */
-void key(unsigned char key, int x, int y){
-	if(key == 27){
+void key(unsigned char ch,int x,int y)
+{
+	// Exit on ESC
+	if(ch == 27){
 		exit(0);
 	}
+	// Reset view angle and lorenz parameters
+	else if(ch == '0'){
+		th = ph = 0;
+		s  = 10;
+		b  = 2.6666;
+		r  = 28;
+	}
+	// Increase the value of the s parameter of the Lorenz Attractor
+	else if(ch == 'S'){
+		s += 1;
+	}
+	// Decrease the value of the s parameter of the Lorenz Attractor
+	else if(ch == 's'){
+		s -= 1;
+	}
+	// Increase the value of the r parameter of the Lorenz Attractor
+	else if(ch == 'R'){
+		r += 1;
+	}
+	// Decrease the value of the r parameter of the Lorenz Attractor
+	else if(ch == 'r'){
+		r -= 1;
+	}
+	// Increase the value of the b parameter of the Lorenz Attractor
+	else if(ch == 'B'){
+		b += 1;
+	}
+	// Decrease the value of the b parameter of the Lorenz Attractor
+	else if(ch == 'b'){
+		b -= 1;
+	}
+	// Tell GLUT it is necessary to redisplay the scene
+	glutPostRedisplay();
 }
 
 /*
@@ -195,6 +239,15 @@ void special(int key,int x,int y)
 }
 
 /*
+ *  GLUT calls this toutine when there is nothing else to do
+ */
+void idle()
+{
+	// Tell GLUT it is necessary to redisplay the scene
+	glutPostRedisplay();
+}
+
+/*
  *  Function to print any errors encountered
  */
 void ErrCheck(char* where)
@@ -209,8 +262,8 @@ void ErrCheck(char* where)
 void init(){
 	// Set the color of the points to white
 	glColor3f(1.0, 1.0, 1.0);
-	// Request double buffering
-	glutInitDisplayMode(GLUT_DOUBLE);
+	// Request double buffered, true color window with Z buffering
+	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 }
 
 /*
@@ -232,6 +285,8 @@ int main(int argc,char* argv[])
    glutDisplayFunc(display);
    // Register the reshape function that handles window resizing
    glutReshapeFunc(reshape);
+   // Tell GLUT to call "idle" when nothing else is going on
+   glutIdleFunc(idle);
    // Set the initial opengl states
    init();
    // Pass control to GLUT for events
