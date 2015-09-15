@@ -14,16 +14,12 @@ CFLG=-O3 -Wall
 LIBS=-lglut -lGLU -lGL -lm
 endif
 #  OSX/Linux/Unix/Solaris
-CLEAN=rm -rf gears *.o *.a *.dSYM LorenzAttractor
+CLEAN=rm -rf gears *.o *.a *.dSYM hw2
 endif
 
-all: LorenzAttractor
+all: hw2
 
-#  Compile and link all .c files
-#%:%.c
-	#gcc $(CFLG) -o $@ $^ $(LIBS)
-
-LorenzAttractor: LorenzAttractor.c
+hw2: LorenzAttractor.c
 	gcc $(CFLG) -o $@ $^ $(LIBS)
 
 #  Clean

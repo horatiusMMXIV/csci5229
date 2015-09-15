@@ -252,7 +252,7 @@ void key(unsigned char ch,int x,int y)
 	}
 	// View down Y-axis
 	else if(ch == 'y'){
-		th = 0;
+		th = -90;
 		ph = 90;
 	}
 	// View down Z-axis
