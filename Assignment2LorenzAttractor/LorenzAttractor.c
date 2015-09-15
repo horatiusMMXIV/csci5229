@@ -34,6 +34,7 @@ double b  = 2.6666;
 double r  = 28;
 float vertices[50000][3]; // Array that stores x, y, z values from the lorenz equation
 int vertexColors[50000][3]; // Array that stores the colors for the x, y, z values from the lorenz equation
+char* text[] = {"Trace Mode","Draw Mode"};
 
 
 /*
@@ -133,12 +134,20 @@ void createLorenzPoints(){
  * Function that traces the lorenz attractor
  */
 void traceLorenz(){
-	glBegin(GL_POINTS);
-	glPointSize(10);
+	int i;
+	// Draw from vertex to vertex of the lorenz attractor
+	glBegin(GL_LINE_STRIP);
+	// Draw the previous vertices
+	for(i = 0;i < l;i++){
+		glColor3d(vertexColors[i][0], vertexColors[i][1], vertexColors[i][2]);
+		glVertex3f(vertices[i][0], vertices[i][1], vertices[i][2]);
+	}
+	// Connect the new vertex to the previous vertices to make it seem like it is tracing the lorenz
 	glColor3d(vertexColors[l][0], vertexColors[l][1], vertexColors[l][2]);
 	glVertex3f(vertices[l][0], vertices[l][1], vertices[l][2]);
 	glEnd();
 }
+
 /*
  * Function that draws the lorenz attractor
  */
@@ -183,7 +192,7 @@ void display()
 	// Also keeps the bitmap characters on the screen while resizing the window
 	glWindowPos2i(5,5);
 	// Display text
-	Print("View Angle = %d, %d", th, ph);
+	Print("View Angle = %d, %d %s b = %f r = %f s = %f", th, ph, text[mode], b, r, s);
 	// Render the scene using double buffering (display doesn't stutter after using this)
 	glutSwapBuffers();
 }
@@ -225,6 +234,8 @@ void key(unsigned char ch,int x,int y)
 		s  = 10;
 		b  = 2.6666;
 		r  = 28;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Switch display mode
 	else if (ch == 'm'){
@@ -250,27 +261,45 @@ void key(unsigned char ch,int x,int y)
 	}
 	// Increase the value of the s parameter of the Lorenz Attractor
 	else if(ch == 'S'){
+		l = 0;
 		s += 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Decrease the value of the s parameter of the Lorenz Attractor
 	else if(ch == 's'){
+		l = 0;
 		s -= 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Increase the value of the r parameter of the Lorenz Attractor
 	else if(ch == 'R'){
+		l = 0;
 		r += 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Decrease the value of the r parameter of the Lorenz Attractor
 	else if(ch == 'r'){
+		l = 0;
 		r -= 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Increase the value of the b parameter of the Lorenz Attractor
 	else if(ch == 'B'){
+		l = 0;
 		b += 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Decrease the value of the b parameter of the Lorenz Attractor
 	else if(ch == 'b'){
+		l = 0;
 		b -= 1;
+		// Recreate the lorenz points after changing the parameter value
+		createLorenzPoints();
 	}
 	// Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
@@ -306,10 +335,13 @@ void special(int key,int x,int y)
  */
 void idle()
 {
-	if(l < 50000){
-		l += 1;
-	}else{
-		l = 0;
+	// If in the right mode for tracing increment l to go through the lorenz attractor points
+	if(mode == 0){
+		if(l < n){
+			l += 1;
+		}else{
+			l = 0;
+		}
 	}
 	// Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
@@ -342,7 +374,7 @@ int main(int argc,char* argv[])
 	// Initialize GLUT
 	glutInit(&argc,argv);
 	// Request 500 x 500 pixel window
-	glutInitWindowSize(500,500);
+	glutInitWindowSize(600,600);
 	// Create window
 	glutCreateWindow("Lorenz Attractor");
 	// Tell GLUT to call "key" when a key is pressed
