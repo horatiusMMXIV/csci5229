@@ -34,10 +34,10 @@ double dim=5.0;   //  Size of world
  * -------
  * 1) Scene should be viewable from multiple eye positions directed by user input
  * 2) Scene should be viewable from different viewpoints using the cursor keys or mouse
- * 3) OpenGL should remove those parts of the objects that are obstructed by other objects in the scene. (Face Culling)
- * 4) Scene should contain at least two instances of the same object at different positions, scales, and orientations
- * 5) The second object should be created by translation, rotation, and scaling of the original object
- * 5) The objects should be custom made not using GLU or GLUT objects (I will try to create a car as my custom object)
+ * 3) OpenGL should remove those parts of the objects that are obstructed by other objects in the scene. (Face Culling or Z-buffer)
+ * 4) Scene should contain at least two instances of the same object at different positions, scales, and orientations *Completed*
+ * 5) The second object should be created by translation, rotation, and scaling of the original object *Completed*
+ * 5) The objects should be custom made not using GLU or GLUT objects (I will try to create a car as my custom object) *Completed*
  */
 
 /*
@@ -60,13 +60,6 @@ void Print(const char* format , ...)
 }
 
 /*
- * This function will draw a helicopter
- */
-void helicopter() {
-
-}
-
-/*
  *  Draw vertex in polar coordinates
  */
 void Vertex(double th,double ph)
@@ -77,16 +70,17 @@ void Vertex(double th,double ph)
 
 /*
 *  Draw a sphere
+*	at (x,y,z)
+* 	radius (r)
 */
-void sphere()
+void sphere(double x, double y, double z, double r)
 {
 	int th,ph;
-
 	//  Save transformation
 	glPushMatrix();
 	//  Offset and scale
-	glTranslatef(-.4, .07, 0);
-	glScalef(.45,.45,.45);
+	glTranslatef(x, y, z);
+	glScalef(r, r, r);
 
 	//  South pole cap
 	glBegin(GL_TRIANGLE_FAN);
@@ -117,199 +111,49 @@ void sphere()
 	  Vertex(th,90-dim);
 	}
 	glEnd();
-
 	//  Undo transformations
 	glPopMatrix();
 }
 
 /*
  * Draw a triangle
+ * 	at (x,y,z)
+ * 	with height (h), length (l), width (w)
+ * 	at angle (angle) on x (ax), y (ay), or z (az)
  */
-void tail(double x, double y, double z, double l, double h, double w)
+void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
 	//  Save transformation
-	   glPushMatrix();
-	   // Offset, scale, and rotate
-	   glTranslatef(x, y, z);
-	   glScalef(l, h, w);
-	   glRotatef(-45, 0, 0, 1);
-	   glBegin(GL_TRIANGLES);
-	   glVertex3f(1, 0, 0);
-	   glVertex3f(0, 1, 0);
-	   glVertex3f(0, 0, 0);
-	   glEnd();
-	   //  Undo transofrmations
-	   glPopMatrix();
+	glPushMatrix();
+	// Offset, scale, and rotate
+	glTranslatef(x, y, z);
+	glScalef(l, h, w);
+	glRotatef(angle, ax, ay, az);
+	// Draw a triangle
+	glBegin(GL_TRIANGLES);
+	glVertex3f(1, 0, 0);
+	glVertex3f(0, 1, 0);
+	glVertex3f(0, 0, 0);
+	glEnd();
+	//  Undo transofrmations
+	glPopMatrix();
 }
 
 /*
  *  Draw a cube
  *     at (x,y,z)
  *     with height (h), length (l), width (w)
+ *     at angle (angle) on x (ax), y (ay), or z (az)
+ *
  *
  */
-void mainRotorBlade(double x, double y, double z, double l, double h, double w, double angle)
-{
-   //  Save transformation
-   glPushMatrix();
-   // Offset, rotate, scale
-   glTranslatef(x, y, z);
-   glRotatef(angle, 0, 1, 0);
-   glScalef(l, h, w);
-
-   //  Cube
-   glBegin(GL_QUADS);
-   glVertex3f(-1,-1, 1);
-   glVertex3f(+1,-1, 1);
-   glVertex3f(+1,+1, 1);
-   glVertex3f(-1,+1, 1);
-   //  Back
-   glVertex3f(+1,-1,-1);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,+1,-1);
-   glVertex3f(+1,+1,-1);
-   //  Right
-   glVertex3f(+1,-1,+1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(+1,+1,+1);
-   //  Left
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,-1,+1);
-   glVertex3f(-1,+1,+1);
-   glVertex3f(-1,+1,-1);
-   //  Top
-   glVertex3f(-1,+1,+1);
-   glVertex3f(+1,+1,+1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(-1,+1,-1);
-   //  Bottom
-   glVertex3f(-1,-1,-1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,-1,+1);
-   glVertex3f(-1,-1,+1);
-   //  End
-   glEnd();
-   //  Undo transofrmations
-   glPopMatrix();
-}
-
-/*
- *  Draw a cube
- *     at (x,y,z)
- *     with height (h), length (l), width (w)
- *
- */
-void tailRotorBlade(double x, double y, double z, double l, double h, double w)
-{
-   //  Save transformation
-   glPushMatrix();
-   // Offset, rotate, scale
-   glTranslatef(x, y, z);
-   glRotatef(45, 0, 0, 1);
-   glScalef(l, h, w);
-
-   //  Cube
-   glBegin(GL_QUADS);
-   glVertex3f(-1,-1, 1);
-   glVertex3f(+1,-1, 1);
-   glVertex3f(+1,+1, 1);
-   glVertex3f(-1,+1, 1);
-   //  Back
-   glVertex3f(+1,-1,-1);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,+1,-1);
-   glVertex3f(+1,+1,-1);
-   //  Right
-   glVertex3f(+1,-1,+1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(+1,+1,+1);
-   //  Left
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,-1,+1);
-   glVertex3f(-1,+1,+1);
-   glVertex3f(-1,+1,-1);
-   //  Top
-   glVertex3f(-1,+1,+1);
-   glVertex3f(+1,+1,+1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(-1,+1,-1);
-   //  Bottom
-   glVertex3f(-1,-1,-1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,-1,+1);
-   glVertex3f(-1,-1,+1);
-   //  End
-   glEnd();
-   //  Undo transofrmations
-   glPopMatrix();
-}
-
-/*
- *  Draw a cube
- *     at (x,y,z)
- *     with height (h), length (l), width (w)
- *
- */
-void skid(double x, double y, double z, double l, double h, double w)
-{
-   //  Save transformation
-   glPushMatrix();
-   // Offset, rotate, scale
-   glTranslatef(x, y, z);
-   glRotatef(45, 0, 0, 1);
-   glScalef(l, h, w);
-
-   //  Cube
-   glBegin(GL_QUADS);
-   glVertex3f(-1,-1, 1);
-   glVertex3f(+1,-1, 1);
-   glVertex3f(+1,+1, 1);
-   glVertex3f(-1,+1, 1);
-   //  Back
-   glVertex3f(+1,-1,-1);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,+1,-1);
-   glVertex3f(+1,+1,-1);
-   //  Right
-   glVertex3f(+1,-1,+1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(+1,+1,+1);
-   //  Left
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,-1,+1);
-   glVertex3f(-1,+1,+1);
-   glVertex3f(-1,+1,-1);
-   //  Top
-   glVertex3f(-1,+1,+1);
-   glVertex3f(+1,+1,+1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(-1,+1,-1);
-   //  Bottom
-   glVertex3f(-1,-1,-1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,-1,+1);
-   glVertex3f(-1,-1,+1);
-   //  End
-   glEnd();
-   //  Undo transofrmations
-   glPopMatrix();
-}
-
-/*
- *  Draw a cube
- *     at (x,y,z)
- *     with height (h), length (l), width (w)
- *
- */
-void cube(double x, double y, double z, double l, double h, double w)
+void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
    //  Save transformation
    glPushMatrix();
    // Offset, scale
    glTranslatef(x, y, z);
+   glRotatef(angle, ax, ay, az);
    glScalef(l, h, w);
    //  Cube
    glBegin(GL_QUADS);
@@ -344,8 +188,70 @@ void cube(double x, double y, double z, double l, double h, double w)
    glVertex3f(-1,-1,+1);
    //  End
    glEnd();
-   //  Undo transofrmations
+   //  Undo transformations
    glPopMatrix();
+}
+
+/*
+ * Draw entire helicopter
+ */
+void helicopter(){
+	// Helicopter body
+	// Blue
+	glColor3f(0, 0, 1);
+	cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0);
+
+	// Tail Bloom
+	// Green
+	glColor3f(0, 1, 0);
+	cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0);
+
+	// Tail Fin
+	// Red
+	glColor3f(1, 0, 0);
+	triangle(1.1, .1, 0, .6, .6, .6, -45, 0, 0, 1);
+
+	// Tail Gearbox
+	// Blue
+	glColor3f(0, 0, 1);
+	cube(1.3, .1, 0, .1, .1, .1, 0, 0, 0, 0);
+
+	//Tail Rotor Blades
+	// White
+	glColor3f(1, 1, 1);
+	cube(1.3, .1, .18, .3, .06, .08, 45, 0, 0, 1);
+
+	// Rotor mast
+	// Red
+	glColor3f(1, 0, 0);
+	cube(.2, .45, 0, .1, .2, .1, 0, 0, 0, 0);
+
+	// Main rotor blades
+	// White
+	glColor3f(1, 1, 1);
+	cube(.2, .7, 0, .9, .1, .1, 0, 0, 0, 0);
+	cube(.2, .7, 0, .9, .1, .1, 90, 0, 1, 0);
+
+	// Skids
+	// Yellow
+	glColor3f(1, 1, 0);
+
+	// Left skid mounts
+	cube(-.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1);
+	cube(.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1);
+
+	// Left skid
+	cube(-.1, -.5, .2, .7, .06, .06, 0, 0, 0, 0);
+
+	// Right skid mounts
+	cube(-.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1);
+	cube(.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1);
+
+	// Right skid
+	cube(-.1, -.5, -.2, .7, .06, .06, 0, 0, 0, 0);
+
+	// Cockpit
+	sphere(-.4, .07, 0, .45);
 }
 
 /*
@@ -353,7 +259,7 @@ void cube(double x, double y, double z, double l, double h, double w)
  */
 void display()
 {
-	const double len=1.5;  //  Length of axes
+	const double len=2.0;  //  Length of axes
 	//  Erase the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	//  Enable Z-buffering in OpenGL
@@ -364,61 +270,27 @@ void display()
 	glRotated(ph,1,0,0);
 	glRotated(th,0,1,0);
 
-	// Helicopter body
-	// Blue
-	glColor3f(0, 0, 1);
-	cube(0, 0, 0, .5, .3, .3);
+	// Draw a helicopter in the middle of the axes
+	helicopter();
 
-	// Tail Bloom
-	// Green
-	glColor3f(0, 1, 0);
-	cube(.8, .1, 0, .4, .1, .1);
+	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
+	// so that it doesn't affect the how the axes are drawn later one
+	glPushMatrix();
+	glTranslatef(2, 2, -2);
+	glRotatef(90, 0, 1, 0);
+	glRotatef(45, 0, 0, 1);
+	glScalef(.5, .5, .5);
+	helicopter();
+	glPopMatrix();
 
-	// Tail Fin
-	// Red
-	glColor3f(1, 0, 0);
-	tail(1.1, .1, 0, .6, .6, .6);
-
-	// Tail Gearbox
-	// Blue
-	glColor3f(0, 0, 1);
-	cube(1.3, .1, .1, .1, .1, .2);
-
-	//Tail Rotor Blades
-	// White
-	glColor3f(1, 1, 1);
-	tailRotorBlade(1.3, .1, .25, .3, .06, .08);
-
-	// Rotor mast
-	// Red
-	glColor3f(1, 0, 0);
-	cube(.2, .5, 0, .1, .2, .1);
-
-	// Main rotor blades
-	glColor3f(1, 1, 1);
-	mainRotorBlade(.2, .7, 0, .9, .1, .1, 0);
-	mainRotorBlade(.2, .7, 0, .9, .1, .1, 90);
-
-	// Skids
-	// Yellow
-	glColor3f(1, 1, 0);
-
-	// Left skid mounts
-	skid(-.2, -.3, .2, .3, .06, .06);
-	skid(.2, -.3, .2, .3, .06, .06);
-
-	// Left skid
-	cube(-.1, -.5, .2, .7, .06, .06);
-
-	// Right skid mounts
-	skid(-.2, -.3, -.2, .3, .06, .06);
-	skid(.2, -.3, -.2, .3, .06, .06);
-
-	// Right skid
-	cube(-.1, -.5, -.2, .7, .06, .06);
-
-	// Cockpit
-	sphere();
+	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
+	// so that it doesn't affect the how the axes are drawn later one
+	glPushMatrix();
+	glTranslatef(-2, 2, 2);
+	glRotatef(-45, 1, 0, 1);
+	glScalef(.3, .3, .3);
+	helicopter();
+	glPopMatrix();
 
 	if(axes){
 		//  Draw axes
