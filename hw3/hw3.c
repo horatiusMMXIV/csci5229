@@ -85,8 +85,8 @@ void sphere()
 	//  Save transformation
 	glPushMatrix();
 	//  Offset and scale
-	glTranslatef(-.3, 0, 0);
-	glScalef(.4,.4,.4);
+	glTranslatef(-.4, .07, 0);
+	glScalef(.45,.45,.45);
 
 	//  South pole cap
 	glBegin(GL_TRIANGLE_FAN);
@@ -129,7 +129,7 @@ void tail(double x, double y, double z, double l, double h, double w)
 {
 	//  Save transformation
 	   glPushMatrix();
-	   // Offset, scale
+	   // Offset, scale, and rotate
 	   glTranslatef(x, y, z);
 	   glScalef(l, h, w);
 	   glRotatef(-45, 0, 0, 1);
@@ -141,6 +141,163 @@ void tail(double x, double y, double z, double l, double h, double w)
 	   //  Undo transofrmations
 	   glPopMatrix();
 }
+
+/*
+ *  Draw a cube
+ *     at (x,y,z)
+ *     with height (h), length (l), width (w)
+ *
+ */
+void mainRotorBlade(double x, double y, double z, double l, double h, double w, double angle)
+{
+   //  Save transformation
+   glPushMatrix();
+   // Offset, rotate, scale
+   glTranslatef(x, y, z);
+   glRotatef(angle, 0, 1, 0);
+   glScalef(l, h, w);
+
+   //  Cube
+   glBegin(GL_QUADS);
+   glVertex3f(-1,-1, 1);
+   glVertex3f(+1,-1, 1);
+   glVertex3f(+1,+1, 1);
+   glVertex3f(-1,+1, 1);
+   //  Back
+   glVertex3f(+1,-1,-1);
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,+1,-1);
+   glVertex3f(+1,+1,-1);
+   //  Right
+   glVertex3f(+1,-1,+1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(+1,+1,+1);
+   //  Left
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,-1,+1);
+   glVertex3f(-1,+1,+1);
+   glVertex3f(-1,+1,-1);
+   //  Top
+   glVertex3f(-1,+1,+1);
+   glVertex3f(+1,+1,+1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(-1,+1,-1);
+   //  Bottom
+   glVertex3f(-1,-1,-1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,-1,+1);
+   glVertex3f(-1,-1,+1);
+   //  End
+   glEnd();
+   //  Undo transofrmations
+   glPopMatrix();
+}
+
+/*
+ *  Draw a cube
+ *     at (x,y,z)
+ *     with height (h), length (l), width (w)
+ *
+ */
+void tailRotorBlade(double x, double y, double z, double l, double h, double w)
+{
+   //  Save transformation
+   glPushMatrix();
+   // Offset, rotate, scale
+   glTranslatef(x, y, z);
+   glRotatef(45, 0, 0, 1);
+   glScalef(l, h, w);
+
+   //  Cube
+   glBegin(GL_QUADS);
+   glVertex3f(-1,-1, 1);
+   glVertex3f(+1,-1, 1);
+   glVertex3f(+1,+1, 1);
+   glVertex3f(-1,+1, 1);
+   //  Back
+   glVertex3f(+1,-1,-1);
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,+1,-1);
+   glVertex3f(+1,+1,-1);
+   //  Right
+   glVertex3f(+1,-1,+1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(+1,+1,+1);
+   //  Left
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,-1,+1);
+   glVertex3f(-1,+1,+1);
+   glVertex3f(-1,+1,-1);
+   //  Top
+   glVertex3f(-1,+1,+1);
+   glVertex3f(+1,+1,+1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(-1,+1,-1);
+   //  Bottom
+   glVertex3f(-1,-1,-1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,-1,+1);
+   glVertex3f(-1,-1,+1);
+   //  End
+   glEnd();
+   //  Undo transofrmations
+   glPopMatrix();
+}
+
+/*
+ *  Draw a cube
+ *     at (x,y,z)
+ *     with height (h), length (l), width (w)
+ *
+ */
+void skid(double x, double y, double z, double l, double h, double w)
+{
+   //  Save transformation
+   glPushMatrix();
+   // Offset, rotate, scale
+   glTranslatef(x, y, z);
+   glRotatef(45, 0, 0, 1);
+   glScalef(l, h, w);
+
+   //  Cube
+   glBegin(GL_QUADS);
+   glVertex3f(-1,-1, 1);
+   glVertex3f(+1,-1, 1);
+   glVertex3f(+1,+1, 1);
+   glVertex3f(-1,+1, 1);
+   //  Back
+   glVertex3f(+1,-1,-1);
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,+1,-1);
+   glVertex3f(+1,+1,-1);
+   //  Right
+   glVertex3f(+1,-1,+1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(+1,+1,+1);
+   //  Left
+   glVertex3f(-1,-1,-1);
+   glVertex3f(-1,-1,+1);
+   glVertex3f(-1,+1,+1);
+   glVertex3f(-1,+1,-1);
+   //  Top
+   glVertex3f(-1,+1,+1);
+   glVertex3f(+1,+1,+1);
+   glVertex3f(+1,+1,-1);
+   glVertex3f(-1,+1,-1);
+   //  Bottom
+   glVertex3f(-1,-1,-1);
+   glVertex3f(+1,-1,-1);
+   glVertex3f(+1,-1,+1);
+   glVertex3f(-1,-1,+1);
+   //  End
+   glEnd();
+   //  Undo transofrmations
+   glPopMatrix();
+}
+
 /*
  *  Draw a cube
  *     at (x,y,z)
@@ -156,38 +313,31 @@ void cube(double x, double y, double z, double l, double h, double w)
    glScalef(l, h, w);
    //  Cube
    glBegin(GL_QUADS);
-   //  Front
-   //glColor3f(1,0,0);
    glVertex3f(-1,-1, 1);
    glVertex3f(+1,-1, 1);
    glVertex3f(+1,+1, 1);
    glVertex3f(-1,+1, 1);
    //  Back
-   //glColor3f(0,0,1);
    glVertex3f(+1,-1,-1);
    glVertex3f(-1,-1,-1);
    glVertex3f(-1,+1,-1);
    glVertex3f(+1,+1,-1);
    //  Right
-   //glColor3f(1,1,0);
    glVertex3f(+1,-1,+1);
    glVertex3f(+1,-1,-1);
    glVertex3f(+1,+1,-1);
    glVertex3f(+1,+1,+1);
    //  Left
-   //glColor3f(0,1,0);
    glVertex3f(-1,-1,-1);
    glVertex3f(-1,-1,+1);
    glVertex3f(-1,+1,+1);
    glVertex3f(-1,+1,-1);
    //  Top
-   //glColor3f(0,1,1);
    glVertex3f(-1,+1,+1);
    glVertex3f(+1,+1,+1);
    glVertex3f(+1,+1,-1);
    glVertex3f(-1,+1,-1);
    //  Bottom
-   //glColor3f(1,0,1);
    glVertex3f(-1,-1,-1);
    glVertex3f(+1,-1,-1);
    glVertex3f(+1,-1,+1);
@@ -227,21 +377,47 @@ void display()
 	// Tail Fin
 	// Red
 	glColor3f(1, 0, 0);
-	//cube(1.2, .1, 0, .1, .3, .1);
-	tail(1.1, .1, 0, .5, .5, .5);
+	tail(1.1, .1, 0, .6, .6, .6);
 
-	// Tail Rotor
+	// Tail Gearbox
+	// Blue
 	glColor3f(0, 0, 1);
-	//cube()
+	cube(1.3, .1, .1, .1, .1, .2);
+
+	//Tail Rotor Blades
+	// White
+	glColor3f(1, 1, 1);
+	tailRotorBlade(1.3, .1, .25, .3, .06, .08);
 
 	// Rotor mast
 	// Red
 	glColor3f(1, 0, 0);
 	cube(.2, .5, 0, .1, .2, .1);
 
+	// Main rotor blades
+	glColor3f(1, 1, 1);
+	mainRotorBlade(.2, .7, 0, .9, .1, .1, 0);
+	mainRotorBlade(.2, .7, 0, .9, .1, .1, 90);
+
+	// Skids
+	// Yellow
+	glColor3f(1, 1, 0);
+
+	// Left skid mounts
+	skid(-.2, -.3, .2, .3, .06, .06);
+	skid(.2, -.3, .2, .3, .06, .06);
+
+	// Left skid
+	cube(-.1, -.5, .2, .7, .06, .06);
+
+	// Right skid mounts
+	skid(-.2, -.3, -.2, .3, .06, .06);
+	skid(.2, -.3, -.2, .3, .06, .06);
+
+	// Right skid
+	cube(-.1, -.5, -.2, .7, .06, .06);
+
 	// Cockpit
-	// White
-	//glColor3f(1, 1, 1);
 	sphere();
 
 	if(axes){
