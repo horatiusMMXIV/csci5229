@@ -123,51 +123,71 @@ void sphere()
 }
 
 /*
+ * Draw a triangle
+ */
+void tail(double x, double y, double z, double l, double h, double w)
+{
+	//  Save transformation
+	   glPushMatrix();
+	   // Offset, scale
+	   glTranslatef(x, y, z);
+	   glScalef(l, h, w);
+	   glRotatef(-45, 0, 0, 1);
+	   glBegin(GL_TRIANGLES);
+	   glVertex3f(1, 0, 0);
+	   glVertex3f(0, 1, 0);
+	   glVertex3f(0, 0, 0);
+	   glEnd();
+	   //  Undo transofrmations
+	   glPopMatrix();
+}
+/*
  *  Draw a cube
  *     at (x,y,z)
- *     dimentions (dx,dy,dz)
- *     rotated th about the y axis
+ *     with height (h), length (l), width (w)
+ *
  */
-void cube()
+void cube(double x, double y, double z, double l, double h, double w)
 {
    //  Save transformation
    glPushMatrix();
-
-   glScalef(.5, .3, .3);
+   // Offset, scale
+   glTranslatef(x, y, z);
+   glScalef(l, h, w);
    //  Cube
    glBegin(GL_QUADS);
    //  Front
-   glColor3f(1,0,0);
+   //glColor3f(1,0,0);
    glVertex3f(-1,-1, 1);
    glVertex3f(+1,-1, 1);
    glVertex3f(+1,+1, 1);
    glVertex3f(-1,+1, 1);
    //  Back
-   glColor3f(0,0,1);
+   //glColor3f(0,0,1);
    glVertex3f(+1,-1,-1);
    glVertex3f(-1,-1,-1);
    glVertex3f(-1,+1,-1);
    glVertex3f(+1,+1,-1);
    //  Right
-   glColor3f(1,1,0);
+   //glColor3f(1,1,0);
    glVertex3f(+1,-1,+1);
    glVertex3f(+1,-1,-1);
    glVertex3f(+1,+1,-1);
    glVertex3f(+1,+1,+1);
    //  Left
-   glColor3f(0,1,0);
+   //glColor3f(0,1,0);
    glVertex3f(-1,-1,-1);
    glVertex3f(-1,-1,+1);
    glVertex3f(-1,+1,+1);
    glVertex3f(-1,+1,-1);
    //  Top
-   glColor3f(0,1,1);
+   //glColor3f(0,1,1);
    glVertex3f(-1,+1,+1);
    glVertex3f(+1,+1,+1);
    glVertex3f(+1,+1,-1);
    glVertex3f(-1,+1,-1);
    //  Bottom
-   glColor3f(1,0,1);
+   //glColor3f(1,0,1);
    glVertex3f(-1,-1,-1);
    glVertex3f(+1,-1,-1);
    glVertex3f(+1,-1,+1);
@@ -194,8 +214,36 @@ void display()
 	glRotated(ph,1,0,0);
 	glRotated(th,0,1,0);
 
-	cube();
+	// Helicopter body
+	// Blue
+	glColor3f(0, 0, 1);
+	cube(0, 0, 0, .5, .3, .3);
+
+	// Tail Bloom
+	// Green
+	glColor3f(0, 1, 0);
+	cube(.8, .1, 0, .4, .1, .1);
+
+	// Tail Fin
+	// Red
+	glColor3f(1, 0, 0);
+	//cube(1.2, .1, 0, .1, .3, .1);
+	tail(1.1, .1, 0, .5, .5, .5);
+
+	// Tail Rotor
+	glColor3f(0, 0, 1);
+	//cube()
+
+	// Rotor mast
+	// Red
+	glColor3f(1, 0, 0);
+	cube(.2, .5, 0, .1, .2, .1);
+
+	// Cockpit
+	// White
+	//glColor3f(1, 1, 1);
 	sphere();
+
 	if(axes){
 		//  Draw axes
 		glColor3f(1,1,1);
