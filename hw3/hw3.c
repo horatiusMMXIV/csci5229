@@ -24,6 +24,7 @@ int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
+double zh=0;
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -32,12 +33,14 @@ double dim=5.0;   //  Size of world
 /*
  * Tasks
  * -------
- * 1) Scene should be viewable from multiple eye positions directed by user input
- * 2) Scene should be viewable from different viewpoints using the cursor keys or mouse
- * 3) OpenGL should remove those parts of the objects that are obstructed by other objects in the scene. (Face Culling or Z-buffer)
+ * 1) Scene should be viewable from multiple eye positions directed by user input *Completed*
+ * 2) Scene should be viewable from different viewpoints using the cursor keys or mouse *Completed*
+ * 3) OpenGL should remove those parts of the objects that are obstructed by other objects in the scene. (Face Culling and Z-buffer) *Completed*
  * 4) Scene should contain at least two instances of the same object at different positions, scales, and orientations *Completed*
  * 5) The second object should be created by translation, rotation, and scaling of the original object *Completed*
- * 5) The objects should be custom made not using GLU or GLUT objects (I will try to create a car as my custom object) *Completed*
+ * 6) The objects should be custom made not using GLU or GLUT objects (I will try to create a car as my custom object) *Completed*
+ * 7) Add animation to the helicopters.
+ * 8) Allow a user to change to a perspective mode.
  */
 
 /*
@@ -75,6 +78,7 @@ void Vertex(double th,double ph)
 */
 void sphere(double x, double y, double z, double r)
 {
+	const int d=5;
 	int th,ph;
 	//  Save transformation
 	glPushMatrix();
@@ -85,20 +89,20 @@ void sphere(double x, double y, double z, double r)
 	//  South pole cap
 	glBegin(GL_TRIANGLE_FAN);
 	Vertex(0,-90);
-	for (th=0;th<=360;th+=dim)
+	for (th=0;th<=360;th+=d)
 	{
-	  Vertex(th,dim-90);
+	  Vertex(th,d-90);
 	}
 	glEnd();
 
 	//  Latitude bands
-	for (ph=dim-90;ph<=90-2*dim;ph+=dim)
+	for (ph=d-90;ph<=90-2*d;ph+=d)
 	{
 	  glBegin(GL_QUAD_STRIP);
-	  for (th=0;th<=360;th+=dim)
+	  for (th=0;th<=360;th+=d)
 	  {
 		 Vertex(th,ph);
-		 Vertex(th,ph+dim);
+		 Vertex(th,ph+d);
 	  }
 	  glEnd();
 	}
@@ -106,9 +110,9 @@ void sphere(double x, double y, double z, double r)
 	//  North pole cap
 	glBegin(GL_TRIANGLE_FAN);
 	Vertex(0,90);
-	for (th=0;th<=360;th+=dim)
+	for (th=0;th<=360;th+=d)
 	{
-	  Vertex(th,90-dim);
+	  Vertex(th,90-d);
 	}
 	glEnd();
 	//  Undo transformations
@@ -194,8 +198,9 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 
 /*
  * Draw entire helicopter
+ *	with blade rotation (br)
  */
-void helicopter(){
+void helicopter(double br){
 	// Helicopter body
 	// Blue
 	glColor3f(0, 0, 1);
@@ -219,7 +224,7 @@ void helicopter(){
 	//Tail Rotor Blades
 	// White
 	glColor3f(1, 1, 1);
-	cube(1.3, .1, .18, .3, .06, .08, 45, 0, 0, 1);
+	cube(1.3, .1, .18, .3, .06, .08, br + 45, 0, 0, 1);
 
 	// Rotor mast
 	// Red
@@ -229,8 +234,8 @@ void helicopter(){
 	// Main rotor blades
 	// White
 	glColor3f(1, 1, 1);
-	cube(.2, .7, 0, .9, .1, .1, 0, 0, 0, 0);
-	cube(.2, .7, 0, .9, .1, .1, 90, 0, 1, 0);
+	cube(.2, .7, 0, .9, .1, .1, br + 0, 0, 1, 0);
+	cube(.2, .7, 0, .9, .1, .1, br + 90, 0, 1, 0);
 
 	// Skids
 	// Yellow
@@ -255,6 +260,60 @@ void helicopter(){
 }
 
 /*
+ * Create a moving helicopter
+ *	at (x,y,z)
+ *  nose towards (dx,dy,dz)
+ *  up towards (ux,uy,uz)
+ */
+void movingHelicopter(double x, double y, double z, double dx, double dy, double dz, double ux, double uy, double uz){
+	//  Unit vector in direction of flght
+	double D0 = sqrt(dx*dx+dy*dy+dz*dz);
+	double X0 = dx/D0;
+	double Y0 = dy/D0;
+	double Z0 = dz/D0;
+	//  Unit vector in "up" direction
+	double D1 = sqrt(ux*ux+uy*uy+uz*uz);
+	double X1 = ux/D1;
+	double Y1 = uy/D1;
+	double Z1 = uz/D1;
+	//  Cross product gives the third vector
+	double X2 = Y0*Z1-Y1*Z0;
+	double Y2 = Z0*X1-Z1*X0;
+	double Z2 = X0*Y1-X1*Y0;
+	//  Rotation matrix
+	double mat[16];
+	mat[0] = X0;   mat[4] = X1;   mat[ 8] = X2;   mat[12] = 0;
+	mat[1] = Y0;   mat[5] = Y1;   mat[ 9] = Y2;   mat[13] = 0;
+	mat[2] = Z0;   mat[6] = Z1;   mat[10] = Z2;   mat[14] = 0;
+	mat[3] =  0;   mat[7] =  0;   mat[11] =  0;   mat[15] = 1;
+
+	//  Save current transforms
+	glPushMatrix();
+
+	//  Offset, scale and rotate
+	glTranslated(x,y,z);
+	//glRotated(45, 1, 0, 0);
+	//glRotated(zh - 90, 0, 1, 0);
+
+	//glMultMatrixd(mat);
+	helicopter(zh);
+
+	//  Undo transformations
+	glPopMatrix();
+}
+
+/*
+ *  GLUT calls this toutine when there is nothing else to do
+ */
+void idle()
+{
+   double t = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+   zh = fmod(90*t,360);
+   glutPostRedisplay();
+}
+
+
+/*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
 void display()
@@ -270,8 +329,9 @@ void display()
 	glRotated(ph,1,0,0);
 	glRotated(th,0,1,0);
 
+	movingHelicopter(Sin(zh), 1, Cos(zh), Sin(zh), 1, 1 , 1, 1, 1);
 	// Draw a helicopter in the middle of the axes
-	helicopter();
+	//helicopter();
 
 	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
 	// so that it doesn't affect the how the axes are drawn later one
@@ -280,7 +340,7 @@ void display()
 	glRotatef(90, 0, 1, 0);
 	glRotatef(45, 0, 0, 1);
 	glScalef(.5, .5, .5);
-	helicopter();
+	helicopter(0);
 	glPopMatrix();
 
 	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
@@ -289,12 +349,12 @@ void display()
 	glTranslatef(-2, 2, 2);
 	glRotatef(-45, 1, 0, 1);
 	glScalef(.3, .3, .3);
-	helicopter();
+	helicopter(0);
 	glPopMatrix();
 
+	glColor3f(1,1,1);
 	if(axes){
 		//  Draw axes
-		glColor3f(1,1,1);
 		glBegin(GL_LINES);
 		glVertex3d(0.0,0.0,0.0);
 		glVertex3d(len,0.0,0.0);
@@ -329,9 +389,32 @@ void key(unsigned char ch,int x,int y)
 	if (ch == 27){
 	  exit(0);
 	}
+	// Reset everything
+	else if (ch == '0'){
+		axes = 0;
+		th = ph = 0;
+	}
 	//  Toggle axes
 	else if (ch == 'a' || ch == 'A'){
 	      axes = 1-axes;
+	}
+	//  Reset view angle
+	// Look down x-axis
+	else if (ch == 'x' || ch == 'X')
+	{
+		th = -90;
+		ph = 0;
+	}
+	// Look down y-axis
+	else if (ch == 'y' || ch == 'Y'){
+		th = 0;
+		ph = 90;
+	}
+	// Look down z-axis
+	else if (ch == 'z' || ch == 'Z')
+	{
+		th = ph = 0;
+
 	}
 	//  Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
@@ -374,12 +457,6 @@ void special(int key,int x,int y)
    //  Down arrow key - decrease elevation by 5 degrees
    else if (key == GLUT_KEY_DOWN)
       ph -= 5;
-   //  PageUp key - increase dim
-   else if (key == GLUT_KEY_PAGE_UP)
-      dim += 0.1;
-   //  PageDown key - decrease dim
-   else if (key == GLUT_KEY_PAGE_DOWN && dim>1)
-      dim -= 0.1;
    //  Keep angles to +/-360 degrees
    th %= 360;
    ph %= 360;
@@ -403,6 +480,8 @@ int main(int argc,char* argv[])
 	glutReshapeFunc(reshape);
 	glutSpecialFunc(special);
 	glutKeyboardFunc(key);
+	//  Tell GLUT to call "idle" when there is nothing else to do
+	glutIdleFunc(idle);
 	//  Pass control to GLUT so it can interact with the user
 	glutMainLoop();
 	return 0;
