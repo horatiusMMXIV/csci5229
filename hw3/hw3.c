@@ -25,6 +25,7 @@ int ph=0;         //  Elevation of view angle
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
 double zh=0;
+int ba = 45;
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -39,8 +40,8 @@ double zh=0;
  * 4) Scene should contain at least two instances of the same object at different positions, scales, and orientations *Completed*
  * 5) The second object should be created by translation, rotation, and scaling of the original object *Completed*
  * 6) The objects should be custom made not using GLU or GLUT objects (I will try to create a car as my custom object) *Completed*
- * 7) Add animation to the helicopters.
- * 8) Allow a user to change to a perspective mode.
+ * 7) Add animation to the helicopters. *Completed*
+ * 8) Allow a user to change to a perspective mode. *Did not attempt*
  */
 
 /*
@@ -265,38 +266,21 @@ void helicopter(double br){
  *  nose towards (dx,dy,dz)
  *  up towards (ux,uy,uz)
  */
-void movingHelicopter(double x, double y, double z, double dx, double dy, double dz, double ux, double uy, double uz){
-	//  Unit vector in direction of flght
-	double D0 = sqrt(dx*dx+dy*dy+dz*dz);
-	double X0 = dx/D0;
-	double Y0 = dy/D0;
-	double Z0 = dz/D0;
-	//  Unit vector in "up" direction
-	double D1 = sqrt(ux*ux+uy*uy+uz*uz);
-	double X1 = ux/D1;
-	double Y1 = uy/D1;
-	double Z1 = uz/D1;
-	//  Cross product gives the third vector
-	double X2 = Y0*Z1-Y1*Z0;
-	double Y2 = Z0*X1-Z1*X0;
-	double Z2 = X0*Y1-X1*Y0;
-	//  Rotation matrix
-	double mat[16];
-	mat[0] = X0;   mat[4] = X1;   mat[ 8] = X2;   mat[12] = 0;
-	mat[1] = Y0;   mat[5] = Y1;   mat[ 9] = Y2;   mat[13] = 0;
-	mat[2] = Z0;   mat[6] = Z1;   mat[10] = Z2;   mat[14] = 0;
-	mat[3] =  0;   mat[7] =  0;   mat[11] =  0;   mat[15] = 1;
-
+void movingHelicopter(){
 	//  Save current transforms
 	glPushMatrix();
 
-	//  Offset, scale and rotate
-	glTranslated(x,y,z);
-	//glRotated(45, 1, 0, 0);
-	//glRotated(zh - 90, 0, 1, 0);
+	//  Translate the helicopter around the space
+	glTranslated(Cos(zh), 1, -Sin(zh));
+	// Bank the helicopter towards the origin
+	glRotated(45 * Sin(zh), 1, 0, 0);
+	// Tilt the cockpit of the helicopter down as if going forward
+	glRotated(45 * Sin(zh), 0, 0, 1);
+	// Have the helicopter face away from the origin at 90 degrees
+	glRotated(-90 + zh, 0, 1, 0);
 
-	//glMultMatrixd(mat);
-	helicopter(zh);
+	// Create the helicopter with rotating blades
+	helicopter(5*zh);
 
 	//  Undo transformations
 	glPopMatrix();
@@ -329,9 +313,9 @@ void display()
 	glRotated(ph,1,0,0);
 	glRotated(th,0,1,0);
 
-	movingHelicopter(Sin(zh), 1, Cos(zh), Sin(zh), 1, 1 , 1, 1, 1);
-	// Draw a helicopter in the middle of the axes
-	//helicopter();
+	glPushMatrix();
+	movingHelicopter();
+	glPopMatrix();
 
 	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
 	// so that it doesn't affect the how the axes are drawn later one
@@ -395,23 +379,23 @@ void key(unsigned char ch,int x,int y)
 		th = ph = 0;
 	}
 	//  Toggle axes
-	else if (ch == 'a' || ch == 'A'){
+	else if (ch == 'a'){
 	      axes = 1-axes;
 	}
 	//  Reset view angle
 	// Look down x-axis
-	else if (ch == 'x' || ch == 'X')
+	else if (ch == 'x')
 	{
 		th = -90;
 		ph = 0;
 	}
 	// Look down y-axis
-	else if (ch == 'y' || ch == 'Y'){
+	else if (ch == 'y'){
 		th = 0;
 		ph = 90;
 	}
 	// Look down z-axis
-	else if (ch == 'z' || ch == 'Z')
+	else if (ch == 'z')
 	{
 		th = ph = 0;
 

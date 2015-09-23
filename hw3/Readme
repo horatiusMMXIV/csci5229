@@ -1,0 +1,23 @@
+Robert Werthman
+CSCI 5229
+Homework 3
+
+Use make to compile and link the program.  This will create and executable call 'hw3'.
+Run the executable with './hw3'
+
+To reset the viewing angle to the original angle seen on start, press 0.
+To look down the Y-axis, press y.
+To look down the X-axis, press x.
+To look down the Z-axis, press z.
+
+To rotate around the X and Y axes use the arrow keys.
+
+To toggle the display of the x, y, and z axes on and off, press a.
+
+It took me 12 hours to complete this assignment.
+
+
+******* Question *******
+I couldn't get the helicopter to just tilt forward and bank around the y-axis without flopping up and down and side-to-side.  
+I realize this has to do my use of the Sin function in the rotation but I couldn't think of any other way.
+Do you have any suggestions?
