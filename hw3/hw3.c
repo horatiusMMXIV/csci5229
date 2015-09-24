@@ -7,6 +7,7 @@
  *
  */
 
+#define GL_GLEXT_PROTOTYPES
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -19,13 +20,12 @@
 #include <GL/glut.h>
 #endif
 
-int axes=0;       //  Display axes
+int axes=1;       //  Display axes
 int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
-double zh=0;
-int ba = 45;
+double zh=0;	// Angle incrementer
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -43,6 +43,15 @@ int ba = 45;
  * 7) Add animation to the helicopters. *Completed*
  * 8) Allow a user to change to a perspective mode. *Did not attempt*
  */
+
+/*
+ *  Check for OpenGL errors
+ */
+void ErrCheck(const char* where)
+{
+   int err = glGetError();
+   if (err) fprintf(stderr,"ERROR: %s [%s]\n",gluErrorString(err),where);
+}
 
 /*
  *  Convenience routine to output raster text
@@ -270,14 +279,14 @@ void movingHelicopter(){
 	//  Save current transforms
 	glPushMatrix();
 
-	//  Translate the helicopter around the space
+	//  Translate the helicopter around the y-axis
 	glTranslated(Cos(zh), 1, -Sin(zh));
-	// Bank the helicopter towards the origin
-	glRotated(45 * Sin(zh), 1, 0, 0);
-	// Tilt the cockpit of the helicopter down as if going forward
-	glRotated(45 * Sin(zh), 0, 0, 1);
-	// Have the helicopter face away from the origin at 90 degrees
+	// Point the nose of the helicopter in the direction of travel
 	glRotated(-90 + zh, 0, 1, 0);
+	// Pitch the helicopter forward
+	glRotated(45, 0, 0, 1);
+	// Roll the helicopter towards the origin
+	glRotated(25, 1, 0, 0);
 
 	// Create the helicopter with rotating blades
 	helicopter(5*zh);
@@ -358,6 +367,8 @@ void display()
 	//  Display parameters
 	glWindowPos2i(5,5);
 	Print("Angle=%d,%d  Dim=%.1f ",th,ph,dim);
+	// Check for any errors that have occurred
+	ErrCheck("display");
 	//  Render the scene and make it visible
 	glFlush();
 	glutSwapBuffers();
@@ -375,7 +386,7 @@ void key(unsigned char ch,int x,int y)
 	}
 	// Reset everything
 	else if (ch == '0'){
-		axes = 0;
+		axes = 1;
 		th = ph = 0;
 	}
 	//  Toggle axes
@@ -458,7 +469,7 @@ int main(int argc,char* argv[])
 	//  Request double buffered, true color window with Z buffering at 600x600
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(600,600);
-	glutCreateWindow("Objects in 3D");
+	glutCreateWindow("Robert Werthman Assignment 3");
 	//  Set callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
@@ -466,6 +477,8 @@ int main(int argc,char* argv[])
 	glutKeyboardFunc(key);
 	//  Tell GLUT to call "idle" when there is nothing else to do
 	glutIdleFunc(idle);
+	//  Check if any errors have occurred
+	ErrCheck("init");
 	//  Pass control to GLUT so it can interact with the user
 	glutMainLoop();
 	return 0;
