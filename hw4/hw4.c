@@ -7,13 +7,13 @@
  *
  * Requirements:
  * 1) GL_CULL_FACE
- * 2) Zoom capabilities
+ * 2) Zoom capabilities *Completed*
  * 3) 3 modes:
- * 		i) Orthogonal
+ * 		i) Orthogonal *Completed*
  * 		ii) Perspective
  * 		iii) First Person Navigation with cursor keys
- * 4) View scene from multiple eye positions
- * 5) View scene from multiple view points using cursor keys
+ * 4) View scene from multiple eye positions *Completed*
+ * 5) View scene from multiple view points using cursor keys *Completed*
  *
  */
 
@@ -36,7 +36,9 @@ int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
-double zh=0;	// Angle incrementer
+double zh=0;	// Changing angle
+int mode = 0;	// Toggle between orthogonal, perspective, first-person
+int fov=55;       //  Field of view (for perspective)
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -68,6 +70,40 @@ void Print(const char* format , ...)
    //  Display the characters one at a time at the current raster position
    while (*ch)
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*ch++);
+}
+
+/*
+ *  Set projection
+ */
+static void Project()
+{
+   //  Tell OpenGL we want to manipulate the projection matrix
+   glMatrixMode(GL_PROJECTION);
+   //  Undo previous transformations
+   glLoadIdentity();
+   //  Perspective transformation
+   if (mode)
+      gluPerspective(fov,asp,dim/4,4*dim);
+   //  Orthogonal projection
+   else
+      glOrtho(-asp*dim,+asp*dim, -dim,+dim, -dim,+dim);
+   //  Switch to manipulating the model matrix
+   glMatrixMode(GL_MODELVIEW);
+   //  Undo previous transformations
+   glLoadIdentity();
+}
+
+/*
+ *  GLUT calls this routine when the window is resized
+ */
+void reshape(int width,int height)
+{
+   //  Ratio of the width to the height of the window
+   asp = (height>0) ? (double)width/height : 1;
+   //  Set the viewport to the entire window
+   glViewport(0,0, width,height);
+   //  Set projection
+   Project();
 }
 
 /*
@@ -156,7 +192,6 @@ void triangle(double x, double y, double z, double l, double h, double w, double
  *     at (x,y,z)
  *     with height (h), length (l), width (w)
  *     at angle (angle) on x (ax), y (ay), or z (az)
- *
  *
  */
 void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
@@ -316,9 +351,21 @@ void display()
 	glEnable(GL_DEPTH_TEST);
 	//  Undo previous transformations
 	glLoadIdentity();
-	// Set view angle
-	glRotated(ph,1,0,0);
-	glRotated(th,0,1,0);
+
+	//  Perspective - set eye position
+	if (mode)
+	{
+		double Ex = -2*dim*Sin(th)*Cos(ph);
+		double Ey = +2*dim        *Sin(ph);
+		double Ez = +2*dim*Cos(th)*Cos(ph);
+		gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
+	}
+	//  Orthogonal - set world orientation
+	else
+	{
+		glRotatef(ph,1,0,0);
+		glRotatef(th,0,1,0);
+	}
 
 	glPushMatrix();
 	movingHelicopter();
@@ -364,7 +411,7 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Angle=%d,%d", th, ph);
+	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s",th,ph,dim,fov,mode?"Perpective":"Orthogonal");
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
@@ -386,6 +433,8 @@ void key(unsigned char ch,int x,int y)
 	else if (ch == '0'){
 		axes = 1;
 		th = ph = 0;
+		fov = 55;
+		dim = 5;
 	}
 	//  Toggle axes
 	else if (ch == 'a'){
@@ -393,8 +442,7 @@ void key(unsigned char ch,int x,int y)
 	}
 	//  Reset view angle
 	// Look down x-axis
-	else if (ch == 'x')
-	{
+	else if (ch == 'x'){
 		th = -90;
 		ph = 0;
 	}
@@ -404,33 +452,25 @@ void key(unsigned char ch,int x,int y)
 		ph = 90;
 	}
 	// Look down z-axis
-	else if (ch == 'z')
-	{
+	else if (ch == 'z'){
 		th = ph = 0;
 
 	}
+	//  Switch display mode
+	else if (ch == 'm'){
+		mode = 1-mode;
+	}
+	//  Change field of view angle
+	else if (ch == '-' && fov>1){
+		fov--;
+	}
+	else if (ch == '+' && fov<89){
+		fov++;
+	}
+	// Reproject
+	Project();
 	//  Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
-}
-
-/*
- *  GLUT calls this routine when the window is resized
- */
-void reshape(int width,int height)
-{
-	//  Ratio of the width to the height of the window
-	asp = (height>0) ? (double)width/height : 1;
-	//  Set the viewport to the entire window
-	glViewport(0,0, width,height);
-	//  Tell OpenGL we want to manipulate the projection matrix
-	glMatrixMode(GL_PROJECTION);
-	//  Undo previous transformations
-	glLoadIdentity();
-	glOrtho(-asp*dim,+asp*dim, -dim,+dim, -dim,+dim);
-	//  Switch to manipulating the model matrix
-	glMatrixMode(GL_MODELVIEW);
-	//  Undo previous transformations
-	glLoadIdentity();
 }
 
 /*
@@ -438,23 +478,38 @@ void reshape(int width,int height)
  */
 void special(int key,int x,int y)
 {
-   //  Right arrow key - increase angle by 5 degrees
-   if (key == GLUT_KEY_RIGHT)
-      th += 5;
-   //  Left arrow key - decrease angle by 5 degrees
-   else if (key == GLUT_KEY_LEFT)
-      th -= 5;
-   //  Up arrow key - increase elevation by 5 degrees
-   else if (key == GLUT_KEY_UP)
-      ph -= 5;
-   //  Down arrow key - decrease elevation by 5 degrees
-   else if (key == GLUT_KEY_DOWN)
-      ph += 5;
-   //  Keep angles to +/-360 degrees
-   th %= 360;
-   ph %= 360;
-   //  Tell GLUT it is necessary to redisplay the scene
-   glutPostRedisplay();
+	//  Right arrow key - increase angle by 5 degrees
+	if (key == GLUT_KEY_RIGHT){
+	  th += 5;
+	}
+	//  Left arrow key - decrease angle by 5 degrees
+	else if (key == GLUT_KEY_LEFT){
+	  th -= 5;
+	}
+	//  Up arrow key - increase elevation by 5 degrees
+	else if (key == GLUT_KEY_UP){
+	  ph -= 5;
+	}
+	//  Down arrow key - decrease elevation by 5 degrees
+	else if (key == GLUT_KEY_DOWN){
+	  ph += 5;
+	}
+	//  PageUp key - increase dim
+	else if (key == GLUT_KEY_PAGE_UP){
+		dim += 0.1;
+	}
+	//  PageDown key - decrease dim
+	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
+		dim -= 0.1;
+	}
+	//  Keep angles to +/-360 degrees
+	//  Keep angles to +/-360 degrees
+	th %= 360;
+	ph %= 360;
+	// Reproject
+	Project();
+	//  Tell GLUT it is necessary to redisplay the scene
+	glutPostRedisplay();
 }
 
 /*
@@ -467,7 +522,7 @@ int main(int argc,char* argv[])
 	//  Request double buffered, true color window with Z buffering at 600x600
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(600,600);
-	glutCreateWindow("Robert Werthman Assignment 3");
+	glutCreateWindow("Robert Werthman Assignment 4");
 	//  Set callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
