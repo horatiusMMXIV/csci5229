@@ -6,7 +6,7 @@
  * hw4.c
  *
  * Requirements:
- * 1) GL_CULL_FACE
+ * 1) GL_CULL_FACE *In-progress, need to fix how the points are drawn*
  * 2) Zoom capabilities *Completed*
  * 3) 3 modes:
  * 		i) Orthogonal *Completed*
@@ -39,6 +39,9 @@ double dim=5.0;   //  Size of world
 double zh=0;	// Changing angle
 int mode = 0;	// Toggle between orthogonal, perspective, first-person
 int fov=55;       //  Field of view (for perspective)
+char* text[] = {"Projection","Perspective","First-person Navigation"};
+int lr = 0; // Left/Right view angle for first person
+int fb = 0; // Forward/Backward view angle for first person
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -177,7 +180,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glTranslatef(x, y, z);
 	glScalef(l, h, w);
 	glRotatef(angle, ax, ay, az);
-	// Draw a triangle
+	// Draw a triangle counter-clockwise for face culling
 	glBegin(GL_TRIANGLES);
 	glVertex3f(1, 0, 0);
 	glVertex3f(0, 1, 0);
@@ -349,22 +352,36 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	//  Enable Z-buffering in OpenGL
 	glEnable(GL_DEPTH_TEST);
+	// Enable face culling in OpenGL
+	//glEnable(GL_CULL_FACE);
 	//  Undo previous transformations
 	glLoadIdentity();
 
 	//  Perspective - set eye position
-	if (mode)
-	{
+	if (mode == 1){
 		double Ex = -2*dim*Sin(th)*Cos(ph);
 		double Ey = +2*dim        *Sin(ph);
 		double Ez = +2*dim*Cos(th)*Cos(ph);
 		gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
 	}
 	//  Orthogonal - set world orientation
-	else
-	{
+	else if(mode == 0){
 		glRotatef(ph,1,0,0);
 		glRotatef(th,0,1,0);
+	}
+	// First person
+	else if(mode == 2){
+		double Ex = 0;
+		double Ey = 0;
+		double Ez = 2*dim;
+		double Ax = lr;
+		double Ay = fb;
+		double Az = 0;
+		double Ux = 0;
+		double Uy = 1;
+		double Uz = 0;
+		// The up vector should just be the direction of the positive y-axis
+		gluLookAt(Ex, Ey, Ez, Ax, Ay, Az, Ux, Uy, Uz);
 	}
 
 	glPushMatrix();
@@ -411,7 +428,7 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s",th,ph,dim,fov,mode?"Perpective":"Orthogonal");
+	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s",th,ph,dim,fov,text[mode]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
@@ -458,7 +475,7 @@ void key(unsigned char ch,int x,int y)
 	}
 	//  Switch display mode
 	else if (ch == 'm'){
-		mode = 1-mode;
+		mode = (mode+1)%3;
 	}
 	//  Change field of view angle
 	else if (ch == '-' && fov>1){
@@ -478,34 +495,55 @@ void key(unsigned char ch,int x,int y)
  */
 void special(int key,int x,int y)
 {
-	//  Right arrow key - increase angle by 5 degrees
-	if (key == GLUT_KEY_RIGHT){
-	  th += 5;
-	}
-	//  Left arrow key - decrease angle by 5 degrees
-	else if (key == GLUT_KEY_LEFT){
-	  th -= 5;
-	}
-	//  Up arrow key - increase elevation by 5 degrees
-	else if (key == GLUT_KEY_UP){
-	  ph -= 5;
-	}
-	//  Down arrow key - decrease elevation by 5 degrees
-	else if (key == GLUT_KEY_DOWN){
-	  ph += 5;
-	}
-	//  PageUp key - increase dim
-	else if (key == GLUT_KEY_PAGE_UP){
-		dim += 0.1;
-	}
-	//  PageDown key - decrease dim
-	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
-		dim -= 0.1;
+	if(mode == 2){
+		//  Right arrow key - increase angle by .1 degrees
+		if (key == GLUT_KEY_RIGHT){
+			lr += 1;
+		}
+		//  Left arrow key - decrease angle by .1 degrees
+		else if (key == GLUT_KEY_LEFT){
+			lr -= 1;
+		}
+		//  Up arrow key - increase elevation by 5 degrees
+		else if (key == GLUT_KEY_UP){
+			fb += 1;
+		}
+		//  Down arrow key - decrease elevation by 5 degrees
+		else if (key == GLUT_KEY_DOWN){
+			fb -= 1;
+		}
+	}else{
+		//  Right arrow key - increase angle by 5 degrees
+		if (key == GLUT_KEY_RIGHT){
+		  th += 5;
+		}
+		//  Left arrow key - decrease angle by 5 degrees
+		else if (key == GLUT_KEY_LEFT){
+		  th -= 5;
+		}
+		//  Up arrow key - increase elevation by 5 degrees
+		else if (key == GLUT_KEY_UP){
+		  ph -= 5;
+		}
+		//  Down arrow key - decrease elevation by 5 degrees
+		else if (key == GLUT_KEY_DOWN){
+		  ph += 5;
+		}
+		//  PageUp key - increase dim
+		else if (key == GLUT_KEY_PAGE_UP){
+			dim += 0.1;
+		}
+		//  PageDown key - decrease dim
+		else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
+			dim -= 0.1;
+		}
 	}
 	//  Keep angles to +/-360 degrees
 	//  Keep angles to +/-360 degrees
 	th %= 360;
 	ph %= 360;
+	fb %= 260;
+	lr %= 360;
 	// Reproject
 	Project();
 	//  Tell GLUT it is necessary to redisplay the scene
