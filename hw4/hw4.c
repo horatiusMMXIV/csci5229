@@ -39,13 +39,25 @@ double dim=5.0;   //  Size of world
 double zh=0;	// Changing angle
 int mode = 0;	// Toggle between orthogonal, perspective, first-person
 int fov=55;       //  Field of view (for perspective)
-char* text[] = {"Projection","Perspective","First-person Navigation"};
+char* text[] = {"Projection","Perspective","First Person"};
 int lr = 0; // Left/Right view angle for first person
-int fb = 0; // Forward/Backward view angle for first person
+int ud = 0; // Up/Down view angle for first person
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
 #define Sin(x) (sin((x)*3.1415927/180))
+
+double EX = 0; // x-coordinate of camera position
+double EY = 0; // y-coordinate of camera position
+double EZ = 10; // z-coordinate of camera position
+
+double AX = 0; // x-coordinate of where the camera is looking
+double AY = 0; // y-coordinate of where the camera is looking
+double AZ = 0; // z-coordinate of where the camera is looking
+
+double UX = 0; // x-coordinate of the up vector
+double UY = 1; // y-coordinate of the up vector
+double UZ = 0; // z-coordinate of the up vector
 
 /*
  *  Check for OpenGL errors
@@ -314,7 +326,6 @@ void helicopter(double br){
 void movingHelicopter(){
 	//  Save current transforms
 	glPushMatrix();
-
 	//  Translate the helicopter around the y-axis
 	glTranslated(Cos(zh), 1, -Sin(zh));
 	// Point the nose of the helicopter in the direction of travel
@@ -323,10 +334,8 @@ void movingHelicopter(){
 	glRotated(45, 0, 0, 1);
 	// Roll the helicopter towards the origin
 	glRotated(25, 1, 0, 0);
-
 	// Create the helicopter with rotating blades
 	helicopter(5*zh);
-
 	//  Undo transformations
 	glPopMatrix();
 }
@@ -369,19 +378,14 @@ void display()
 		glRotatef(ph,1,0,0);
 		glRotatef(th,0,1,0);
 	}
-	// First person
+	// First person view
 	else if(mode == 2){
-		double Ex = 0;
-		double Ey = 0;
-		double Ez = 2*dim;
-		double Ax = lr;
-		double Ay = fb;
-		double Az = 0;
-		double Ux = 0;
-		double Uy = 1;
-		double Uz = 0;
-		// The up vector should just be the direction of the positive y-axis
-		gluLookAt(Ex, Ey, Ez, Ax, Ay, Az, Ux, Uy, Uz);
+		// Recalculate where the camera is looking
+		AX = +2*dim*Sin(th)*Cos(ph);
+		AY = +2*dim*Sin(ph);
+		AZ = -2*dim*Cos(th)*Cos(ph);
+		// Orient the scene so it imitates first person movement
+		gluLookAt(EX, EY, EZ, AX + EX, AY + EY, AZ + EZ, UX, UY, UZ);
 	}
 
 	glPushMatrix();
@@ -428,7 +432,7 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s",th,ph,dim,fov,text[mode]);
+	Print("Th,Ph=%.2d,%.2d X,Y,Z=%.1f,%.1f,%.1f Dim=%.1f FOV=%d Projection=%s",th, ph, EX, EY, EZ, dim, fov, text[mode]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
@@ -452,6 +456,9 @@ void key(unsigned char ch,int x,int y)
 		th = ph = 0;
 		fov = 55;
 		dim = 5;
+		EX = 0;
+		EY = 0;
+		EZ = 2*dim;
 	}
 	//  Toggle axes
 	else if (ch == 'a'){
@@ -484,6 +491,16 @@ void key(unsigned char ch,int x,int y)
 	else if (ch == '+' && fov<89){
 		fov++;
 	}
+	// Move forward in the scene
+	else if(ch == 'f'){
+		EX += AX*.1;
+		EZ += AZ*.1;
+	}
+	// Move backwards in the scene
+	else if(ch == 'b'){
+		EX -= AX*.1;
+		EZ -= AZ*.1;
+	}
 	// Reproject
 	Project();
 	//  Tell GLUT it is necessary to redisplay the scene
@@ -495,55 +512,34 @@ void key(unsigned char ch,int x,int y)
  */
 void special(int key,int x,int y)
 {
-	if(mode == 2){
-		//  Right arrow key - increase angle by .1 degrees
-		if (key == GLUT_KEY_RIGHT){
-			lr += 1;
-		}
-		//  Left arrow key - decrease angle by .1 degrees
-		else if (key == GLUT_KEY_LEFT){
-			lr -= 1;
-		}
-		//  Up arrow key - increase elevation by 5 degrees
-		else if (key == GLUT_KEY_UP){
-			fb += 1;
-		}
-		//  Down arrow key - decrease elevation by 5 degrees
-		else if (key == GLUT_KEY_DOWN){
-			fb -= 1;
-		}
-	}else{
-		//  Right arrow key - increase angle by 5 degrees
-		if (key == GLUT_KEY_RIGHT){
-		  th += 5;
-		}
-		//  Left arrow key - decrease angle by 5 degrees
-		else if (key == GLUT_KEY_LEFT){
-		  th -= 5;
-		}
-		//  Up arrow key - increase elevation by 5 degrees
-		else if (key == GLUT_KEY_UP){
-		  ph -= 5;
-		}
-		//  Down arrow key - decrease elevation by 5 degrees
-		else if (key == GLUT_KEY_DOWN){
-		  ph += 5;
-		}
-		//  PageUp key - increase dim
-		else if (key == GLUT_KEY_PAGE_UP){
-			dim += 0.1;
-		}
-		//  PageDown key - decrease dim
-		else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
-			dim -= 0.1;
-		}
+	//  Right arrow key - increase angle by 5 degrees
+	if (key == GLUT_KEY_RIGHT){
+	  th += 5;
+	}
+	//  Left arrow key - decrease angle by 5 degrees
+	else if (key == GLUT_KEY_LEFT){
+	  th -= 5;
+	}
+	//  Up arrow key - increase elevation by 5 degrees
+	else if (key == GLUT_KEY_UP){
+	  ph += 5;
+	}
+	//  Down arrow key - decrease elevation by 5 degrees
+	else if (key == GLUT_KEY_DOWN){
+	  ph -= 5;
+	}
+	//  PageUp key - increase dim
+	else if (key == GLUT_KEY_PAGE_UP){
+		dim += 0.1;
+	}
+	//  PageDown key - decrease dim
+	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
+		dim -= 0.1;
 	}
 	//  Keep angles to +/-360 degrees
 	//  Keep angles to +/-360 degrees
 	th %= 360;
 	ph %= 360;
-	fb %= 260;
-	lr %= 360;
 	// Reproject
 	Project();
 	//  Tell GLUT it is necessary to redisplay the scene
@@ -559,7 +555,7 @@ int main(int argc,char* argv[])
 	glutInit(&argc,argv);
 	//  Request double buffered, true color window with Z buffering at 600x600
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(600,600);
+	glutInitWindowSize(700,700);
 	glutCreateWindow("Robert Werthman Assignment 4");
 	//  Set callbacks
 	glutDisplayFunc(display);
