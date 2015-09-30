@@ -6,14 +6,19 @@
  * hw4.c
  *
  * Requirements:
- * 1) GL_CULL_FACE *In-progress, need to fix how the points are drawn*
+ * 1) GL_CULL_FACE *Not completed*
  * 2) Zoom capabilities *Completed*
  * 3) 3 modes:
  * 		i) Orthogonal *Completed*
- * 		ii) Perspective
- * 		iii) First Person Navigation with cursor keys
+ * 		ii) Perspective *Completed*
+ * 		iii) First Person Navigation with cursor keys *Completed*
  * 4) View scene from multiple eye positions *Completed*
  * 5) View scene from multiple view points using cursor keys *Completed*
+ *
+ * Sources:
+ * ---------
+ * 1) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-6-keyboard-and-mouse/
+ * 	- Information about first person view in opengl
  *
  */
 
@@ -40,8 +45,6 @@ double zh=0;	// Changing angle
 int mode = 0;	// Toggle between orthogonal, perspective, first-person
 int fov=55;       //  Field of view (for perspective)
 char* text[] = {"Projection","Perspective","First Person"};
-int lr = 0; // Left/Right view angle for first person
-int ud = 0; // Up/Down view angle for first person
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -192,7 +195,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glTranslatef(x, y, z);
 	glScalef(l, h, w);
 	glRotatef(angle, ax, ay, az);
-	// Draw a triangle counter-clockwise for face culling
+	// Draw a triangle counter-clockwise
 	glBegin(GL_TRIANGLES);
 	glVertex3f(1, 0, 0);
 	glVertex3f(0, 1, 0);
@@ -365,7 +368,6 @@ void display()
 	//glEnable(GL_CULL_FACE);
 	//  Undo previous transformations
 	glLoadIdentity();
-
 	//  Perspective - set eye position
 	if (mode == 1){
 		double Ex = -2*dim*Sin(th)*Cos(ph);
@@ -387,11 +389,9 @@ void display()
 		// Orient the scene so it imitates first person movement
 		gluLookAt(EX, EY, EZ, AX + EX, AY + EY, AZ + EZ, UX, UY, UZ);
 	}
-
 	glPushMatrix();
 	movingHelicopter();
 	glPopMatrix();
-
 	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
 	// so that it doesn't affect the how the axes are drawn later one
 	glPushMatrix();
@@ -401,7 +401,6 @@ void display()
 	glScalef(.5, .5, .5);
 	helicopter(0);
 	glPopMatrix();
-
 	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
 	// so that it doesn't affect the how the axes are drawn later one
 	glPushMatrix();
@@ -410,7 +409,6 @@ void display()
 	glScalef(.3, .3, .3);
 	helicopter(0);
 	glPopMatrix();
-
 	glColor3f(1,1,1);
 	if(axes){
 		//  Draw axes
@@ -438,7 +436,6 @@ void display()
 	//  Render the scene and make it visible
 	glFlush();
 	glutSwapBuffers();
-
 }
 
 /*
@@ -469,6 +466,8 @@ void key(unsigned char ch,int x,int y)
 	else if (ch == 'x'){
 		th = -90;
 		ph = 0;
+		EX = 2*dim;
+		EZ = 0;
 	}
 	// Look down y-axis
 	else if (ch == 'y'){
@@ -478,7 +477,8 @@ void key(unsigned char ch,int x,int y)
 	// Look down z-axis
 	else if (ch == 'z'){
 		th = ph = 0;
-
+		EX = 0;
+		EZ = 2*dim;
 	}
 	//  Switch display mode
 	else if (ch == 'm'){
@@ -514,19 +514,19 @@ void special(int key,int x,int y)
 {
 	//  Right arrow key - increase angle by 5 degrees
 	if (key == GLUT_KEY_RIGHT){
-	  th += 5;
+		th += 5;
 	}
 	//  Left arrow key - decrease angle by 5 degrees
 	else if (key == GLUT_KEY_LEFT){
-	  th -= 5;
+		th -= 5;
 	}
 	//  Up arrow key - increase elevation by 5 degrees
 	else if (key == GLUT_KEY_UP){
-	  ph += 5;
+		ph += 5;
 	}
 	//  Down arrow key - decrease elevation by 5 degrees
 	else if (key == GLUT_KEY_DOWN){
-	  ph -= 5;
+		ph -= 5;
 	}
 	//  PageUp key - increase dim
 	else if (key == GLUT_KEY_PAGE_UP){
