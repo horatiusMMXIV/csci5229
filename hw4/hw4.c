@@ -44,7 +44,7 @@ double dim=5.0;   //  Size of world
 double zh=0;	// Changing angle
 int mode = 0;	// Toggle between orthogonal, perspective, first-person
 int fov=55;       //  Field of view (for perspective)
-char* text[] = {"Projection","Perspective","First Person"};
+char* text[] = {"Orthogonal","Perspective","First Person"};
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
@@ -142,6 +142,7 @@ void sphere(double x, double y, double z, double r)
 {
 	const int d=5;
 	int th,ph;
+	glDisable(GL_CULL_FACE);
 	//  Save transformation
 	glPushMatrix();
 	//  Offset and scale
@@ -156,7 +157,6 @@ void sphere(double x, double y, double z, double r)
 	  Vertex(th,d-90);
 	}
 	glEnd();
-
 	//  Latitude bands
 	for (ph=d-90;ph<=90-2*d;ph+=d)
 	{
@@ -168,7 +168,6 @@ void sphere(double x, double y, double z, double r)
 	  }
 	  glEnd();
 	}
-
 	//  North pole cap
 	glBegin(GL_TRIANGLE_FAN);
 	Vertex(0,90);
@@ -179,6 +178,7 @@ void sphere(double x, double y, double z, double r)
 	glEnd();
 	//  Undo transformations
 	glPopMatrix();
+	glEnable(GL_CULL_FACE);
 }
 
 /*
@@ -189,6 +189,7 @@ void sphere(double x, double y, double z, double r)
  */
 void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
+	glDisable(GL_CULL_FACE);
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale, and rotate
@@ -203,6 +204,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glEnd();
 	//  Undo transofrmations
 	glPopMatrix();
+	glEnable(GL_CULL_FACE);
 }
 
 /*
@@ -365,7 +367,7 @@ void display()
 	//  Enable Z-buffering in OpenGL
 	glEnable(GL_DEPTH_TEST);
 	// Enable face culling in OpenGL
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	//  Undo previous transformations
 	glLoadIdentity();
 	//  Perspective - set eye position
@@ -383,8 +385,8 @@ void display()
 	// First person view
 	else if(mode == 2){
 		// Recalculate where the camera is looking
-		AX = +2*dim*Sin(th)*Cos(ph);
-		AY = +2*dim*Sin(ph);
+		AX = -2*dim*Sin(th)*Cos(ph);
+		AY = -2*dim*Sin(ph);
 		AZ = -2*dim*Cos(th)*Cos(ph);
 		// Orient the scene so it imitates first person movement
 		gluLookAt(EX, EY, EZ, AX + EX, AY + EY, AZ + EZ, UX, UY, UZ);
@@ -514,19 +516,19 @@ void special(int key,int x,int y)
 {
 	//  Right arrow key - increase angle by 5 degrees
 	if (key == GLUT_KEY_RIGHT){
-		th += 5;
+		th -= 5;
 	}
 	//  Left arrow key - decrease angle by 5 degrees
 	else if (key == GLUT_KEY_LEFT){
-		th -= 5;
+		th += 5;
 	}
 	//  Up arrow key - increase elevation by 5 degrees
 	else if (key == GLUT_KEY_UP){
-		ph += 5;
+		ph -= 5;
 	}
 	//  Down arrow key - decrease elevation by 5 degrees
 	else if (key == GLUT_KEY_DOWN){
-		ph -= 5;
+		ph += 5;
 	}
 	//  PageUp key - increase dim
 	else if (key == GLUT_KEY_PAGE_UP){
