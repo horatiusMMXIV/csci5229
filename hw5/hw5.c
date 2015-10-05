@@ -7,7 +7,9 @@
  *
  * Requirements:
  * 1. Add normals to all polygons *Completed*
- * 2. Include the cscix229 library
+ * 2. Use the cscix229 library
+ * 3. Add light source that can be stopped and moved
+ * 4.
  *
  */
 
@@ -26,30 +28,32 @@
 #endif
 
 int axes=1;       //  Display axes
+int mode=1;       //  Projection mode
+int move=1;       //  Move light
 int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
+int fov=55;       //  Field of view (for perspective)
+int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
-double zh=0;	// Changing angle
-int mode = 0;	// Toggle between orthogonal, perspective, first-person
-int fov=55;       //  Field of view (for perspective)
-char* text[] = {"Orthogonal","Perspective","First Person"};
+// Light values
+int one       =   1;  // Unit value
+int distance  =   5;  // Light distance
+int inc       =  10;  // Ball increment
+int smooth    =   1;  // Smooth/Flat shading
+int emission  =   0;  // Emission intensity (%)
+int ambient   =  30;  // Ambient intensity (%)
+int diffuse   = 100;  // Diffuse intensity (%)
+int specular  =   0;  // Specular intensity (%)
+int shininess =   0;  // Shininess (power of two)
+float shinyvec[1];    // Shininess (value)
+int zh        =  90;  // Light azimuth
+float ylight  =   0;  // Elevation of light
 
 //  Cosine and Sine in degrees
 #define Cos(x) (cos((x)*3.1415927/180))
 #define Sin(x) (sin((x)*3.1415927/180))
 
-double EX = 0; // x-coordinate of camera position
-double EY = 0; // y-coordinate of camera position
-double EZ = 10; // z-coordinate of camera position
-
-double AX = 0; // x-coordinate of where the camera is looking
-double AY = 0; // y-coordinate of where the camera is looking
-double AZ = 0; // z-coordinate of where the camera is looking
-
-double UX = 0; // x-coordinate of the up vector
-double UY = 1; // y-coordinate of the up vector
-double UZ = 0; // z-coordinate of the up vector
 
 /*
  *  Check for OpenGL errors
@@ -136,6 +140,8 @@ void sphere(double x, double y, double z, double r)
 {
 	const int d=5;
 	int th,ph;
+	float yellow[] = {1.0,1.0,0.0,1.0};
+	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 	//  Save transformation
 	glPushMatrix();
 	//  Offset and scale
@@ -144,6 +150,9 @@ void sphere(double x, double y, double z, double r)
 
 	//  Purple ball
 	glColor3f(.5,0.0,.5);
+	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
+	glMaterialfv(GL_FRONT,GL_SPECULAR,yellow);
+	glMaterialfv(GL_FRONT,GL_EMISSION,Emission);
 
 	//  Latitude bands
 	for (ph=-90;ph<90;ph+=d)
@@ -170,6 +179,12 @@ void sphere(double x, double y, double z, double r)
 void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
 	glDisable(GL_CULL_FACE);
+	// Set specular color to white
+	float white[] = {1,1,1,1};
+	float black[] = {0,0,0,1};
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,white);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale, and rotate
@@ -197,54 +212,60 @@ void triangle(double x, double y, double z, double l, double h, double w, double
  */
 void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
-   //  Save transformation
-   glPushMatrix();
-   // Offset, scale
-   glTranslatef(x, y, z);
-   glRotatef(angle, ax, ay, az);
-   glScalef(l, h, w);
-   //  Cube
-   // Front
-   glBegin(GL_QUADS);
-   glNormal3f(0, 0, +1);
-   glVertex3f(-1,-1, 1);
-   glVertex3f(+1,-1, 1);
-   glVertex3f(+1,+1, 1);
-   glVertex3f(-1,+1, 1);
-   //  Back
-   glNormal3f(0, 0, -1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,+1,-1);
-   glVertex3f(+1,+1,-1);
-   //  Right
-   glNormal3f(+1, 0, 0);
-   glVertex3f(+1,-1,+1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(+1,+1,+1);
-   //  Left
-   glNormal3f(-1, 0, 0);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(-1,-1,+1);
-   glVertex3f(-1,+1,+1);
-   glVertex3f(-1,+1,-1);
-   //  Top
-   glNormal3f(0, 1, 0);
-   glVertex3f(-1,+1,+1);
-   glVertex3f(+1,+1,+1);
-   glVertex3f(+1,+1,-1);
-   glVertex3f(-1,+1,-1);
-   //  Bottom
-   glNormal3f(0, -1, 0);
-   glVertex3f(-1,-1,-1);
-   glVertex3f(+1,-1,-1);
-   glVertex3f(+1,-1,+1);
-   glVertex3f(-1,-1,+1);
-   //  End
-   glEnd();
-   //  Undo transformations
-   glPopMatrix();
+	// Set specular color to white
+	float white[] = {1,1,1,1};
+	float black[] = {0,0,0,1};
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,white);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
+	//  Save transformation
+	glPushMatrix();
+	// Offset, scale
+	glTranslatef(x, y, z);
+	glRotatef(angle, ax, ay, az);
+	glScalef(l, h, w);
+	//  Cube
+	// Front
+	glBegin(GL_QUADS);
+	glNormal3f(0, 0, +1);
+	glVertex3f(-1,-1, 1);
+	glVertex3f(+1,-1, 1);
+	glVertex3f(+1,+1, 1);
+	glVertex3f(-1,+1, 1);
+	//  Back
+	glNormal3f(0, 0, -1);
+	glVertex3f(+1,-1,-1);
+	glVertex3f(-1,-1,-1);
+	glVertex3f(-1,+1,-1);
+	glVertex3f(+1,+1,-1);
+	//  Right
+	glNormal3f(+1, 0, 0);
+	glVertex3f(+1,-1,+1);
+	glVertex3f(+1,-1,-1);
+	glVertex3f(+1,+1,-1);
+	glVertex3f(+1,+1,+1);
+	//  Left
+	glNormal3f(-1, 0, 0);
+	glVertex3f(-1,-1,-1);
+	glVertex3f(-1,-1,+1);
+	glVertex3f(-1,+1,+1);
+	glVertex3f(-1,+1,-1);
+	//  Top
+	glNormal3f(0, 1, 0);
+	glVertex3f(-1,+1,+1);
+	glVertex3f(+1,+1,+1);
+	glVertex3f(+1,+1,-1);
+	glVertex3f(-1,+1,-1);
+	//  Bottom
+	glNormal3f(0, -1, 0);
+	glVertex3f(-1,-1,-1);
+	glVertex3f(+1,-1,-1);
+	glVertex3f(+1,-1,+1);
+	glVertex3f(-1,-1,+1);
+	//  End
+	glEnd();
+	//  Undo transformations
+	glPopMatrix();
 }
 
 /*
@@ -370,36 +391,43 @@ void display()
 		glRotatef(ph,1,0,0);
 		glRotatef(th,0,1,0);
 	}
-	// First person view
-	else if(mode == 2){
-		// Recalculate where the camera is looking
-		AX = -2*dim*Sin(th)*Cos(ph);
-		AY = -2*dim*Sin(ph);
-		AZ = -2*dim*Cos(th)*Cos(ph);
-		// Orient the scene so it imitates first person movement
-		gluLookAt(EX, EY, EZ, AX + EX, AY + EY, AZ + EZ, UX, UY, UZ);
+
+	if(light){
+		//  Translate intensity to color vectors
+		float Ambient[]   = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
+		float Diffuse[]   = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
+		float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
+		//  Light position
+		float Position[]  = {distance*Cos(zh),ylight,distance*Sin(zh),1.0};
+		//  Draw light position as ball (still no lighting here)
+		glColor3f(1,1,1);
+		sphere(Position[0],Position[1],Position[2] , 0.1);
+		//  OpenGL should normalize normal vectors
+		glEnable(GL_NORMALIZE);
+		//  Enable lighting
+		glEnable(GL_LIGHTING);
+		//  glColor sets ambient and diffuse color materials
+		glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+		glEnable(GL_COLOR_MATERIAL);
+		//  Enable light 0
+		glEnable(GL_LIGHT0);
+		//  Set ambient, diffuse, specular components and position of light 0
+		glLightfv(GL_LIGHT0,GL_AMBIENT ,Ambient);
+		glLightfv(GL_LIGHT0,GL_DIFFUSE ,Diffuse);
+		glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
+		glLightfv(GL_LIGHT0,GL_POSITION,Position);
+	}else{
+		glDisable(GL_LIGHTING);
 	}
+
 	glPushMatrix();
 	helicopter(0);
 	//movingHelicopter();
 	glPopMatrix();
-	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
-	// so that it doesn't affect the how the axes are drawn later one
-	//glPushMatrix();
-	//glTranslatef(2, 2, -2);
-	//glRotatef(90, 0, 1, 0);
-	//glRotatef(45, 0, 0, 1);
-	//glScalef(.5, .5, .5);
-	//helicopter(0);
-	//glPopMatrix();
-	// Draw another helicopter but use a different matrix to draw it on and apply the transformations to
-	// so that it doesn't affect the how the axes are drawn later one
-	//glPushMatrix();
-	//glTranslatef(-2, 2, 2);
-	//glRotatef(-45, 1, 0, 1);
-	//glScalef(.3, .3, .3);
-	//helicopter(0);
-	//glPopMatrix();
+	glColor3f(1,1,1);
+
+	//  Draw axes - no lighting from here on
+	glDisable(GL_LIGHTING);
 	glColor3f(1,1,1);
 	if(axes){
 		//  Draw axes
@@ -421,7 +449,15 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Th,Ph=%.2d,%.2d X,Y,Z=%.1f,%.1f,%.1f Dim=%.1f FOV=%d Projection=%s",th, ph, EX, EY, EZ, dim, fov, text[mode]);
+	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s Light=%s",
+	     th,ph,dim,fov,mode?"Perpective":"Orthogonal",light?"On":"Off");
+	if (light)
+	   {
+	      glWindowPos2i(5,45);
+	      Print("Distance=%d Elevation=%.1f", distance, ylight);
+	      glWindowPos2i(5,25);
+	      Print("Ambient=%d  Diffuse=%d Specular=%d Emission=%d Shininess=%.0f",ambient,diffuse,specular,emission,shinyvec[0]);
+	   }
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
@@ -434,68 +470,72 @@ void display()
  */
 void key(unsigned char ch,int x,int y)
 {
-	//  Exit on ESC
-	if (ch == 27){
-	  exit(0);
-	}
-	// Reset everything
-	else if (ch == '0'){
-		axes = 1;
-		th = ph = 0;
-		fov = 55;
-		dim = 5;
-		EX = 0;
-		EY = 0;
-		EZ = 2*dim;
-	}
-	//  Toggle axes
-	else if (ch == 'a'){
-	      axes = 1-axes;
-	}
-	//  Reset view angle
-	// Look down x-axis
-	else if (ch == 'x'){
-		th = -90;
-		ph = 0;
-		EX = 2*dim;
-		EZ = 0;
-	}
-	// Look down y-axis
-	else if (ch == 'y'){
-		th = 0;
-		ph = 90;
-	}
-	// Look down z-axis
-	else if (ch == 'z'){
-		th = ph = 0;
-		EX = 0;
-		EZ = 2*dim;
-	}
-	//  Switch display mode
-	else if (ch == 'm'){
-		mode = (mode+1)%3;
-	}
-	//  Change field of view angle
-	else if (ch == '-' && fov>1){
-		fov--;
-	}
-	else if (ch == '+' && fov<89){
-		fov++;
-	}
-	// Move forward in the scene
-	else if(ch == 'f'){
-		EX += AX*.1;
-		EZ += AZ*.1;
-	}
-	// Move backwards in the scene
-	else if(ch == 'b'){
-		EX -= AX*.1;
-		EZ -= AZ*.1;
-	}
-	// Reproject
-	Project();
-	//  Tell GLUT it is necessary to redisplay the scene
-	glutPostRedisplay();
+   //  Exit on ESC
+   if (ch == 27)
+      exit(0);
+   //  Reset view angle
+   else if (ch == '0')
+      th = ph = 0;
+   //  Toggle axes
+   else if (ch == 'x' || ch == 'X')
+      axes = 1-axes;
+   //  Toggle lighting
+   else if (ch == 'l' || ch == 'L')
+      light = 1-light;
+   //  Switch projection mode
+   else if (ch == 'p' || ch == 'P')
+      mode = 1-mode;
+   //  Toggle light movement
+   else if (ch == 'm' || ch == 'M')
+      move = 1-move;
+   //  Move light
+   else if (ch == '<')
+      zh += 1;
+   else if (ch == '>')
+      zh -= 1;
+   //  Change field of view angle
+   else if (ch == '-' && ch>1)
+      fov--;
+   else if (ch == '+' && ch<179)
+      fov++;
+   //  Light elevation
+   else if (ch=='[')
+      ylight -= 0.1;
+   else if (ch==']')
+      ylight += 0.1;
+   //  Ambient level
+   else if (ch=='a' && ambient>0)
+      ambient -= 5;
+   else if (ch=='A' && ambient<100)
+      ambient += 5;
+   //  Diffuse level
+   else if (ch=='d' && diffuse>0)
+      diffuse -= 5;
+   else if (ch=='D' && diffuse<100)
+      diffuse += 5;
+   //  Specular level
+   else if (ch=='s' && specular>0)
+      specular -= 5;
+   else if (ch=='S' && specular<100)
+      specular += 5;
+   //  Emission level
+   else if (ch=='e' && emission>0)
+      emission -= 5;
+   else if (ch=='E' && emission<100)
+      emission += 5;
+   //  Shininess level
+   else if (ch=='n' && shininess>-1)
+      shininess -= 1;
+   else if (ch=='N' && shininess<7)
+      shininess += 1;
+   //  Translate shininess power to value (-1 => 0)
+   shinyvec[0] = shininess<0 ? 0 : pow(2.0,shininess);
+   //  Reproject
+   Project();
+   //  Animate if requested
+   glutIdleFunc(move?idle:NULL);
+   //  Tell GLUT it is necessary to redisplay the scene
+   glutPostRedisplay();
 }
 
 /*
