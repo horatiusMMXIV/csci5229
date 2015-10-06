@@ -136,11 +136,11 @@ static void Vertex(double th,double ph)
 *	at (x,y,z)
 * 	radius (r)
 */
-void sphere(double x, double y, double z, double r)
+void sphere(double x, double y, double z, double r, double red, double green, double blue)
 {
 	const int d=5;
 	int th,ph;
-	float yellow[] = {1.0,1.0,0.0,1.0};
+	float color[] = {red,green,blue,1.0};
 	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 	//  Save transformation
 	glPushMatrix();
@@ -149,9 +149,9 @@ void sphere(double x, double y, double z, double r)
 	glScalef(r, r, r);
 
 	//  Purple ball
-	glColor3f(.5,0.0,.5);
+	glColor3f(red, green, blue);
 	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
-	glMaterialfv(GL_FRONT,GL_SPECULAR,yellow);
+	glMaterialfv(GL_FRONT,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT,GL_EMISSION,Emission);
 
 	//  Latitude bands
@@ -176,23 +176,24 @@ void sphere(double x, double y, double z, double r)
  * 	with height (h), length (l), width (w)
  * 	at angle (angle) on x (ax), y (ay), or z (az)
  */
-void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
+void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
+		double red, double green, double blue)
 {
 	// Have opengl correctly calculate the shading for both sides of the triangle
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glDisable(GL_CULL_FACE);
-	// Set specular color to white
-	float white[] = {1,1,1,1};
-	float black[] = {0,0,0,1};
+	float color[] = {red, green, blue, 1};
+	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,white);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale, and rotate
 	glTranslatef(x, y, z);
 	glScalef(l, h, w);
 	glRotatef(angle, ax, ay, az);
+	glColor3f(red, green, blue);
 	// Draw a triangle clockwise
 	glBegin(GL_TRIANGLES);
 	glNormal3f(0, 0, 1);
@@ -200,7 +201,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glVertex3f(0, 1, 0);
 	glVertex3f(0, 0, 0);
 	glEnd();
-	//  Undo transofrmations
+	//  Undo transformations
 	glPopMatrix();
 	glEnable(GL_CULL_FACE);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
@@ -213,14 +214,14 @@ void triangle(double x, double y, double z, double l, double h, double w, double
  *     at angle (angle) on x (ax), y (ay), or z (az)
  *
  */
-void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
+void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
+		double red, double green, double blue)
 {
-	// Set specular color to white
-	float white[] = {1,1,1,1};
-	float black[] = {0,0,0,1};
+	float color[] = {red, green, blue, 1};
+	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,white);
-	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,black);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale
@@ -229,6 +230,7 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 	glScalef(l, h, w);
 	//  Cube
 	// Front
+	glColor3f(red, green, blue);
 	glBegin(GL_QUADS);
 	glNormal3f(0, 0, +1);
 	glVertex3f(-1,-1, 1);
@@ -278,60 +280,60 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 void helicopter(double br){
 	// Helicopter body
 	// Blue
-	glColor3f(0, 0, 1);
-	cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0);
+	//glColor3f(0, 0, 1);
+	cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0, 0, 0, 1);
 
 	// Tail Bloom
 	// Green
-	glColor3f(0, 1, 0);
-	cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0);
+	//glColor3f(0, 1, 0);
+	cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0, 0, 1, 0);
 
 	// Tail Fin
 	// Red
-	glColor3f(1, 0, 0);
-	triangle(1.1, .1, 0, .6, .6, .6, -45, 0, 0, 1);
+	//glColor3f(1, 0, 0);
+	triangle(1.1, .1, 0, .6, .6, .6, -45, 0, 0, 1, 1, 0, 0);
 
 	// Tail Gearbox
 	// Blue
-	glColor3f(0, 0, 1);
-	cube(1.3, .1, 0, .1, .1, .1, 0, 0, 0, 0);
+	//glColor3f(0, 0, 1);
+	cube(1.3, .1, 0, .1, .1, .1, 0, 0, 0, 0, 0, 0, 1);
 
 	//Tail Rotor Blades
 	// White
-	glColor3f(1, 1, 1);
-	cube(1.3, .1, .18, .3, .06, .08, br + 45, 0, 0, 1);
+	//glColor3f(1, 1, 1);
+	cube(1.3, .1, .18, .3, .06, .08, br + 45, 0, 0, 1, 1, 1, 1);
 
 	// Rotor mast
 	// Red
-	glColor3f(1, 0, 0);
-	cube(.2, .45, 0, .1, .2, .1, 0, 0, 0, 0);
+	//glColor3f(1, 0, 0);
+	cube(.2, .45, 0, .1, .2, .1, 0, 0, 0, 0, 1, 0, 0);
 
 	// Main rotor blades
 	// White
-	glColor3f(1, 1, 1);
-	cube(.2, .7, 0, .9, .1, .1, br + 0, 0, 1, 0);
-	cube(.2, .7, 0, .9, .1, .1, br + 90, 0, 1, 0);
+	//glColor3f(1, 1, 1);
+	cube(.2, .7, 0, .9, .1, .1, br + 0, 0, 1, 0, 1, 1, 1);
+	cube(.2, .7, 0, .9, .1, .1, br + 90, 0, 1, 0, 1, 1, 1);
 
 	// Skids
 	// Yellow
-	glColor3f(1, 1, 0);
+	//glColor3f(1, 1, 0);
 
 	// Left skid mounts
-	cube(-.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1);
-	cube(.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1);
+	cube(-.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
+	cube(.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
 
 	// Left skid
-	cube(-.1, -.5, .2, .7, .06, .06, 0, 0, 0, 0);
+	cube(-.1, -.5, .2, .7, .06, .06, 0, 0, 0, 0, 1, 1, 0);
 
 	// Right skid mounts
-	cube(-.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1);
-	cube(.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1);
+	cube(-.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
+	cube(.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1,1, 0);
 
 	// Right skid
-	cube(-.1, -.5, -.2, .7, .06, .06, 0, 0, 0, 0);
+	cube(-.1, -.5, -.2, .7, .06, .06, 0, 0, 0, 0, 1, 1, 0);
 
-	// Cockpit
-	sphere(-.4, .07, 0, .45);
+	// Purple Cockpit
+	sphere(-.4, .07, 0, .45, 0.5, 0.0, 0.5);
 }
 
 /*
@@ -404,7 +406,7 @@ void display()
 		float Position[]  = {distance*Cos(zh),ylight,distance*Sin(zh),1.0};
 		//  Draw light position as ball (still no lighting here)
 		glColor3f(1,1,1);
-		sphere(Position[0],Position[1],Position[2] , 0.1);
+		sphere(Position[0],Position[1],Position[2] , 0.1, 1.0, 1.0, 1.0);
 		//  OpenGL should normalize normal vectors
 		glEnable(GL_NORMALIZE);
 		//  Enable lighting
@@ -532,7 +534,7 @@ void key(unsigned char ch,int x,int y)
    else if (ch=='N' && shininess<7)
       shininess += 1;
    //  Translate shininess power to value (-1 => 0)
-   shinyvec[0] = shininess<0 ? 0 : pow(2.0,shininess);
+   shinyvec[0] = shininess <= 0 ? 0 : pow(2.0,shininess);
    //  Reproject
    Project();
    //  Animate if requested
