@@ -178,6 +178,8 @@ void sphere(double x, double y, double z, double r)
  */
 void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az)
 {
+	// Have opengl correctly calculate the shading for both sides of the triangle
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glDisable(GL_CULL_FACE);
 	// Set specular color to white
 	float white[] = {1,1,1,1};
@@ -191,7 +193,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glTranslatef(x, y, z);
 	glScalef(l, h, w);
 	glRotatef(angle, ax, ay, az);
-	// Draw a triangle counter-clockwise
+	// Draw a triangle clockwise
 	glBegin(GL_TRIANGLES);
 	glNormal3f(0, 0, 1);
 	glVertex3f(1, 0, 0);
@@ -201,6 +203,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	//  Undo transofrmations
 	glPopMatrix();
 	glEnable(GL_CULL_FACE);
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 }
 
 /*
