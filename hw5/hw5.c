@@ -5,12 +5,6 @@
  *
  * hw5.c
  *
- * Requirements:
- * 1. Add normals to all polygons *Completed*
- * 2. Use the cscix229 library
- * 3. Add light source that can be stopped and moved
- * 4.
- *
  */
 
 
@@ -39,7 +33,6 @@ double dim=5.0;   //  Size of world
 // Light values
 int one       =   1;  // Unit value
 int distance  =   5;  // Light distance
-int inc       =  10;  // Ball increment
 int smooth    =   1;  // Smooth/Flat shading
 int emission  =   0;  // Emission intensity (%)
 int ambient   =  30;  // Ambient intensity (%)
@@ -135,6 +128,7 @@ static void Vertex(double th,double ph)
 *  Draw a sphere
 *	at (x,y,z)
 * 	radius (r)
+* 	with color red, green, blue
 */
 void sphere(double x, double y, double z, double r, double red, double green, double blue)
 {
@@ -175,6 +169,7 @@ void sphere(double x, double y, double z, double r, double red, double green, do
  * 	at (x,y,z)
  * 	with height (h), length (l), width (w)
  * 	at angle (angle) on x (ax), y (ay), or z (az)
+ * 	with color red, green, blue
  */
 void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
 		double red, double green, double blue)
@@ -212,6 +207,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
  *     at (x,y,z)
  *     with height (h), length (l), width (w)
  *     at angle (angle) on x (ax), y (ay), or z (az)
+ *     with color red, green, blue
  *
  */
 void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
@@ -280,44 +276,35 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 void helicopter(double br){
 	// Helicopter body
 	// Blue
-	//glColor3f(0, 0, 1);
 	cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0, 0, 0, 1);
 
 	// Tail Bloom
 	// Green
-	//glColor3f(0, 1, 0);
 	cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0, 0, 1, 0);
 
 	// Tail Fin
 	// Red
-	//glColor3f(1, 0, 0);
 	triangle(1.1, .1, 0, .6, .6, .6, -45, 0, 0, 1, 1, 0, 0);
 
 	// Tail Gearbox
 	// Blue
-	//glColor3f(0, 0, 1);
 	cube(1.3, .1, 0, .1, .1, .1, 0, 0, 0, 0, 0, 0, 1);
 
 	//Tail Rotor Blades
 	// White
-	//glColor3f(1, 1, 1);
 	cube(1.3, .1, .18, .3, .06, .08, br + 45, 0, 0, 1, 1, 1, 1);
 
 	// Rotor mast
 	// Red
-	//glColor3f(1, 0, 0);
 	cube(.2, .45, 0, .1, .2, .1, 0, 0, 0, 0, 1, 0, 0);
 
 	// Main rotor blades
 	// White
-	//glColor3f(1, 1, 1);
 	cube(.2, .7, 0, .9, .1, .1, br + 0, 0, 1, 0, 1, 1, 1);
 	cube(.2, .7, 0, .9, .1, .1, br + 90, 0, 1, 0, 1, 1, 1);
 
 	// Skids
 	// Yellow
-	//glColor3f(1, 1, 0);
-
 	// Left skid mounts
 	cube(-.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
 	cube(.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
@@ -426,8 +413,8 @@ void display()
 	}
 
 	glPushMatrix();
-	helicopter(0);
-	//movingHelicopter();
+	//helicopter(0);
+	movingHelicopter();
 	glPopMatrix();
 	glColor3f(1,1,1);
 
@@ -455,7 +442,7 @@ void display()
 	//  Display parameters
 	glWindowPos2i(5,5);
 	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s Light=%s",
-	     th,ph,dim,fov,mode?"Perpective":"Orthogonal",light?"On":"Off");
+	     th,ph,dim,fov,mode?"Perspective":"Orthogonal",light?"On":"Off");
 	if (light)
 	   {
 	      glWindowPos2i(5,45);
@@ -529,7 +516,7 @@ void key(unsigned char ch,int x,int y)
    else if (ch=='E' && emission<100)
       emission += 5;
    //  Shininess level
-   else if (ch=='n' && shininess>-1)
+   else if (ch=='n' && shininess > 0)
       shininess -= 1;
    else if (ch=='N' && shininess<7)
       shininess += 1;
@@ -571,6 +558,9 @@ void special(int key,int x,int y)
 	//  PageDown key - decrease dim
 	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
 		dim -= 0.1;
+	}
+	else if (key == GLUT_KEY_F3){
+		distance = (distance==1) ? 5 : 1;
 	}
 	//  Keep angles to +/-360 degrees
 	//  Keep angles to +/-360 degrees
