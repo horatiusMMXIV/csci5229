@@ -33,9 +33,10 @@ object.o: object.c CSCIx229.h
 key.o: key.c CSCIx229.h
 special.o: special.c CSCIx229.h
 idle.o: idle.c CSCIx229.h
+reshape.o: reshape.c CSCIx229.h
 
 #  Create archive
-CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o object.o key.o special.o idle.o
+CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o object.o key.o special.o idle.o reshape.o
 	ar -rcs $@ $^
 
 # Compile rules

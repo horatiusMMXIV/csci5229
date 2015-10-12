@@ -32,19 +32,6 @@ int zh        =  90;  // Light azimuth
 float ylight  =   0;  // Elevation of light
 
 /*
- *  GLUT calls this routine when the window is resized
- */
-void reshape(int width,int height)
-{
-   //  Ratio of the width to the height of the window
-   asp = (height>0) ? (double)width/height : 1;
-   //  Set the viewport to the entire window
-   glViewport(0,0, width,height);
-   //  Set projection
-   Project(fov, asp, dim);
-}
-
-/*
  *  Draw vertex in polar coordinates with normal
  */
 static void Vertex(double th,double ph)
@@ -204,57 +191,128 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 }
 
 /*
+ *  Draw a cylinder
+ */
+static void cylinder(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
+		double red, double green, double blue)
+{
+	glDisable(GL_CULL_FACE);
+   int th;
+   float color[] = {red, green, blue, 1};
+   float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
+   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
+   glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
+   glPushMatrix();
+   glColor3f(red, green, blue);
+   glTranslatef(x, y, z);
+   glRotatef(angle, ax, ay, az);
+   glScalef(l, h, w);
+   //  Top
+   glBegin(GL_TRIANGLE_FAN);
+   glNormal3f(0,0,1);
+	glVertex3f(0,0,1);
+	for (th=0;th<=360;th+=15)
+	 glVertex3f(Cos(th),Sin(th),1);
+	glEnd();
+   //  Sides
+	glBegin(GL_QUAD_STRIP);
+	for (th=0;th<=360;th+=15)
+	{
+	 glNormal3f(Cos(th),Sin(th),0);
+	 glVertex3f(Cos(th),Sin(th),1);
+	 glVertex3f(Cos(th),Sin(th),0);
+	}
+	glEnd();
+   glPopMatrix();
+	glEnable(GL_CULL_FACE);
+
+}
+
+/*
  * Draw entire helicopter
  *	with blade rotation (br)
  */
 void helicopter(double br){
 	// Helicopter body
 	// Blue
-	cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0, 0, 0, 1);
+	glPushMatrix();
+	//cube(0, 0, 0, .5, .3, .3, 0, 0, 0, 0, 0, 0, 1);
+	glScalef(1.5,1,1);
+	sphere(0,0,0,1,0,0,1);
+	glPopMatrix();
+
+	// Engine
+	cylinder(1.1, -.2, 0, .2, .2, .5, 90, 0, 1, 0, 0, 1, 0);
 
 	// Tail Bloom
 	// Green
-	cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0, 0, 1, 0);
+	//cube(.8, .1, 0, .4, .1, .1, 0, 0, 0, 0, 0, 1, 0);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(.1,.1);
+	cylinder(.8, .6, 0, .2, .2, 3, 90, 0, 1, 0, 1, 0, 0);
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	triangle(1.5, .06, 0, 1, 1, 1, 45, 0, 0, 1, 0, 0, 1);
 
 	// Tail Fin
 	// Red
-	triangle(1.1, .1, 0, .6, .6, .6, -45, 0, 0, 1, 1, 0, 0);
+	triangle(3.5, .6, -.2, .7, 1.5, .6, -45, 0, 0, 1, 0, 1, 0);
+	glEnable(GL_POLYGON_OFFSET_FILL);
+	glPolygonOffset(.1,.1);
+	glPushMatrix();
+	glRotatef(-90, 1, 0, 0);
+	triangle(3.5, .2, 1.65, 1, 1, 1, -45, 0, 0, 1, 0, 1, 0);
+	glPopMatrix();
+	glDisable(GL_POLYGON_OFFSET_FILL);
+	triangle(4, 1.65, -.9, .4, .4, .4, -45, 0, 0, 1, 0, 1, 0);
+	triangle(4, 1.65, .5, .4, .4, .4, -45, 0, 0, 1, 0, 1, 0);
 
 	// Tail Gearbox
 	// Blue
-	cube(1.3, .1, 0, .1, .1, .1, 0, 0, 0, 0, 0, 0, 1);
+	cube(3.6, .6, .3, .07, .07, .1, 0, 0, 0, 0, 0, 0, 1);
 
 	//Tail Rotor Blades
 	// White
-	cube(1.3, .1, .18, .3, .06, .08, br + 45, 0, 0, 1, 1, 1, 1);
+	cube(3.6, .6, .4, .4, .06, .08, br + 45, 0, 0, 1, 1, 1, 1);
+	cube(3.6, .6, .4, .4, .06, .08, br - 45, 0, 0, 1, 1, 1, 1);
 
 	// Rotor mast
 	// Red
-	cube(.2, .45, 0, .1, .2, .1, 0, 0, 0, 0, 1, 0, 0);
+	cube(.4, .8, 0, .8, .3, .3, 0, 0, 0, 0, 1, 0, 0);
+	cube(.2, 1.1, 0, .1, .18, .1, 0 ,0, 0, 0, 0, 0, 1);
 
 	// Main rotor blades
 	// White
-	cube(.2, .7, 0, .9, .1, .1, br + 0, 0, 1, 0, 1, 1, 1);
-	cube(.2, .7, 0, .9, .1, .1, br + 90, 0, 1, 0, 1, 1, 1);
+	cube(.2, 1.3, 0, 2, .1, .1, br + 0, 0, 1, 0, 1, 1, 1);
+	cube(.2, 1.3, 0, 2, .1, .1, br + 90, 0, 1, 0, 1, 1, 1);
 
 	// Skids
 	// Yellow
 	// Left skid mounts
-	cube(-.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
-	cube(.2, -.3, .2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
+	glPushMatrix();
+	glRotatef(-30, 1, 0, 0);
+	cube(-.5, -1.1, .2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 0);
+	cube(.5, -1.1, .2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 0);
+	glPopMatrix();
 
 	// Left skid
-	cube(-.1, -.5, .2, .7, .06, .06, 0, 0, 0, 0, 1, 1, 0);
+	cube(-.4, -1.1, .9, 1, .06, .06, 0, 0, 0, 0, 1, 1, 0);
 
 	// Right skid mounts
-	cube(-.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
-	cube(.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1,1, 0);
+	//cube(-.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1, 1, 0);
+	//cube(.2, -.3, -.2, .3, .06, .06, 45, 0, 0, 1, 1,1, 0);
+	glPushMatrix();
+	glRotatef(30, 1, 0, 0);
+	cube(-.5, -1.1, -.2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 0);
+	cube(.5, -1.1, -.2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 0);
+	glPopMatrix();
 
 	// Right skid
-	cube(-.1, -.5, -.2, .7, .06, .06, 0, 0, 0, 0, 1, 1, 0);
+	//cube(-.1, -.5, -.2, .7, .06, .06, 0, 0, 0, 0, 1, 1, 0);
+	cube(-.4, -1.1, -.9, 1, .06, .06, 0, 0, 0, 0, 1, 1, 0);
 
 	// Purple Cockpit
-	sphere(-.4, .07, 0, .45, 0.5, 0.0, 0.5);
+	//sphere(-.4, .07, 0, .45, 0.5, 0.0, 0.5);
 }
 
 /*
@@ -391,7 +449,7 @@ int main(int argc,char* argv[])
 	//  Request double buffered, true color window with Z buffering at 600x600
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(700,700);
-	glutCreateWindow("Robert Werthman Assignment 5");
+	glutCreateWindow("Robert Werthman Assignment 6");
 	//  Set callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);

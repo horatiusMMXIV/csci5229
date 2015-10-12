@@ -67,7 +67,7 @@ void key(unsigned char ch,int x,int y)
    //  Translate shininess power to value (-1 => 0)
    shinyvec[0] = shininess <= 0 ? 0 : pow(2.0,shininess);
    //  Reproject
-   Project(fov, asp, dim);
+   Project(mode?fov:0,asp,dim);
    //  Animate if requested
    glutIdleFunc(move?idle:NULL);
    //  Tell GLUT it is necessary to redisplay the scene

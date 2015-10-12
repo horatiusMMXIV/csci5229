@@ -37,7 +37,7 @@ void special(int key,int x,int y)
 	th %= 360;
 	ph %= 360;
 	// Reproject
-	Project(fov, asp, dim);
+	Project(mode?fov:0,asp,dim);
 	//  Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
 }

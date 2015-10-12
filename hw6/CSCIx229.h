@@ -33,6 +33,7 @@ int  LoadOBJ(const char* file);
 void special(int key,int x,int y);
 void key(unsigned char ch,int x,int y);
 void idle();
+void reshape(int width,int height);
 
 // Global Variables
 extern int axes;       //  Display axes
