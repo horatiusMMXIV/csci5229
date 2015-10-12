@@ -43,6 +43,7 @@ unsigned int LoadTexBMP(const char* file)
        fread(&nbp,2,1,f)!=1 || fread(&bpp,2,1,f)!=1 || fread(&k,4,1,f)!=1)
      Fatal("Cannot read header from %s\n",file);
    //  Reverse bytes on big endian hardware (detected by backwards magic)
+
    if (magic==0x424D)
    {
       Reverse(&dx,4);
@@ -51,6 +52,8 @@ unsigned int LoadTexBMP(const char* file)
       Reverse(&bpp,2);
       Reverse(&k,4);
    }
+   dy = sqrt(dy*dy);
+   dx = sqrt(dx*dx);
    //  Check image parameters
    glGetIntegerv(GL_MAX_TEXTURE_SIZE,&max);
    if (dx<1 || dx>max) Fatal("%s image width %d out of range 1-%d\n",file,dx,max);

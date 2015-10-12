@@ -31,6 +31,8 @@ float shinyvec[1];    // Shininess (value)
 int zh        =  90;  // Light azimuth
 float ylight  =   0;  // Elevation of light
 
+unsigned int littlebird[10];
+
 /*
  *  Draw vertex in polar coordinates with normal
  */
@@ -63,7 +65,6 @@ void sphere(double x, double y, double z, double r, double red, double green, do
 	glTranslatef(x, y, z);
 	glScalef(r, r, r);
 
-	//  Purple ball
 	glColor3f(red, green, blue);
 	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT,GL_SPECULAR,color);
@@ -75,8 +76,8 @@ void sphere(double x, double y, double z, double r, double red, double green, do
 		glBegin(GL_QUAD_STRIP);
 		for (th=0;th<=360;th+=d)
 		{
-		 Vertex(th,ph);
-		 Vertex(th,ph+d);
+			Vertex(th,ph);
+			Vertex(th,ph+d);
 		}
 		glEnd();
 	}
@@ -103,6 +104,7 @@ void triangle(double x, double y, double z, double l, double h, double w, double
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
+
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale, and rotate
@@ -139,6 +141,10 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
+
+	//  Enable textures
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,littlebird[0]);
 	//  Save transformation
 	glPushMatrix();
 	// Offset, scale
@@ -150,10 +156,10 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 	glColor3f(red, green, blue);
 	glBegin(GL_QUADS);
 	glNormal3f(0, 0, +1);
-	glVertex3f(-1,-1, 1);
-	glVertex3f(+1,-1, 1);
-	glVertex3f(+1,+1, 1);
-	glVertex3f(-1,+1, 1);
+	glTexCoord2f(0,0); glVertex3f(-1,-1, 1);
+	glTexCoord2f(1,0); glVertex3f(+1,-1, 1);
+	glTexCoord2f(1,1); glVertex3f(+1,+1, 1);
+	glTexCoord2f(0,1); glVertex3f(-1,+1, 1);
 	//  Back
 	glNormal3f(0, 0, -1);
 	glVertex3f(+1,-1,-1);
@@ -188,6 +194,7 @@ void cube(double x, double y, double z, double l, double h, double w, double ang
 	glEnd();
 	//  Undo transformations
 	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 
 /*
@@ -395,8 +402,8 @@ void display()
 	}
 
 	glPushMatrix();
-	//helicopter(0);
-	movingHelicopter();
+	helicopter(0);
+	//movingHelicopter();
 	glPopMatrix();
 	glColor3f(1,1,1);
 
@@ -457,6 +464,7 @@ int main(int argc,char* argv[])
 	glutKeyboardFunc(key);
 	//  Tell GLUT to call "idle" when there is nothing else to do
 	glutIdleFunc(idle);
+	littlebird[0] = LoadTexBMP("littlebirdside.bmp");
 	//  Check if any errors have occurred
 	ErrCheck("init");
 	//  Pass control to GLUT so it can interact with the user
