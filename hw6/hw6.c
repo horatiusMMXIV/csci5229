@@ -349,7 +349,7 @@ void movingHelicopter(){
 	//  Save current transforms
 	glPushMatrix();
 	//  Translate the helicopter around the y-axis
-	glTranslated(Cos(zh), 1, -Sin(zh));
+	glTranslated(Cos(zh)*3, 1, -Sin(zh)*3);
 	// Point the nose of the helicopter in the direction of travel
 	glRotated(-90 + zh, 0, 1, 0);
 	// Pitch the helicopter forward
@@ -419,8 +419,8 @@ void display()
 	}
 
 	glPushMatrix();
-	helicopter(0);
-	//movingHelicopter();
+	//helicopter(0);
+	movingHelicopter();
 	glPopMatrix();
 	glColor3f(1,1,1);
 
