@@ -10,5 +10,5 @@ void reshape(int width,int height)
    //  Set the viewport to the entire window
    glViewport(0,0, width,height);
    //  Set projection
-   Project(mode?fov:0,asp,dim);
+   Project(fov,asp,dim);
 }

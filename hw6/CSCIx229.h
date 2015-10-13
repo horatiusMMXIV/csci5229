@@ -36,8 +36,8 @@ void idle();
 void reshape(int width,int height);
 
 // Global Variables
+extern int fly;	// Have helicopter fly around y-axis
 extern int axes;       //  Display axes
-extern int mode;       //  Projection mode
 extern int move;       //  Move light
 extern int th;         //  Azimuth of view angle
 extern int ph;         //  Elevation of view angle
@@ -46,7 +46,6 @@ extern int light;      //  Lighting
 extern double asp;     //  Aspect ratio
 extern double dim;   //  Size of world
 // Light values
-extern int one;  // Unit value
 extern int distance;  // Light distance
 extern int smooth;  // Smooth/Flat shading
 extern int emission;  // Emission intensity (%)

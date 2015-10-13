@@ -1,17 +1,18 @@
-ex17: Draped Textures
+Robert Werthman
+CSCI 5229
+HW6
 
-Willem A. (Vlakkies) Schreuder
-CSCI4229/5229 Fall 2014
-
-Combines a large texture with a quadrangles to make a simple terrain viewer.
 
 Key bindings
-  m           Cycle display modes
-  +/-         Increase/decrease vertical exaggeration
-  a           Toggle axes
-  arrows      Change view angle
-  PgDn/PgUp   Zoom in and out
-  LeftMouse   Pan horizontally
-  RightMouse  Pan vertically
-  0           Reset view angle
-  ESC         Exit
+  f			 Toggles helicopter's flight
+  l          Toggles lighting
+  m          Toggles light movement
+  +/-        Increase/decrease vertical exaggeration
+  x          Toggle axes
+  arrows     Change view angle
+  PgDn/PgUp  Zoom in and out
+  []         Lower/raise light
+  +/-        Change field of view of perspective
+  </>		 Manually move the light/helicopter 
+  0          Reset view angle
+  ESC        Exit

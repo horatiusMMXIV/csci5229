@@ -13,8 +13,8 @@
 
 #include "CSCIx229.h"
 
+int fly=1;	// Have the helicopter fly around
 int axes=1;       //  Display axes
-int mode=1;       //  Projection mode
 int move=1;       //  Move light
 int th=0;         //  Azimuth of view angle
 int ph=0;         //  Elevation of view angle
@@ -23,7 +23,6 @@ int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=5.0;   //  Size of world
 // Light values
-int one       =   1;  // Unit value
 int distance  =   5;  // Light distance
 int smooth    =   1;  // Smooth/Flat shading
 int emission  =   0;  // Emission intensity (%)
@@ -40,209 +39,169 @@ unsigned int littlebird[10];
 /*
  *  Draw vertex in polar coordinates
  */
-static void Vertex(int th,int ph)
+static void Vertex(int th,int ph, double rep)
 {
    double x = Sin(th)*Cos(ph);
    double y =  Cos(th)*Cos(ph);
    double z =          Sin(ph);
    glNormal3d(x,y,z);
-   glTexCoord2d(th/360.0,ph/180.0+.5);
+   glTexCoord2d(rep*th/360.0,rep*ph/180.0+.5);
    glVertex3d(x,y,z);
 }
 
 /*
 *  Draw a sphere
-*	at (x,y,z)
-* 	radius (r)
 * 	with color red, green, blue
 */
-void sphere(double x, double y, double z, double r, double red, double green, double blue)
+void sphere(double red, double green, double blue, double rep)
 {
-	const int d=5;
 	int th,ph;
 	float color[] = {red,green,blue,1.0};
 	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
-	//  Save transformation
-	glPushMatrix();
-	//  Offset and scale
-	glTranslatef(x, y, z);
-	glScalef(r, r, r);
+
 
 	glColor3f(red, green, blue);
 	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT,GL_EMISSION,Emission);
 
-	for (ph=-90;ph<90;ph+=d)
+	for (ph=-90;ph<90;ph+=5)
 	{
 		glBegin(GL_QUAD_STRIP);
-		for (th=0;th<=360;th+=d)
+		for (th=0;th<=360;th+=5)
 		{
-			Vertex(th,ph);
-			Vertex(th,ph+d);
+			Vertex(th,ph, rep);
+			Vertex(th,ph+5, rep);
 		}
 		glEnd();
 	}
-
-	//  Undo transformations
-	glPopMatrix();
 }
 
 /*
  * Draw a triangle
- * 	at (x,y,z)
- * 	with height (h), length (l), width (w)
- * 	at angle (angle) on x (ax), y (ay), or z (az)
  * 	with color red, green, blue
  */
-void triangle(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
-		double red, double green, double blue)
+void triangle(double red, double green, double blue, double rep)
 {
 	// Have opengl correctly calculate the shading for both sides of the triangle
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glDisable(GL_CULL_FACE);
+
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
-	//  Save transformation
-	glPushMatrix();
-	glTranslatef(x, y, z);
-	glScalef(l, h, w);
-	glRotatef(angle, ax, ay, az);
 	glColor3f(red, green, blue);
 
 	// Draw a triangle clockwise
 	glBegin(GL_TRIANGLES);
 	glNormal3f(0, 0, 1);
 	glTexCoord2f(0 ,0); glVertex3f(1, 0, 0);
-	glTexCoord2f(1/2,1); glVertex3f(0, 1, 0);
-	glTexCoord2f(1,0); glVertex3f(0, 0, 0);
+	glTexCoord2f(rep/2,rep); glVertex3f(0, 1, 0);
+	glTexCoord2f(rep,0); glVertex3f(0, 0, 0);
 	glEnd();
 
-	//  Undo transformations
-	glPopMatrix();
 	glEnable(GL_CULL_FACE);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 }
 
 /*
  *  Draw a cube
- *     at (x,y,z)
- *     with height (h), length (l), width (w)
- *     at angle (angle) on x (ax), y (ay), or z (az)
  *     with color red, green, blue
  *
  */
-void cube(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
-		double red, double green, double blue)
+void cube(double red, double green, double blue, double rep)
 {
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
-	//  Save transformation
-	glPushMatrix();
-	// Offset, scale
-	glTranslatef(x, y, z);
-	glRotatef(angle, ax, ay, az);
-	glScalef(l, h, w);
+	glColor3f(red, green, blue);
+
 	//  Cube
 	// Front
-	glColor3f(red, green, blue);
 	glBegin(GL_QUADS);
 	glNormal3f(0, 0, +1);
 	glTexCoord2f(0,0); glVertex3f(-1,-1, 1);
-	glTexCoord2f(1,0); glVertex3f(+1,-1, 1);
-	glTexCoord2f(1,1); glVertex3f(+1,+1, 1);
-	glTexCoord2f(0,1); glVertex3f(-1,+1, 1);
+	glTexCoord2f(rep,0); glVertex3f(+1,-1, 1);
+	glTexCoord2f(rep,rep); glVertex3f(+1,+1, 1);
+	glTexCoord2f(0,rep); glVertex3f(-1,+1, 1);
 	//  Back
 	glNormal3f(0, 0, -1);
 	glTexCoord2f(0,0); glVertex3f(+1,-1,-1);
-	glTexCoord2f(1,0); glVertex3f(-1,-1,-1);
-	glTexCoord2f(1,1); glVertex3f(-1,+1,-1);
-	glTexCoord2f(0,1); glVertex3f(+1,+1,-1);
+	glTexCoord2f(rep,0); glVertex3f(-1,-1,-1);
+	glTexCoord2f(rep,rep); glVertex3f(-1,+1,-1);
+	glTexCoord2f(0,rep); glVertex3f(+1,+1,-1);
 	//  Right
 	glNormal3f(+1, 0, 0);
 	glTexCoord2f(0,0); glVertex3f(+1,-1,+1);
-	glTexCoord2f(1,0); glVertex3f(+1,-1,-1);
-	glTexCoord2f(1,1); glVertex3f(+1,+1,-1);
-	glTexCoord2f(0,1); glVertex3f(+1,+1,+1);
+	glTexCoord2f(rep,0); glVertex3f(+1,-1,-1);
+	glTexCoord2f(rep,rep); glVertex3f(+1,+1,-1);
+	glTexCoord2f(0,rep); glVertex3f(+1,+1,+1);
 	//  Left
 	glNormal3f(-1, 0, 0);
 	glTexCoord2f(0,0); glVertex3f(-1,-1,-1);
-	glTexCoord2f(1,0); glVertex3f(-1,-1,+1);
-	glTexCoord2f(1,1); glVertex3f(-1,+1,+1);
-	glTexCoord2f(0,1); glVertex3f(-1,+1,-1);
+	glTexCoord2f(rep,0); glVertex3f(-1,-1,+1);
+	glTexCoord2f(rep,rep); glVertex3f(-1,+1,+1);
+	glTexCoord2f(0,rep); glVertex3f(-1,+1,-1);
 	//  Top
 	glNormal3f(0, 1, 0);
 	glTexCoord2f(0,0); glVertex3f(-1,+1,+1);
-	glTexCoord2f(1,0); glVertex3f(+1,+1,+1);
-	glTexCoord2f(1,1); glVertex3f(+1,+1,-1);
-	glTexCoord2f(1,0); glVertex3f(-1,+1,-1);
+	glTexCoord2f(rep,0); glVertex3f(+1,+1,+1);
+	glTexCoord2f(rep,rep); glVertex3f(+1,+1,-1);
+	glTexCoord2f(rep,0); glVertex3f(-1,+1,-1);
 	//  Bottom
 	glNormal3f(0, -1, 0);
 	glTexCoord2f(0,0); glVertex3f(-1,-1,-1);
-	glTexCoord2f(1,0); glVertex3f(+1,-1,-1);
-	glTexCoord2f(1,1); glVertex3f(+1,-1,+1);
-	glTexCoord2f(1,0); glVertex3f(-1,-1,+1);
+	glTexCoord2f(rep,0); glVertex3f(+1,-1,-1);
+	glTexCoord2f(rep,rep); glVertex3f(+1,-1,+1);
+	glTexCoord2f(rep,0); glVertex3f(-1,-1,+1);
 	//  End
 	glEnd();
-	//  Undo transformations
-	glPopMatrix();
 }
 
 /*
  *  Draw a cylinder
  */
-static void cylinder(double x, double y, double z, double l, double h, double w, double angle, double ax, double ay, double az,
-		double red, double green, double blue)
+void cylinder(double red, double green, double blue, double rep)
 {
-glDisable(GL_CULL_FACE);
-   int th;
+	int th;
+	float color[] = {red, green, blue, 1};
+	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 
-   float color[] = {red, green, blue, 1};
-   float Emission[]  = {0.0,0.0,0.01*emission,1.0};
-   glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
-   glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
-   glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
+	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
-   glPushMatrix();
+	glColor3f(red, green, blue);
 
-   glColor3f(red, green, blue);
-   glTranslatef(x, y, z);
-   glRotatef(angle, ax, ay, az);
-   glScalef(l, h, w);
-
-   //  Cap
-   glBegin(GL_TRIANGLE_FAN);
-   glNormal3f(0,0,1);
-   glTexCoord2f(0.5,0.5);
-   glVertex3f(0,0,1);
+	//  Cap
+	glBegin(GL_TRIANGLE_FAN);
+	glNormal3f(0,0,1);
+	glTexCoord2f(0.5,0.5);
+	glVertex3f(0,0,1);
 	for (th=0;th<=360;th+=10){
-		glTexCoord2f(0.5*Cos(th)+0.5,0.5*Sin(th)+0.5);
+		glTexCoord2f(rep/2*Cos(th)+0.5,rep/2*Sin(th)+0.5);
 		glVertex3f(Cos(th),Sin(th),1);
 	}
 	glEnd();
 
-   //  Sides
+	//  Sides
 	glBegin(GL_QUAD_STRIP);
 	for (th=0;th<=360;th+=15)
 	{
-	const float tc = th/(float)360;
-	 glNormal3f(Cos(th),Sin(th),0);
-	 glTexCoord2f(tc, 0); glVertex3f(Cos(th),Sin(th),1);
-	 glTexCoord2f(tc, 1); glVertex3f(Cos(th),Sin(th),0);
+		const float tc = th/(float)360;
+		glNormal3f(Cos(th),Sin(th),0);
+		glTexCoord2f(rep*tc, 0); glVertex3f(Cos(th),Sin(th),1);
+		glTexCoord2f(rep*tc, rep); glVertex3f(Cos(th),Sin(th),0);
 	}
 	glEnd();
-
-   glPopMatrix();
-   glEnable(GL_CULL_FACE);
-
 }
 
 /*
@@ -252,91 +211,179 @@ glDisable(GL_CULL_FACE);
 void helicopter(double br){
 	glEnable(GL_TEXTURE_2D);
 
-	// Helicopter body
+	/* Helicopter Body */
 	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glPushMatrix();
-	glScalef(1.5,1,1);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
-	sphere(0,0,0,1,1,1,1);
+	glScalef(1,1.5,1);
+	sphere(1,1,1, 1);
 	glPopMatrix();
 
-	// Engine
+	/* Engine */
 	glBindTexture(GL_TEXTURE_2D,littlebird[3]);
-	cylinder(1.1, -.2, 0, .2, .2, .5, 90, 0, 1, 0, 1, 1, 1);
-
-	// Tail Bloom
-	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
-	//glEnable(GL_POLYGON_OFFSET_FILL);
-	//glPolygonOffset(.1,.1);
-	cylinder(.8, .6, 0, .2, .2, 3, 90, 0, 1, 0, 1, 1, 1);
-	//glDisable(GL_POLYGON_OFFSET_FILL);
-	triangle(1.5, .06, 0, 1, 1, 1, 45, 0, 0, 1, 1, 1, 1);
-
-	// Tail fins
-	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
-	triangle(3.5, .6, -.2, .7, 1.5, .6, -45, 0, 0, 1, 1, 1, 1);
-	//glEnable(GL_POLYGON_OFFSET_FILL);
-	//glPolygonOffset(.1,.1);
 	glPushMatrix();
+	glTranslatef(1.1, -.2, 0);
+	glRotatef(90, 0, 1, 0);
+	glScalef(.2, .2, .5);
+	cylinder(1, 1, 1, 2);
+	glPopMatrix();
+
+	/* Tail Bloom */
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
+	glPushMatrix();
+	glTranslatef(.8, .6, 0);
+	glRotatef(90, 0, 1, 0);
+	glScalef(.2, .2, 3);
+	cylinder(1,1,1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(1.5, .06, 0);
+	glRotatef(45, 0, 0, 1);
+	glScalef(1, 1, 1);
+	triangle(1, 1, 1, 2);
+	glPopMatrix();
+
+	/* Tail Fins */
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
+	glPushMatrix();
+	glTranslatef(3.5, .6, -.2);
+	glRotatef(-45, 0, 0, 1);
+	triangle(1, 1, 1, 2);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(3.7, 1.3, -.2);
 	glRotatef(-90, 1, 0, 0);
-	triangle(3.5, .2, 1.65, 1, 1, 1, -45, 0, 0, 1, 1, 1, 1);
+	glRotatef(-45, 0, 0, 1);
+	triangle(1, 1, 1,2);
 	glPopMatrix();
-	//glDisable(GL_POLYGON_OFFSET_FILL);
-	triangle(4, 1.65, -.9, .4, .4, .4, -45, 0, 0, 1, 1, 1, 1);
-	triangle(4, 1.65, .5, .4, .4, .4, -45, 0, 0, 1, 1, 1, 1);
 
-	// Tail Gearbox
+	glPushMatrix();
+	glTranslatef(4.2, 1.3, -.9);
+	glRotatef(-45, 0, 0, 1);
+	glScalef(.4, .4, .4);
+	triangle(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(4.2, 1.3, 0.5);
+	glRotatef(-45, 0, 0, 1);
+	glScalef(.4, .4, .4);
+	triangle(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Tail Gearbox */
 	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
-	cube(3.6, .6, .3, .07, .07, .1, 0, 0, 0, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(3.6, .6, .3);
+	glScalef(.07, .07, .1);
+	cube(1, 1, 1,2);
+	glPopMatrix();
 
-	//Tail Rotor Blades
+	/* Tail Rotor Blades */
 	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
-	cube(3.6, .6, .4, .4, .05, .08, br + 45, 0, 0, 1, 1, 1, 1);
-	cube(3.6, .6, .4, .4, .05, .08, br - 45, 0, 0, 1, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(3.6, .6, .4);
+	glRotatef(br + 45, 0, 0, 1);
+	glScalef(.4, .05, .08);
+	cube(1, 1, 1,2);
+	glPopMatrix();
 
-	// Main rotor mast
+	glPushMatrix();
+	glTranslatef(3.6, .6, .4);
+	glRotatef(br - 45, 0, 0, 1);
+	glScalef(.4, .05, .08);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Main Rotor Mast */
 	glBindTexture(GL_TEXTURE_2D,littlebird[0]);
-	cube(.4, .8, 0, .8, .3, .3, 0, 0, 0, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(.4, .8, 0);
+	glScalef(.8, .3, .3);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
 	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
-	cube(.2, 1.1, 0, .1, .18, .1, 0 ,0, 0, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(.2, 1.1, 0);
+	glScalef(.1, .18, .1);
+	cube(1, 1, 1,2);
+	glPopMatrix();
 
-	// Main rotor blades
+	/* Main Rotor Blades */
 	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
-	cube(.2, 1.3, 0, 2, .05, .2, br + 0, 0, 1, 0, 1, 1, 1);
-	cube(.2, 1.3, 0, 2, .05, .2, br + 90, 0, 1, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(.2, 1.3, 0);
+	glRotatef(br + 0, 0, 1, 0);
+	glScalef(2, .05, .2);
+	cube(1, 1, 1,2);
+	glPopMatrix();
 
-	// Skids
-	// Yellow
-	// Left skid mounts
+	glPushMatrix();
+	glTranslatef(.2, 1.3, 0);
+	glRotatef(br + 90, 0, 1, 0);
+	glScalef(2, .05, .2);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Skids */
+	/* Left Skid Mounts */
 	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
 	glPushMatrix();
+	glTranslatef(-.5, -.9, .5);
 	glRotatef(-30, 1, 0, 0);
-	cube(-.5, -1.1, .2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 1);
-	cube(.5, -1.1, .2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 1);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
 	glPopMatrix();
 
-	// Left skid
-	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
-	cube(-.4, -1.1, .9, 1, .06, .06, 0, 0, 0, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(.5, -.9, .5);
+	glRotatef(-30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
 
-	// Right skid mounts
+	/* Right Skid Mounts */
 	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
 	glPushMatrix();
+	glTranslatef(-.5, -.9, -.5);
 	glRotatef(30, 1, 0, 0);
-	cube(-.5, -1.1, -.2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 1);
-	cube(.5, -1.1, -.2, .3, .06, .06, 75, 0, 0, 1, 1, 1, 1);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
 	glPopMatrix();
 
-	// Right skid
+	glPushMatrix();
+	glTranslatef(.5, -.9, -.5);
+	glRotatef(30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Right Skid */
 	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	cube(-.4, -1.1, -.9, 1, .06, .06, 0, 0, 0, 0, 1, 1, 1);
+	glPushMatrix();
+	glTranslatef(-.4, -1.15, .65);
+	glScalef(1, .06, .06);
+	cube(1, 1, 1,3);
+	glPopMatrix();
+
+	/* Left Skid */
+	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
+	glPushMatrix();
+	glTranslatef(-.4, -1.15, -.65);
+	glScalef(1, .06, .06);
+	cube(1, 1, 1,3);
+	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
-
-	// Purple Cockpit
-	//sphere(-.4, .07, 0, .45, 0.5, 0.0, 0.5);
 }
 
 /*
@@ -378,17 +425,10 @@ void display()
 	//  Undo previous transformations
 	glLoadIdentity();
 	//  Perspective - set eye position
-	if (mode == 1){
-		double Ex = -2*dim*Sin(th)*Cos(ph);
-		double Ey = +2*dim        *Sin(ph);
-		double Ez = +2*dim*Cos(th)*Cos(ph);
-		gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
-	}
-	//  Orthogonal - set world orientation
-	else if(mode == 0){
-		glRotatef(ph,1,0,0);
-		glRotatef(th,0,1,0);
-	}
+	double Ex = -2*dim*Sin(th)*Cos(ph);
+	double Ey = +2*dim        *Sin(ph);
+	double Ez = +2*dim*Cos(th)*Cos(ph);
+	gluLookAt(Ex,Ey,Ez , 0,0,0 , 0,Cos(ph),0);
 
 	if(light){
 		//  Translate intensity to color vectors
@@ -399,7 +439,11 @@ void display()
 		float Position[]  = {distance*Cos(zh),ylight,distance*Sin(zh),1.0};
 		//  Draw light position as ball (still no lighting here)
 		glColor3f(1,1,1);
-		sphere(Position[0],Position[1],Position[2] , 0.1, 1.0, 1.0, 1.0);
+		glPushMatrix();
+		glTranslatef(Position[0],Position[1],Position[2]);
+		glScalef(0.1, 0.1, 0.1);
+		sphere(1.0, 1.0, 1.0, 1);
+		glPopMatrix();
 		//  OpenGL should normalize normal vectors
 		glEnable(GL_NORMALIZE);
 		//  Enable lighting
@@ -418,11 +462,11 @@ void display()
 		glDisable(GL_LIGHTING);
 	}
 
-	glPushMatrix();
-	//helicopter(0);
-	movingHelicopter();
-	glPopMatrix();
-	glColor3f(1,1,1);
+	if(fly){
+		movingHelicopter();
+	}else{
+		helicopter(0);
+	}
 
 	//  Draw axes - no lighting from here on
 	glDisable(GL_LIGHTING);
@@ -448,7 +492,7 @@ void display()
 	//  Display parameters
 	glWindowPos2i(5,5);
 	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s Light=%s",
-	     th,ph,dim,fov,mode?"Perspective":"Orthogonal",light?"On":"Off");
+	     th,ph,dim,fov,"Perspective",light?"On":"Off");
 	if (light)
 	   {
 	      glWindowPos2i(5,45);
@@ -485,7 +529,7 @@ int main(int argc,char* argv[])
 	// Load the textures for the helicopter
 	littlebird[0] = LoadTexBMP("littlebirdenginetank.bmp");
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
-	littlebird[2] = LoadTexBMP("cockpitfull.bmp");
+	littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
 	littlebird[3] = LoadTexBMP("littlebirdengine.bmp");
 	littlebird[4] = LoadTexBMP("littlebirdskidmount.bmp");
 	littlebird[5] = LoadTexBMP("littlebirdskid.bmp");

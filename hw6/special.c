@@ -29,15 +29,12 @@ void special(int key,int x,int y)
 	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
 		dim -= 0.1;
 	}
-	else if (key == GLUT_KEY_F3){
-		distance = (distance==1) ? 5 : 1;
-	}
 	//  Keep angles to +/-360 degrees
 	//  Keep angles to +/-360 degrees
 	th %= 360;
 	ph %= 360;
 	// Reproject
-	Project(mode?fov:0,asp,dim);
+	Project(fov,asp,dim);
 	//  Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
 }
