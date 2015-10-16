@@ -80,13 +80,10 @@ void sphere(double red, double green, double blue, double rep)
 /*
  * Draw a triangle
  * 	with color red, green, blue
+ * 	and texture repetitions rep
  */
 void triangle(double red, double green, double blue, double rep)
 {
-	// Have opengl correctly calculate the shading for both sides of the triangle
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
-	glDisable(GL_CULL_FACE);
-
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
 
@@ -96,7 +93,7 @@ void triangle(double red, double green, double blue, double rep)
 
 	glColor3f(red, green, blue);
 
-	// Draw a triangle clockwise
+	// Front
 	glBegin(GL_TRIANGLES);
 	glNormal3f(0, 0, 1);
 	glTexCoord2f(0 ,0); glVertex3f(1, 0, 0);
@@ -104,8 +101,40 @@ void triangle(double red, double green, double blue, double rep)
 	glTexCoord2f(rep,0); glVertex3f(0, 0, 0);
 	glEnd();
 
-	glEnable(GL_CULL_FACE);
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+	// Back
+	glBegin(GL_TRIANGLES);
+	glNormal3f(0, 0, -1);
+	glTexCoord2f(0 ,0); glVertex3f(0, 0, -1);
+	glTexCoord2f(rep/2,rep); glVertex3f(0, 1, -1);
+	glTexCoord2f(rep,0); glVertex3f(1, 0, -1);
+	glEnd();
+
+	// Adjacent edge
+	glBegin(GL_QUADS);
+	glNormal3f(0, -1, 0);
+	glTexCoord2f(0,0); glVertex3f(0, 0, 0);
+	glTexCoord2f(rep,0); glVertex3f(0, 0, -1);
+	glTexCoord2f(rep,rep); glVertex3f(1, 0, -1);
+	glTexCoord2f(0,rep); glVertex3f(1, 0, 0);
+	glEnd();
+
+	// Opposite edge
+	glBegin(GL_QUADS);
+	glNormal3f(-1, 0, 0);
+	glTexCoord2f(0,0); glVertex3f(0, 0, 0);
+	glTexCoord2f(rep,0); glVertex3f(0, 1, 0);
+	glTexCoord2f(rep,rep); glVertex3f(0, 1, -1);
+	glTexCoord2f(0,rep); glVertex3f(0, 0, -1);
+	glEnd();
+
+	// Hypotenuse edge
+	glBegin(GL_QUADS);
+	glNormal3f(1, 1, 0);
+	glTexCoord2f(0,0); glVertex3f(0, 1, 0);
+	glTexCoord2f(rep,0); glVertex3f(1, 0, 0);
+	glTexCoord2f(rep,rep); glVertex3f(1, 0, -1);
+	glTexCoord2f(0,rep); glVertex3f(0, 1, -1);
+	glEnd();
 }
 
 /*
@@ -209,11 +238,11 @@ void cylinder(double red, double green, double blue, double rep)
  *	with blade rotation (br)
  */
 void helicopter(double br){
+
 	glEnable(GL_TEXTURE_2D);
 
 	/* Helicopter Body */
 	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
@@ -240,9 +269,9 @@ void helicopter(double br){
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(1.5, .06, 0);
+	glTranslatef(1.5, .06, .05);
 	glRotatef(45, 0, 0, 1);
-	glScalef(1, 1, 1);
+	glScalef(.5, 1, .1);
 	triangle(1, 1, 1, 2);
 	glPopMatrix();
 
@@ -251,27 +280,29 @@ void helicopter(double br){
 	glPushMatrix();
 	glTranslatef(3.5, .6, -.2);
 	glRotatef(-45, 0, 0, 1);
+	glScalef(1, 1, .1);
 	triangle(1, 1, 1, 2);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(3.7, 1.3, -.2);
+	glTranslatef(3.7, 1.4, -.2);
 	glRotatef(-90, 1, 0, 0);
 	glRotatef(-45, 0, 0, 1);
+	glScalef(1,1,.1);
 	triangle(1, 1, 1,2);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(4.2, 1.3, -.9);
+	glTranslatef(4.2, 1.4, -.9);
 	glRotatef(-45, 0, 0, 1);
-	glScalef(.4, .4, .4);
+	glScalef(.4, .4, .1);
 	triangle(1, 1, 1,2);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(4.2, 1.3, 0.5);
+	glTranslatef(4.2, 1.4, 0.6);
 	glRotatef(-45, 0, 0, 1);
-	glScalef(.4, .4, .4);
+	glScalef(.4, .4, .1);
 	triangle(1, 1, 1,2);
 	glPopMatrix();
 
