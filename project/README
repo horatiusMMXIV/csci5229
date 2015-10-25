@@ -1,0 +1,25 @@
+Robert Werthman
+CSCI 5229
+HW6
+
+
+Key bindings
+  f			 Toggles helicopter's flight
+  l          Toggles lighting
+  m          Toggles light movement
+  x          Toggle axes
+  arrows     Change view angle
+  PgDn/PgUp  Zoom in and out
+  []         Lower/raise light
+  +/-        Change field of view of perspective
+  </>		 Manually move the light/helicopter 
+  0          Reset view angle
+  ESC        Exit
+  
+  This assignment took me 10 hours to complete.
+
+  Known Bug
+  ---------
+  I could not figure out how to get the image of the cockpit to not be distorted on the sphere.  
+  I tried to make my own UV mapped image of the cockpit with a single side view of a real little bird cockpit but it obviously didn't work out.
+  Do you have any suggestion for the future to make this looks better?
