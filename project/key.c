@@ -40,35 +40,25 @@ void key(unsigned char ch,int x,int y)
 	   fly = 1-fly;
    }
    else if(ch =='w'){
-	   //cameraPos[0] += cameraFront[0]*.1;
-	   //cameraPos[1] += cameraFront[1]*.1;
-	   //cameraPos[2] += cameraFront[2]*.1;
-	   cameraPos[0] += cameraUp[0]*.1;
-	   cameraPos[1] += cameraUp[1]*.1;
-	   cameraPos[2] += cameraUp[2]*.1;
+	   cameraPos[0] += cameraUp[0]*(deltaTime*5);
+	   cameraPos[1] += cameraUp[1]*(deltaTime*5);
+	   cameraPos[2] += cameraUp[2]*(deltaTime*5);
    }
    else if(ch=='s'){
-	   //cameraPos[0] -= cameraFront[0]*.1;
-	   //cameraPos[1] -= cameraFront[1]*.1;
-	   //cameraPos[2] -= cameraFront[2]*.1;
-	   cameraPos[0] -= cameraUp[0]*.1;
-	   cameraPos[1] -= cameraUp[1]*.1;
-	   cameraPos[2] -= cameraUp[2]*.1;
+	   cameraPos[0] -= cameraUp[0]*(deltaTime*5);
+	   cameraPos[1] -= cameraUp[1]*(deltaTime*5);
+	   cameraPos[2] -= cameraUp[2]*(deltaTime*5);
    }
    else if(ch=='a'){
-	   cameraPos[0] -= cameraRight[0]*.1;
-	   cameraPos[1] -= cameraRight[1]*.1;
-	   cameraPos[2] -= cameraRight[2]*.1;
+	   cameraPos[0] -= cameraRight[0]*(deltaTime*5);
+	   cameraPos[1] -= cameraRight[1]*(deltaTime*5);
+	   cameraPos[2] -= cameraRight[2]*(deltaTime*5);
    }
    else if(ch=='d'){
-   	   cameraPos[0] += cameraRight[0]*.1;
-   	   cameraPos[1] += cameraRight[1]*.1;
-   	   cameraPos[2] += cameraRight[2]*.1;
-      }
-   // Spacebar makes the helicopter move in the direction of the up vector
-	else if(ch == 32){
-		// Move in direction of up vector
-	}
+   	   cameraPos[0] += cameraRight[0]*(deltaTime*5);
+   	   cameraPos[1] += cameraRight[1]*(deltaTime*5);
+   	   cameraPos[2] += cameraRight[2]*(deltaTime*5);
+   }
    //  Reproject
    Project(fov,asp,dim);
    //  Animate if requested

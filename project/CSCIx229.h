@@ -39,8 +39,9 @@ void reshape(int width,int height);
 extern int fly;	// Have helicopter fly around y-axis
 extern int axes;       //  Display axes
 extern int move;       //  Move light
-extern int yaw;         //  Azimuth of view angle
-extern int pitch;         //  Elevation of view angle
+extern int yaw;
+extern int pitch;
+extern int roll;
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting
 extern double asp;     //  Aspect ratio
@@ -61,6 +62,10 @@ extern double cameraPos[3];
 extern double cameraFront[3];
 extern double cameraRight[3];
 extern double cameraUp[3];
+
+extern double deltaTime;
+extern double lastFrameTime;
+
 
 #ifdef __cplusplus
 }

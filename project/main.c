@@ -7,6 +7,10 @@
  * https://stackoverflow.com/questions/26536570/how-do-i-texture-a-cylinder-in-opengl-created-with-triangle-strip
  * - How to add textures to the cylinder
  *
+ * http://cs.lmu.edu/~ray/notes/flightsimulator/
+ *
+ * http://learnopengl.com/#!Getting-started/Camera
+ *
  */
 
 #include "CSCIx229.h"
@@ -14,8 +18,9 @@
 int fly=1;	// Have the helicopter fly around
 int axes=1;       //  Display axes
 int move=1;       //  Move light
-int yaw=0;         //  Azimuth of view angle
-int pitch=0;         //  Elevation of view angle
+int yaw=0;
+int pitch=0;
+int roll=0;
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
@@ -40,12 +45,17 @@ double cameraUp[3];
 double cameraFront[3];
 double worldUp[3];
 
+double deltaTime;
+double lastFrameTime;
+
 unsigned int littlebird[10];
 
 void init(){
 	cameraPos[0] = 0; cameraPos[1] = 0; cameraPos[2] = 10;
 	cameraFront[0] = 0; cameraFront[1] = 0; cameraFront[2] = -1;
-	worldUp[0] = 0; worldUp[1] = 1; worldUp[2] = 0;
+	cameraRight[0] = 1; cameraRight[1] = 0;cameraRight[2] = 0;
+	cameraUp[0] = 0; cameraUp[1] = 1; cameraUp[2] = 0;
+	lastFrameTime = 0;
 }
 
 /*
@@ -486,10 +496,9 @@ void display()
 	//  Undo previous transformations
 	glLoadIdentity();
 
+	worldUp[0] = Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = -Sin(roll);
 
-	cameraFront[0] = Sin(yaw)*Cos(pitch);
-	cameraFront[1] = Sin(pitch);
-	cameraFront[2] = -Cos(yaw)*Cos(pitch);
+	cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
 	// Normalize cameraFront
 	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
 						cameraFront[1]*cameraFront[1]+
@@ -503,6 +512,7 @@ void display()
 	cameraRight[0] = cameraFront[1]*worldUp[2]-cameraFront[2]*worldUp[1];
 	cameraRight[1] = cameraFront[2]*worldUp[0]-cameraFront[0]*worldUp[2];
 	cameraRight[2] = cameraFront[0]*worldUp[1]-cameraFront[1]*worldUp[0];
+
 	// Normalize cameraRight
 	vectorLength = sqrt(cameraRight[0]*cameraRight[0] +
 						cameraRight[1]*cameraRight[1] +
@@ -510,8 +520,6 @@ void display()
 	cameraRight[0] = cameraRight[0]/vectorLength;
 	cameraRight[1] = cameraRight[1]/vectorLength;
 	cameraRight[2] = cameraRight[2]/vectorLength;
-
-	fprintf(stderr,"right x:%f right y:%f right z:%f\n", cameraRight[0], cameraRight[1], cameraRight[2]);
 
 	// Calculate cameraUp with the cross product of cameraRight and cameraFront
 	cameraUp[0] = cameraRight[1]*cameraFront[2]-cameraRight[2]*cameraFront[1];
@@ -595,9 +603,7 @@ void display()
 	if (light)
 	   {
 	      glWindowPos2i(5,45);
-	      Print("Distance=%d Elevation=%.1f", distance, ylight);
-	      glWindowPos2i(5,25);
-	      Print("Ambient=%d  Diffuse=%d Specular=%d Emission=%d Shininess=%.0f",ambient,diffuse,specular,emission,shinyvec[0]);
+	      Print("Roll=%d Yaw=%d Pitch=%d", roll, yaw, pitch);
 	   }
 	// Check for any errors that have occurred
 	ErrCheck("display");

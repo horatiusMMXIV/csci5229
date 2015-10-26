@@ -29,10 +29,17 @@ void special(int key,int x,int y)
 	else if (key == GLUT_KEY_PAGE_DOWN && dim>1){
 		dim -= 0.1;
 	}
+	else if(key == GLUT_KEY_F3){
+		roll += 5;
+	}
+	else if(key==GLUT_KEY_F4){
+		roll -= 5;
+	}
 	//  Keep angles to +/-360 degrees
 	//  Keep angles to +/-360 degrees
 	yaw %= 360;
 	pitch %= 360;
+	roll %= 360;
 	// Reproject
 	Project(fov,asp,dim);
 	//  Tell GLUT it is necessary to redisplay the scene
