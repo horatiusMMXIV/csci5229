@@ -479,6 +479,7 @@ void display()
 	/* First person pitch and yaw of the camera */
 	//cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
 
+	//worldUp[0] = 0; worldUp[1] = Cos(pitch); worldUp[2] = 0;
 	// Normalize cameraFront
 	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
 						cameraFront[1]*cameraFront[1]+

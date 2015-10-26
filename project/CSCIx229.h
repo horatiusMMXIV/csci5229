@@ -65,9 +65,6 @@ extern double cameraUp[3];
 
 extern double littleBirdPosition[3];
 
-extern double deltaTime;
-extern double lastFrameTime;
-
 
 #ifdef __cplusplus
 }

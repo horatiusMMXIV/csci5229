@@ -5,6 +5,7 @@
  */
 void special(int key,int x,int y)
 {
+	/*
 	//  Right arrow key - increase angle by 5 degrees
 	if (key == GLUT_KEY_RIGHT){
 		yaw += 5;
@@ -40,6 +41,14 @@ void special(int key,int x,int y)
 	yaw %= 360;
 	pitch %= 360;
 	roll %= 360;
+	*/
+	/*
+	double radius = 10;
+	cameraPos[0] = radius*Sin(yaw)*Cos(pitch);
+	cameraPos[1] = -radius*Sin(pitch);
+	cameraPos[2] = radius*Cos(yaw)*Cos(pitch);
+	*/
+
 	// Reproject
 	Project(fov,asp,dim);
 	//  Tell GLUT it is necessary to redisplay the scene
