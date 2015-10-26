@@ -6,6 +6,7 @@
  */
 void key(unsigned char ch,int x,int y)
 {
+	const double speed = .5;
    //  Exit on ESC
    if (ch == 27)
       exit(0);
@@ -40,24 +41,41 @@ void key(unsigned char ch,int x,int y)
 	   fly = 1-fly;
    }
    else if(ch =='w'){
-	   cameraPos[0] += cameraUp[0]*(deltaTime*5);
-	   cameraPos[1] += cameraUp[1]*(deltaTime*5);
-	   cameraPos[2] += cameraUp[2]*(deltaTime*5);
+	// Fly up
+	cameraPos[0] += cameraUp[0]*speed;
+	cameraPos[1] += cameraUp[1]*speed;
+	cameraPos[2] += cameraUp[2]*speed;
+	littleBirdPosition[0] += cameraUp[0]*speed;
+	littleBirdPosition[1] += cameraUp[1]*speed;
+	littleBirdPosition[2] += cameraUp[2]*speed;
    }
    else if(ch=='s'){
-	   cameraPos[0] -= cameraUp[0]*(deltaTime*5);
-	   cameraPos[1] -= cameraUp[1]*(deltaTime*5);
-	   cameraPos[2] -= cameraUp[2]*(deltaTime*5);
+	// Fly down
+	cameraPos[0] -= cameraUp[0]*speed;
+	cameraPos[1] -= cameraUp[1]*speed;
+	cameraPos[2] -= cameraUp[2]*speed;
+	littleBirdPosition[0] -= cameraUp[0]*speed;
+	littleBirdPosition[1] -= cameraUp[1]*speed;
+	littleBirdPosition[2] -= cameraUp[2]*speed;
    }
    else if(ch=='a'){
-	   cameraPos[0] -= cameraRight[0]*(deltaTime*5);
-	   cameraPos[1] -= cameraRight[1]*(deltaTime*5);
-	   cameraPos[2] -= cameraRight[2]*(deltaTime*5);
+	// Strafe left
+	cameraPos[0] -= cameraRight[0]*speed;
+	cameraPos[1] -= cameraRight[1]*speed;
+	cameraPos[2] -= cameraRight[2]*speed;
+	littleBirdPosition[0] -= cameraRight[0]*speed;
+	littleBirdPosition[1] -= cameraRight[1]*speed;
+	littleBirdPosition[2] -= cameraRight[2]*speed;
    }
    else if(ch=='d'){
-   	   cameraPos[0] += cameraRight[0]*(deltaTime*5);
-   	   cameraPos[1] += cameraRight[1]*(deltaTime*5);
-   	   cameraPos[2] += cameraRight[2]*(deltaTime*5);
+	// Strafe right
+	cameraPos[0] += cameraRight[0]*speed;
+	cameraPos[1] += cameraRight[1]*speed;
+	cameraPos[2] += cameraRight[2]*speed;
+	littleBirdPosition[0] += cameraRight[0]*speed;
+	littleBirdPosition[1] += cameraRight[1]*speed;
+	littleBirdPosition[2] += cameraRight[2]*speed;
+
    }
    //  Reproject
    Project(fov,asp,dim);

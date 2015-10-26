@@ -63,6 +63,8 @@ extern double cameraFront[3];
 extern double cameraRight[3];
 extern double cameraUp[3];
 
+extern double littleBirdPosition[3];
+
 extern double deltaTime;
 extern double lastFrameTime;
 

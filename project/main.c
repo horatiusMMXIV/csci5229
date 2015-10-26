@@ -45,16 +45,20 @@ double cameraUp[3];
 double cameraFront[3];
 double worldUp[3];
 
+double littleBirdPosition[3];
+
 double deltaTime;
 double lastFrameTime;
 
 unsigned int littlebird[10];
 
 void init(){
-	cameraPos[0] = 0; cameraPos[1] = 0; cameraPos[2] = 10;
+	cameraPos[0] = 0; cameraPos[1] = 2; cameraPos[2] = 10;
 	cameraFront[0] = 0; cameraFront[1] = 0; cameraFront[2] = -1;
 	cameraRight[0] = 1; cameraRight[1] = 0;cameraRight[2] = 0;
 	cameraUp[0] = 0; cameraUp[1] = 1; cameraUp[2] = 0;
+	worldUp[0] = 0; worldUp[1] = 1; worldUp[2] = 0;
+	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
 	lastFrameTime = 0;
 }
 
@@ -261,6 +265,10 @@ void cylinder(double red, double green, double blue, double rep)
  */
 void helicopter(double br){
 
+	glPushMatrix();
+	glRotated(270,0,1,0);
+	glScaled(.5,.5,.5);
+
 	glEnable(GL_TEXTURE_2D);
 
 	/* Helicopter Body */
@@ -437,48 +445,18 @@ void helicopter(double br){
 	glPopMatrix();
 
 	glDisable(GL_TEXTURE_2D);
-}
-
-/*
- * Create a moving helicopter
- *	at (x,y,z)
- *  nose towards (dx,dy,dz)
- *  up towards (ux,uy,uz)
- */
-void movingHelicopter(){
-	//  Save current transforms
-	glPushMatrix();
-	//  Translate the helicopter around the y-axis
-	/*
-	GLdouble rotate[16];
-	rotate[0] = Cos(-zh-90); rotate[4] = 0; rotate[8] = -Sin(-zh-90); rotate[12] = 0;
-	rotate[1] = 		  0; rotate[5] = 1; rotate[9] =            0; rotate[13] = 0;
-	rotate[2] = Sin(-zh-90); rotate[6] = 0; rotate[10] = Cos(-zh-90); rotate[14] = 0;
-	rotate[3] =           0; rotate[7] = 0; rotate[11] =           0; rotate[15] = 1;
-
-	GLdouble translate[16];
-	translate[0] =       1; translate[4] = 0; translate[8] =        0; translate[12] = 0;
-	translate[1] = 		 0; translate[5] = 1; translate[9] =        0; translate[13] = 0;
-	translate[2] =       0; translate[6] = 0; translate[10] =       1; translate[14] = 0;
-	translate[3] = Cos(zh); translate[7] = 1; translate[11] = Sin(zh); translate[15] = 1;
-
-	glMultMatrixd(translate);
-	glMultMatrixd(rotate);
-	*/
-	//glTranslated(Cos(zh), 1, Sin(zh));
-	//glTranslated(1, 1, 1);
-	// Point the nose of the helicopter in the direction of travel
-	//glRotated(-zh-90, 0, 1, 0);
-	// Pitch the helicopter forward
-	//glRotated(45, 0, 0, 1);
-	// Roll the helicopter towards the origin
-	//glRotated(25, 1, 0, 0);
-	// Create the helicopter with rotating blades
-	helicopter(5*zh);
-	//  Undo transformations
 	glPopMatrix();
 }
 
+void DrawHelicopterFlight(){
+	glPushMatrix();
+	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
+	glRotated(yaw,0,1,0);
+	glRotated(pitch,1,0,0);
+	glRotated(roll,0,0,1);
+	helicopter(0);
+	glPopMatrix();
+}
 
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
@@ -496,9 +474,11 @@ void display()
 	//  Undo previous transformations
 	glLoadIdentity();
 
-	worldUp[0] = Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = -Sin(roll);
+	/* First person camera to roll */
+	//worldUp[0] = Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = -Sin(roll);
+	/* First person pitch and yaw of the camera */
+	//cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
 
-	cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
 	// Normalize cameraFront
 	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
 						cameraFront[1]*cameraFront[1]+
@@ -533,9 +513,15 @@ void display()
 	cameraUp[1] = cameraUp[1]/vectorLength;
 	cameraUp[2] = cameraUp[2]/vectorLength;
 
+	/* First person camera with euler angles
 	gluLookAt(cameraPos[0],cameraPos[1],cameraPos[2],
 			cameraPos[0]+cameraFront[0],cameraPos[1]+cameraFront[1],cameraPos[2]+cameraFront[2],
 			cameraUp[0],cameraUp[1],cameraUp[2]);
+	*/
+
+	gluLookAt(cameraPos[0],cameraPos[1],cameraPos[2],
+				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
+				cameraUp[0],cameraUp[1],cameraUp[2]);
 
 	if(light){
 		//  Translate intensity to color vectors
@@ -569,11 +555,7 @@ void display()
 		glDisable(GL_LIGHTING);
 	}
 
-	//if(fly){
-		//movingHelicopter();
-	//}else{
-		helicopter(0);
-	//}
+	DrawHelicopterFlight();
 
 	//  Draw axes - no lighting from here on
 	glDisable(GL_LIGHTING);
@@ -598,13 +580,8 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Angle=%d,%d  Dim=%.1f FOV=%d Projection=%s Light=%s",
-	     yaw,pitch,dim,fov,"Perspective",light?"On":"Off");
-	if (light)
-	   {
-	      glWindowPos2i(5,45);
-	      Print("Roll=%d Yaw=%d Pitch=%d", roll, yaw, pitch);
-	   }
+	Print("Roll=%d Yaw=%d Pitch=%d X=%f Y=%f Z=%f", roll,
+			  yaw, pitch, littleBirdPosition[0], littleBirdPosition[1], littleBirdPosition[2]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
@@ -623,7 +600,7 @@ int main(int argc,char* argv[])
 	//  Request double buffered, true color window with Z buffering at 600x600
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
 	glutInitWindowSize(700,700);
-	glutCreateWindow("Robert Werthman Assignment 6");
+	glutCreateWindow("Robert Werthman Project");
 	//  Set callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
