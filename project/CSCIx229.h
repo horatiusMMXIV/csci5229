@@ -38,6 +38,8 @@ void reshape(int width,int height);
 void HelicopterPitch(int angle);
 void HelicopterRoll(int angle);
 void HelicopterYaw(int angle);
+void HelicopterFly(int distance);
+void HelicopterStrafe(int distance);
 
 // Global Variables
 extern int axes;       //  Display axes

@@ -143,6 +143,20 @@ void HelicopterYaw(int angle){
 	cameraFront[2] = cameraFront[2]/vectorLength;
 }
 
+void HelicopterFly(int distance){
+	fly += distance;
+	littleBirdPosition[0] += cameraUp[0]*distance;
+	littleBirdPosition[1] += cameraUp[1]*distance;
+	littleBirdPosition[2] += cameraUp[2]*distance;
+}
+
+void HelicopterStrafe(int distance){
+	strafe += distance;
+	littleBirdPosition[0] += cameraRight[0]*distance;
+	littleBirdPosition[1] += cameraRight[1]*distance;
+	littleBirdPosition[2] += cameraRight[2]*distance;
+}
+
 /*
  *  Draw vertex in polar coordinates
  */
@@ -347,7 +361,7 @@ void cylinder(double red, double green, double blue, double rep)
 void helicopter(double br){
 
 	glPushMatrix();
-	glRotated(-180,0,1,0);
+	glRotated(-180,0,1,0); // Why this
 	glScaled(.5,.5,.5);
 
 	glEnable(GL_TEXTURE_2D);
@@ -538,7 +552,7 @@ void DrawHelicopterFlight(){
 	mat[3] =              0;   mat[7] =           0;   mat[11] =              0;   mat[15] = 1;
 
 	glPushMatrix();
-	//glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
+	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glMultMatrixd(mat);
 	//glRotated(yaw,0,1,0);
 	//glRotated(pitch,0,0,1);
@@ -555,7 +569,7 @@ void DrawHelicopterFlight(){
  */
 void display()
 {
-	double vectorLength = 0;
+	//double vectorLength = 0;
 	const double len=2.0;  //  Length of axes
 	//  Erase the window and the depth buffer
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
