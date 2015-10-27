@@ -15,12 +15,14 @@
 
 #include "CSCIx229.h"
 
-int fly=1;	// Have the helicopter fly around
 int axes=1;       //  Display axes
-int move=1;       //  Move light
-int yaw=0;
-int pitch=0;
-int roll=0;
+
+double yaw=0;
+double pitch=0;
+double roll=0;
+double strafe=0;
+double fly=0;
+
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
@@ -449,8 +451,8 @@ void helicopter(double br){
 }
 
 void DrawHelicopterFlight(){
+
 	glPushMatrix();
-	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glRotated(yaw,0,1,0);
 	glRotated(pitch,1,0,0);
 	glRotated(roll,0,0,1);
@@ -474,12 +476,11 @@ void display()
 	//  Undo previous transformations
 	glLoadIdentity();
 
-	/* First person camera to roll */
-	//worldUp[0] = Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = -Sin(roll);
-	/* First person pitch and yaw of the camera */
-	//cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
+	worldUp[0] = -Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = Sin(roll);
+	cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
 
 	//worldUp[0] = 0; worldUp[1] = Cos(pitch); worldUp[2] = 0;
+
 	// Normalize cameraFront
 	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
 						cameraFront[1]*cameraFront[1]+
@@ -514,15 +515,17 @@ void display()
 	cameraUp[1] = cameraUp[1]/vectorLength;
 	cameraUp[2] = cameraUp[2]/vectorLength;
 
-	/* First person camera with euler angles
+	/* First person camera with euler angles */
+	/*
 	gluLookAt(cameraPos[0],cameraPos[1],cameraPos[2],
 			cameraPos[0]+cameraFront[0],cameraPos[1]+cameraFront[1],cameraPos[2]+cameraFront[2],
 			cameraUp[0],cameraUp[1],cameraUp[2]);
 	*/
 
-	gluLookAt(cameraPos[0],cameraPos[1],cameraPos[2],
+	gluLookAt(littleBirdPosition[0]-10*cameraFront[0],littleBirdPosition[1]-10*cameraFront[1],littleBirdPosition[2]-10*cameraFront[2],
 				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 				cameraUp[0],cameraUp[1],cameraUp[2]);
+
 
 	if(light){
 		//  Translate intensity to color vectors
@@ -581,8 +584,8 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Roll=%d Yaw=%d Pitch=%d X=%f Y=%f Z=%f", roll,
-			  yaw, pitch, littleBirdPosition[0], littleBirdPosition[1], littleBirdPosition[2]);
+	Print("Roll=%f Yaw=%f Pitch=%f Stafe=%f Fly=%f", roll,
+			  yaw, pitch,strafe,fly);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible

@@ -48,47 +48,58 @@ void key(unsigned char ch,int x,int y)
 	}
    else if(ch =='i'){
 	// Fly up
+	fly += speed;
+	/*
 	cameraPos[0] += cameraUp[0]*speed;
 	cameraPos[1] += cameraUp[1]*speed;
 	cameraPos[2] += cameraUp[2]*speed;
 	littleBirdPosition[0] += cameraUp[0]*speed;
 	littleBirdPosition[1] += cameraUp[1]*speed;
 	littleBirdPosition[2] += cameraUp[2]*speed;
+	*/
    }
    else if(ch=='k'){
 	// Fly down
+	fly -= speed;
+	/*
 	cameraPos[0] -= cameraUp[0]*speed;
 	cameraPos[1] -= cameraUp[1]*speed;
 	cameraPos[2] -= cameraUp[2]*speed;
 	littleBirdPosition[0] -= cameraUp[0]*speed;
 	littleBirdPosition[1] -= cameraUp[1]*speed;
 	littleBirdPosition[2] -= cameraUp[2]*speed;
+	*/
    }
    else if(ch=='j'){
 	// Strafe left
+	strafe += speed;
+	/*
 	cameraPos[0] -= cameraRight[0]*speed;
 	cameraPos[1] -= cameraRight[1]*speed;
 	cameraPos[2] -= cameraRight[2]*speed;
 	littleBirdPosition[0] -= cameraRight[0]*speed;
 	littleBirdPosition[1] -= cameraRight[1]*speed;
 	littleBirdPosition[2] -= cameraRight[2]*speed;
+	*/
    }
    else if(ch=='l'){
 	// Strafe right
+	strafe -= speed;
+	/*
 	cameraPos[0] += cameraRight[0]*speed;
 	cameraPos[1] += cameraRight[1]*speed;
 	cameraPos[2] += cameraRight[2]*speed;
 	littleBirdPosition[0] += cameraRight[0]*speed;
 	littleBirdPosition[1] += cameraRight[1]*speed;
 	littleBirdPosition[2] += cameraRight[2]*speed;
+	*/
    }
-   yaw %= 360;
-   pitch %= 360;
-   roll %= 360;
+
+   //yaw %= 360;
+   //pitch %= 360;
+   //roll %= 360;
    //  Reproject
    Project(fov,asp,dim);
-   //  Animate if requested
-   glutIdleFunc(move?idle:NULL);
    //  Tell GLUT it is necessary to redisplay the scene
    glutPostRedisplay();
 }

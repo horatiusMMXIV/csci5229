@@ -36,12 +36,14 @@ void idle();
 void reshape(int width,int height);
 
 // Global Variables
-extern int fly;	// Have helicopter fly around y-axis
 extern int axes;       //  Display axes
-extern int move;       //  Move light
-extern int yaw;
-extern int pitch;
-extern int roll;
+
+extern double yaw;
+extern double pitch;
+extern double roll;
+extern double strafe;
+extern double fly;
+
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting
 extern double asp;     //  Aspect ratio
