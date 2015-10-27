@@ -29,22 +29,28 @@ void key(unsigned char ch,int x,int y)
    else if (ch==']')
       ylight += 0.1;
    else if (ch=='g'){
-   		yaw += 5;
+   		//yaw -= 5;
+	   HelicopterYaw(-5);
    	}
    	else if (ch=='a'){
-   		yaw -= 5;
+   		//yaw += 5;
+   		HelicopterYaw(5);
    	}
    	else if (ch=='e'){
-   		pitch += 5;
+   		//pitch += 5;
+   		HelicopterPitch(5);
    	}
    	else if (ch=='d'){
-   		pitch -= 5;
+   		//pitch -= 5;
+   		HelicopterPitch(-5);
    	}
 	else if(ch=='s'){
-		roll += 5;
+		//roll += 5;
+		HelicopterRoll(5);
 	}
 	else if(ch=='f'){
-		roll -= 5;
+		//roll -= 5;
+		HelicopterRoll(-5);
 	}
    else if(ch =='i'){
 	// Fly up
@@ -95,9 +101,9 @@ void key(unsigned char ch,int x,int y)
 	*/
    }
 
-   //yaw %= 360;
-   //pitch %= 360;
-   //roll %= 360;
+  //yaw %= 360;
+  //pitch %= 360;
+  //roll %= 360;
    //  Reproject
    Project(fov,asp,dim);
    //  Tell GLUT it is necessary to redisplay the scene

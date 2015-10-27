@@ -35,14 +35,18 @@ void key(unsigned char ch,int x,int y);
 void idle();
 void reshape(int width,int height);
 
+void HelicopterPitch(int angle);
+void HelicopterRoll(int angle);
+void HelicopterYaw(int angle);
+
 // Global Variables
 extern int axes;       //  Display axes
 
-extern double yaw;
-extern double pitch;
-extern double roll;
-extern double strafe;
-extern double fly;
+extern int yaw;
+extern int pitch;
+extern int roll;
+extern int strafe;
+extern int fly;
 
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting

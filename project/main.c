@@ -11,17 +11,19 @@
  *
  * http://learnopengl.com/#!Getting-started/Camera
  *
+ * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
+ *
  */
 
 #include "CSCIx229.h"
 
 int axes=1;       //  Display axes
 
-double yaw=0;
-double pitch=0;
-double roll=0;
-double strafe=0;
-double fly=0;
+int yaw=0;
+int pitch=0;
+int roll=0;
+int strafe=0;
+int fly=0;
 
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
@@ -49,19 +51,96 @@ double worldUp[3];
 
 double littleBirdPosition[3];
 
-double deltaTime;
-double lastFrameTime;
-
 unsigned int littlebird[10];
 
 void init(){
-	cameraPos[0] = 0; cameraPos[1] = 2; cameraPos[2] = 10;
+	//cameraPos[0] = 0; cameraPos[1] = 2; cameraPos[2] = 10;
 	cameraFront[0] = 0; cameraFront[1] = 0; cameraFront[2] = -1;
 	cameraRight[0] = 1; cameraRight[1] = 0;cameraRight[2] = 0;
 	cameraUp[0] = 0; cameraUp[1] = 1; cameraUp[2] = 0;
 	worldUp[0] = 0; worldUp[1] = 1; worldUp[2] = 0;
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
-	lastFrameTime = 0;
+}
+
+void HelicopterPitch(int angle){
+	double vectorLength = 0;
+	pitch += angle;
+	pitch %= 360;
+	cameraFront[0] = cameraFront[0]*Cos(angle) + cameraUp[0]*Sin(angle);
+	cameraFront[1] = cameraFront[1]*Cos(angle) + cameraUp[1]*Sin(angle);
+	cameraFront[2] = cameraFront[2]*Cos(angle) + cameraUp[2]*Sin(angle);
+	// Normalize cameraFront
+	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
+						cameraFront[1]*cameraFront[1]+
+						cameraFront[2]*cameraFront[2]);
+	cameraFront[0] = cameraFront[0]/vectorLength;
+	cameraFront[1] = cameraFront[1]/vectorLength;
+	cameraFront[2] = cameraFront[2]/vectorLength;
+	// Calculate cameraUp with the cross product of cameraRight and cameraFront
+	cameraUp[0] = cameraRight[1]*cameraFront[2]-cameraRight[2]*cameraFront[1];
+	cameraUp[1] = cameraRight[2]*cameraFront[0]-cameraRight[0]*cameraFront[2];
+	cameraUp[2] = cameraRight[0]*cameraFront[1]-cameraRight[1]*cameraFront[0];
+	// Normalize cameraUp
+	vectorLength = sqrt(cameraUp[0]*cameraUp[0]+
+						cameraUp[1]*cameraUp[1]+
+						cameraUp[2]*cameraUp[2]);
+	cameraUp[0] = cameraUp[0]/vectorLength;
+	cameraUp[1] = cameraUp[1]/vectorLength;
+	cameraUp[2] = cameraUp[2]/vectorLength;
+}
+
+void HelicopterRoll(int angle){
+	double vectorLength = 0;
+	roll += angle;
+	roll %= 360;
+	cameraRight[0] = cameraRight[0]*Cos(angle)+cameraUp[0]*Sin(angle);
+	cameraRight[1] = cameraRight[1]*Cos(angle)+cameraUp[1]*Sin(angle);
+	cameraRight[2] = cameraRight[2]*Cos(angle)+cameraUp[2]*Sin(angle);
+	// Normalize cameraRight
+	vectorLength = sqrt(cameraRight[0]*cameraRight[0] +
+						cameraRight[1]*cameraRight[1] +
+						cameraRight[2]*cameraRight[2]);
+	cameraRight[0] = cameraRight[0]/vectorLength;
+	cameraRight[1] = cameraRight[1]/vectorLength;
+	cameraRight[2] = cameraRight[2]/vectorLength;
+	// Calculate cameraUp with the cross product of cameraRight and cameraFront
+	cameraUp[0] = cameraRight[1]*cameraFront[2]-cameraRight[2]*cameraFront[1];
+	cameraUp[1] = cameraRight[2]*cameraFront[0]-cameraRight[0]*cameraFront[2];
+	cameraUp[2] = cameraRight[0]*cameraFront[1]-cameraRight[1]*cameraFront[0];
+	// Normalize cameraUp
+	vectorLength = sqrt(cameraUp[0]*cameraUp[0]+
+						cameraUp[1]*cameraUp[1]+
+						cameraUp[2]*cameraUp[2]);
+	cameraUp[0] = cameraUp[0]/vectorLength;
+	cameraUp[1] = cameraUp[1]/vectorLength;
+	cameraUp[2] = cameraUp[2]/vectorLength;
+}
+
+void HelicopterYaw(int angle){
+	double vectorLength = 0;
+	yaw += angle;
+	yaw %= 360;
+	cameraRight[0] = cameraRight[0]*Cos(angle)+cameraFront[0]*Sin(angle);
+	cameraRight[1] = cameraRight[1]*Cos(angle)+cameraFront[1]*Sin(angle);
+	cameraRight[2] = cameraRight[2]*Cos(angle)+cameraFront[2]*Sin(angle);
+	// Normalize cameraRight
+	vectorLength = sqrt(cameraRight[0]*cameraRight[0] +
+						cameraRight[1]*cameraRight[1] +
+						cameraRight[2]*cameraRight[2]);
+	cameraRight[0] = cameraRight[0]/vectorLength;
+	cameraRight[1] = cameraRight[1]/vectorLength;
+	cameraRight[2] = cameraRight[2]/vectorLength;
+	// Calculate cameraUp with the cross product of cameraRight and cameraFront
+	cameraFront[0] = cameraUp[1]*cameraRight[2]-cameraUp[2]*cameraRight[1];
+	cameraFront[1] = cameraUp[2]*cameraRight[0]-cameraUp[0]*cameraRight[2];
+	cameraFront[2] = cameraUp[0]*cameraRight[1]-cameraUp[1]*cameraRight[0];
+	// Normalize cameraFront
+	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
+						cameraFront[1]*cameraFront[1]+
+						cameraFront[2]*cameraFront[2]);
+	cameraFront[0] = cameraFront[0]/vectorLength;
+	cameraFront[1] = cameraFront[1]/vectorLength;
+	cameraFront[2] = cameraFront[2]/vectorLength;
 }
 
 /*
@@ -268,7 +347,7 @@ void cylinder(double red, double green, double blue, double rep)
 void helicopter(double br){
 
 	glPushMatrix();
-	glRotated(270,0,1,0);
+	glRotated(-180,0,1,0);
 	glScaled(.5,.5,.5);
 
 	glEnable(GL_TEXTURE_2D);
@@ -452,10 +531,21 @@ void helicopter(double br){
 
 void DrawHelicopterFlight(){
 
+	double mat[16];
+	mat[0] = cameraFront[0];   mat[4] = cameraUp[0];   mat[ 8] = cameraRight[0];   mat[12] = 0;
+	mat[1] = cameraFront[1];   mat[5] = cameraUp[1];   mat[ 9] = cameraRight[1];   mat[13] = 0;
+	mat[2] = cameraFront[2];   mat[6] = cameraUp[2];   mat[10] = cameraRight[2];   mat[14] = 0;
+	mat[3] =              0;   mat[7] =           0;   mat[11] =              0;   mat[15] = 1;
+
 	glPushMatrix();
-	glRotated(yaw,0,1,0);
-	glRotated(pitch,1,0,0);
-	glRotated(roll,0,0,1);
+	//glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
+	glMultMatrixd(mat);
+	//glRotated(yaw,0,1,0);
+	//glRotated(pitch,0,0,1);
+	//glRotated(roll,1,0,0);
+	//glRotated(yaw,0,1,0);
+	//glRotated(pitch,1,0,0);
+	//glRotated(roll,0,0,1);
 	helicopter(0);
 	glPopMatrix();
 }
@@ -476,10 +566,17 @@ void display()
 	//  Undo previous transformations
 	glLoadIdentity();
 
-	worldUp[0] = -Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = Sin(roll);
-	cameraFront[0] = Sin(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = -Cos(yaw)*Cos(pitch);
+	//double Ux, Uy, Uz;
+	//double Dx, Dy, Dz;
 
-	//worldUp[0] = 0; worldUp[1] = Cos(pitch); worldUp[2] = 0;
+	//Ux = worldUp[0]; Uy = worldUp[1]; Uz = worldUp[2];
+	//Dx = cameraFront[0]; Dy = cameraFront[1]; Dz = cameraFront[2];
+	//worldUp[0] = -Sin(roll); worldUp[1] = Cos(pitch)*Cos(roll); worldUp[2] = Sin(roll);
+	/*
+	cameraFront[0] = -Cos(yaw)*Cos(pitch); cameraFront[1] = Sin(pitch); cameraFront[2] = Sin(yaw)*Cos(pitch);
+
+
+	worldUp[0] = 0; worldUp[1] = Cos(pitch); worldUp[2] = 0;
 
 	// Normalize cameraFront
 	vectorLength = sqrt(cameraFront[0]*cameraFront[0]+
@@ -488,7 +585,6 @@ void display()
 	cameraFront[0] = cameraFront[0]/vectorLength;
 	cameraFront[1] = cameraFront[1]/vectorLength;
 	cameraFront[2] = cameraFront[2]/vectorLength;
-
 
 	// Calculate cameraRight with the cross product cameraFront and worldUp
 	cameraRight[0] = cameraFront[1]*worldUp[2]-cameraFront[2]*worldUp[1];
@@ -514,6 +610,8 @@ void display()
 	cameraUp[0] = cameraUp[0]/vectorLength;
 	cameraUp[1] = cameraUp[1]/vectorLength;
 	cameraUp[2] = cameraUp[2]/vectorLength;
+	*/
+
 
 	/* First person camera with euler angles */
 	/*
@@ -521,7 +619,6 @@ void display()
 			cameraPos[0]+cameraFront[0],cameraPos[1]+cameraFront[1],cameraPos[2]+cameraFront[2],
 			cameraUp[0],cameraUp[1],cameraUp[2]);
 	*/
-
 	gluLookAt(littleBirdPosition[0]-10*cameraFront[0],littleBirdPosition[1]-10*cameraFront[1],littleBirdPosition[2]-10*cameraFront[2],
 				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 				cameraUp[0],cameraUp[1],cameraUp[2]);
@@ -584,7 +681,7 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Roll=%f Yaw=%f Pitch=%f Stafe=%f Fly=%f", roll,
+	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d", roll,
 			  yaw, pitch,strafe,fly);
 	// Check for any errors that have occurred
 	ErrCheck("display");
