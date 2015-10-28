@@ -13,6 +13,17 @@
  *
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
  *
+ * Tasks
+ * ------------
+ * 1. Have helicopter automatically return to 0 for pitching, yawing, rolling, strafing, flying.
+ * 2. Set limits for the angles of the helicopter and the min height.
+ *
+ * Known Bugs:
+ * 1. I have to use glrotate on the helicopter in order to use glmultmatrix
+ * 2. I can't just use glrotate for move the helicopter around.
+ * 3. After pitching, yawing, rolling, strafing, and flying going back to 0 doesn't get me to my original position.
+ * 4. Can't look at helicopter from above with camera.
+ *
  */
 
 #include "CSCIx229.h"
@@ -555,9 +566,6 @@ void DrawHelicopterFlight(){
 	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glMultMatrixd(mat);
 	//glRotated(yaw,0,1,0);
-	//glRotated(pitch,0,0,1);
-	//glRotated(roll,1,0,0);
-	//glRotated(yaw,0,1,0);
 	//glRotated(pitch,1,0,0);
 	//glRotated(roll,0,0,1);
 	helicopter(0);
@@ -697,6 +705,8 @@ void display()
 	glWindowPos2i(5,5);
 	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d", roll,
 			  yaw, pitch,strafe,fly);
+	glWindowPos2i(5,25);
+	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible
