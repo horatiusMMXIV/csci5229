@@ -8,11 +8,14 @@ void key(unsigned char ch,int x,int y)
 {
 	const int distance = 1;
 	//  Exit on ESC
-	if (ch == 27)
-	exit(0);
+	if (ch == 27){
+		exit(0);
+	}
 	//  Reset view angle
-	else if (ch == '0')
-	yaw = pitch = roll= 0;
+	else if (ch == '0'){
+		yaw=pitch=roll=strafe=0;
+		littleBirdPosition[0]=littleBirdPosition[1]=littleBirdPosition[2]=0;
+	}
 	//  Move light
 	else if (ch == '<')
 	zh += 1;

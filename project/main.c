@@ -19,10 +19,11 @@
  * 2. Set limits for the angles of the helicopter and the min height.
  *
  * Known Bugs:
- * 1. I have to use glrotate on the helicopter in order to use glmultmatrix
- * 2. I can't just use glrotate for move the helicopter around.
+ * 1. I have to use glrotate on the helicopter in order to use glmultmatrix otherwise it faces in the wrong direction.
+ * 2. I can't just use glrotate to move the helicopter around.
  * 3. After pitching, yawing, rolling, strafing, and flying going back to 0 doesn't get me to my original position.
  * 4. Can't look at helicopter from above with camera.
+ * 5.
  *
  */
 
