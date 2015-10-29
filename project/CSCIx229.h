@@ -66,7 +66,6 @@ extern float shinyvec[1];    // Shininess (value)
 extern int zh;  // Light azimuth
 extern float ylight;  // Elevation of light
 
-extern double cameraPos[3];
 extern double cameraFront[3];
 extern double cameraRight[3];
 extern double cameraUp[3];

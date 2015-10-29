@@ -13,17 +13,29 @@
  *
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
  *
- * Tasks
- * ------------
+ * Tasks To Complete
+ * -------------------
  * 1. Have helicopter automatically return to 0 for pitching, yawing, rolling, strafing, flying.
  * 2. Set limits for the angles of the helicopter and the min height.
  *
- * Known Bugs:
+ * Known Bugs
+ * -------------------
+ * 1. Rotors don't rotate now.
+ *
+ * Resolved Bugs
+ * ----------------------
  * 1. I have to use glrotate on the helicopter in order to use glmultmatrix otherwise it faces in the wrong direction.
+ * 	+++++The way I had the matrix used in glmultmatrix was not an identity matrix so it was inverting the look of the helicopter.
+ *
  * 2. I can't just use glrotate to move the helicopter around.
+ * 	+++++glrotate is used to rotate the object like it was really pitching, rolling, and yawing.  This shows more realistic
+ * 	flight.
+ *
  * 3. After pitching, yawing, rolling, strafing, and flying going back to 0 doesn't get me to my original position.
+ * 	+++++This is because I add doubles that change to the these variables.
+ *
  * 4. Can't look at helicopter from above with camera.
- * 5.
+ * 	+++++I needed to add the height to all dimensions not just the y value.
  *
  */
 
@@ -53,25 +65,23 @@ float shinyvec[1];    // Shininess (value)
 int zh        =  0;  // Light azimuth
 float ylight  =   0;  // Elevation of light
 
-double cameraPos[3];
-double cameraTarget[3];
-double cameraDirection[3];
 double cameraRight[3];
 double cameraUp[3];
 double cameraFront[3];
-double worldUp[3];
 
 double littleBirdPosition[3];
 
 unsigned int littlebird[10];
 
+int bladeRotation;
+
 void init(){
-	//cameraPos[0] = 0; cameraPos[1] = 2; cameraPos[2] = 10;
-	cameraFront[0] = 0; cameraFront[1] = 0; cameraFront[2] = -1;
-	cameraRight[0] = 1; cameraRight[1] = 0;cameraRight[2] = 0;
-	cameraUp[0] = 0; cameraUp[1] = 1; cameraUp[2] = 0;
-	worldUp[0] = 0; worldUp[1] = 1; worldUp[2] = 0;
+	cameraFront[0] = 1; cameraFront[1] = 0; cameraFront[2] = 0;
+	cameraUp[0] =    0; cameraUp[1] =    1; cameraUp[2] =    0;
+	cameraRight[0] = 0; cameraRight[1] = 0; cameraRight[2] = 1;
+
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
+	bladeRotation = 0;
 }
 
 void HelicopterPitch(int angle){
@@ -371,9 +381,10 @@ void cylinder(double red, double green, double blue, double rep)
  *	with blade rotation (br)
  */
 void helicopter(double br){
+	fprintf(stderr,"br=%f\n", br);
 
 	glPushMatrix();
-	glRotated(-180,0,1,0); // Why this
+	glRotated(180,0,1,0);
 	glScaled(.5,.5,.5);
 
 	glEnable(GL_TEXTURE_2D);
@@ -569,7 +580,7 @@ void DrawHelicopterFlight(){
 	//glRotated(yaw,0,1,0);
 	//glRotated(pitch,1,0,0);
 	//glRotated(roll,0,0,1);
-	helicopter(0);
+	helicopter(bladeRotation);
 	glPopMatrix();
 }
 
@@ -642,7 +653,15 @@ void display()
 			cameraPos[0]+cameraFront[0],cameraPos[1]+cameraFront[1],cameraPos[2]+cameraFront[2],
 			cameraUp[0],cameraUp[1],cameraUp[2]);
 	*/
-	gluLookAt(littleBirdPosition[0]-10*cameraFront[0],littleBirdPosition[1]-10*cameraFront[1],littleBirdPosition[2]-10*cameraFront[2],
+	double behindX = 10*cameraFront[0];
+	double behindY = 10*cameraFront[1];
+	double behindZ = 10*cameraFront[2];
+
+	double heightX = 2*cameraUp[0];
+	double heightY = 2*cameraUp[1];
+	double heightZ = 2*cameraUp[2];
+
+	gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
 				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 				cameraUp[0],cameraUp[1],cameraUp[2]);
 
@@ -679,6 +698,8 @@ void display()
 		glDisable(GL_LIGHTING);
 	}
 
+	bladeRotation += 5;
+	bladeRotation %= 360;
 	DrawHelicopterFlight();
 
 	//  Draw axes - no lighting from here on
