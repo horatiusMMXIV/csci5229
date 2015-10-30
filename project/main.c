@@ -79,7 +79,6 @@ void init(){
 	cameraFront[0] = 1; cameraFront[1] = 0; cameraFront[2] = 0;
 	cameraUp[0] =    0; cameraUp[1] =    1; cameraUp[2] =    0;
 	cameraRight[0] = 0; cameraRight[1] = 0; cameraRight[2] = 1;
-
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
 	bladeRotation = 0;
 }
@@ -381,8 +380,6 @@ void cylinder(double red, double green, double blue, double rep)
  *	with blade rotation (br)
  */
 void helicopter(double br){
-	fprintf(stderr,"br=%f\n", br);
-
 	glPushMatrix();
 	glRotated(180,0,1,0);
 	glScaled(.5,.5,.5);

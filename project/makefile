@@ -47,7 +47,7 @@ CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o object.o key.o spec
 
 #  Link
 main:main.o CSCIx229.a
-	gcc -O3 -o $@ $^   $(LIBS)
+	gcc -O3 -o $@ $^ $(LIBS)
 
 #  Clean
 clean:
