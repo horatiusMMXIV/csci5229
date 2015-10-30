@@ -6,7 +6,7 @@
  */
 void key(unsigned char ch,int x,int y)
 {
-	const int distance = 1;
+	const double distance = .1;
 	//  Exit on ESC
 	if (ch == 27){
 		exit(0);
@@ -38,10 +38,10 @@ void key(unsigned char ch,int x,int y)
 	HelicopterYaw(5);
 	}
 	else if (ch=='e'){
-	HelicopterPitch(-5);
+	HelicopterPitch(-1);
 	}
 	else if (ch=='d'){
-	HelicopterPitch(5);
+	HelicopterPitch(1);
 	}
 	else if(ch=='s'){
 	HelicopterRoll(5);

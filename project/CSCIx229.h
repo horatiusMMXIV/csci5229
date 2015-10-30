@@ -38,17 +38,17 @@ void reshape(int width,int height);
 void HelicopterPitch(int angle);
 void HelicopterRoll(int angle);
 void HelicopterYaw(int angle);
-void HelicopterFly(int distance);
+void HelicopterFly(double distance);
 void HelicopterStrafe(int distance);
 
 // Global Variables
 extern int axes;       //  Display axes
 
 extern int yaw;
-extern int pitch;
+extern double pitch;
 extern int roll;
 extern int strafe;
-extern int fly;
+extern double fly;
 
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting
@@ -65,10 +65,6 @@ extern int shininess;  // Shininess (power of two)
 extern float shinyvec[1];    // Shininess (value)
 extern int zh;  // Light azimuth
 extern float ylight;  // Elevation of light
-
-extern double cameraFront[3];
-extern double cameraRight[3];
-extern double cameraUp[3];
 
 extern double littleBirdPosition[3];
 

@@ -46,10 +46,10 @@
 int axes=1;       //  Display axes
 
 int yaw=0;
-int pitch=0;
+double pitch=0;
 int roll=0;
 int strafe=0;
-int fly=0;
+double fly=0;
 
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
@@ -67,32 +67,39 @@ float shinyvec[1];    // Shininess (value)
 int zh        =  0;  // Light azimuth
 float ylight  =   0;  // Elevation of light
 
-double cameraRight[3];
-double cameraUp[3];
-double cameraFront[3];
-
 double littleBirdPosition[3];
 
 unsigned int littlebird[10];
 
-int bladeRotation;
+int bladeRotation = 0;
 
 Vector* directionVec = new Vector(1,0,0);
-Vector* upVec = new Vector(0,1,0);
-Vector* rightVec = new Vector(0,0,1);
+Vector* upVec =        new Vector(0,1,0);
+Vector* rightVec =     new Vector(0,0,1);
+
+
+//Vector* old_directionVec = new Vector(0,0,0);
+//Vector* old_upVec =        new Vector(0,0,0);
+//Vector* old_rightVec =     new Vector(0,0,0);
+
 
 void init(){
-
-	cameraFront[0] = 1; cameraFront[1] = 0; cameraFront[2] = 0;
-	cameraUp[0] =    0; cameraUp[1] =    1; cameraUp[2] =    0;
-	cameraRight[0] = 0; cameraRight[1] = 0; cameraRight[2] = 1;
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
-	bladeRotation = 0;
+}
+
+double dotProductAngle(Vector* one, Vector* two){
+	double dotProductAngle=acos(one->x*two->x+one->y*two->y+one->z*two->z);
+	dotProductAngle = 180*(dotProductAngle)/3.1415926;
+	return dotProductAngle;
 }
 
 void HelicopterPitch(int angle){
 	pitch += angle;
-	pitch %= 360;
+	//pitch %= 360;
+
+	//old_directionVec->x = directionVec->x;
+	//old_directionVec->y = directionVec->y;
+	//old_directionVec->z = directionVec->z;
 	//
 	directionVec->x = directionVec->x*Cos(angle)+upVec->x*Sin(angle);
 	directionVec->y = directionVec->y*Cos(angle)+upVec->y*Sin(angle);
@@ -103,6 +110,8 @@ void HelicopterPitch(int angle){
 	upVec->crossProduct(rightVec, directionVec);
 	// Normalize the up vector
 	upVec->normalize();
+
+	//pitch=dotProductAngle(old_directionVec, directionVec);
 }
 
 void HelicopterRoll(int angle){
@@ -134,15 +143,15 @@ void HelicopterYaw(int angle){
 	directionVec->normalize();
 }
 
-void HelicopterFly(int distance){
-	fly += distance;
+void HelicopterFly(double distance){
+	fly = distance;
 	littleBirdPosition[0] += upVec->x*distance;
 	littleBirdPosition[1] += upVec->y*distance;
 	littleBirdPosition[2] += upVec->z*distance;
 }
 
 void HelicopterStrafe(int distance){
-	strafe += distance;
+	strafe = distance;
 	littleBirdPosition[0] += rightVec->x*distance;
 	littleBirdPosition[1] += rightVec->y*distance;
 	littleBirdPosition[2] += rightVec->z*distance;
@@ -534,13 +543,6 @@ void helicopter(double br){
 }
 
 void DrawHelicopterFlight(){
-	/*
-	double mat[16];
-	mat[0] = cameraFront[0];   mat[4] = cameraUp[0];   mat[ 8] = cameraRight[0];   mat[12] = 0;
-	mat[1] = cameraFront[1];   mat[5] = cameraUp[1];   mat[ 9] = cameraRight[1];   mat[13] = 0;
-	mat[2] = cameraFront[2];   mat[6] = cameraUp[2];   mat[10] = cameraRight[2];   mat[14] = 0;
-	mat[3] =              0;   mat[7] =           0;   mat[11] =              0;   mat[15] = 1;
-	*/
 	double mat[16];
 	mat[0] = directionVec->x;   mat[4] = upVec->x;   mat[ 8] = rightVec->x;   mat[12] = 0;
 	mat[1] = directionVec->y;   mat[5] = upVec->y;   mat[ 9] = rightVec->y;   mat[13] = 0;
@@ -551,8 +553,8 @@ void DrawHelicopterFlight(){
 	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glMultMatrixd(mat);
 	//glRotated(yaw,0,1,0);
-	//glRotated(pitch,1,0,0);
-	//glRotated(roll,0,0,1);
+	//glRotated(pitch,0,0,1);
+	//glRotated(roll,1,0,0);
 	helicopter(bladeRotation);
 	glPopMatrix();
 }
@@ -572,6 +574,8 @@ void display()
 	glEnable(GL_CULL_FACE);
 	//  Undo previous transformations
 	glLoadIdentity();
+
+	HelicopterFly(pitch/1000);
 
 	double behindX = 10*directionVec->x;
 	double behindY = 10*directionVec->y;
@@ -644,7 +648,7 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d", roll,
+	Print("Roll=%d Yaw=%d Pitch=%f Stafe=%d Fly=%f", roll,
 			  yaw, pitch,strafe,fly);
 	glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
