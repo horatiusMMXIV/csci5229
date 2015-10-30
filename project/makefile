@@ -23,7 +23,8 @@ CLEAN=rm -f $(EXE) *.o *.a
 endif
 
 # Dependencies
-main.o: main.c CSCIx229.h
+main.o: main.cpp CSCIx229.h
+Vector.o: Vector.cpp Vector.h
 fatal.o: fatal.c CSCIx229.h
 loadtexbmp.o: loadtexbmp.c CSCIx229.h
 print.o: print.c CSCIx229.h
@@ -46,8 +47,8 @@ CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o object.o key.o spec
 	g++ -c $(CFLG) $<
 
 #  Link
-main:main.o CSCIx229.a
-	gcc -O3 -o $@ $^ $(LIBS)
+main:main.o CSCIx229.a Vector.o
+	g++ -O3 -o $@ $^ $(LIBS)
 
 #  Clean
 clean:

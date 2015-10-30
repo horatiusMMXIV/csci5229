@@ -6,22 +6,20 @@ Vector::Vector(double x, double y, double z){
 	this->z=z;
 }
 
-Vector Vector::dotProduct(Vector one, Vector two){
+void Vector::dotProduct(Vector* one, Vector* two){
 
 }
 
-Vector Vector::crossProduct(Vector three, Vector one, Vector two){
-	three.x = one.y*two.z-one.z*two.y;
-	three.y = one.z*two.x-one.x*two.z;
-	three.z = one.x*two.y-one.y*two.x;
-	return three;
+void Vector::crossProduct(Vector* one, Vector* two){
+	this->x = one->y*two->z-one->z*two->y;
+	this->y = one->z*two->x-one->x*two->z;
+	this->z = one->x*two->y-one->y*two->x;
 }
 
-Vector Vector::normalize(Vector one){
+void Vector::normalize(){
 	double vectorLength = 0;
-	vectorLength = sqrt(one.x*one.x+one.y*one.y+one.z*one.z);
-	one.x = one.x/vectorLength;
-	one.y = one.y/vectorLength;
-	one.z = one.z/vectorLength;
-	return one;
+	vectorLength = sqrt(this->x*this->x+this->y*this->y+this->z*this->z);
+	this->x = this->x/vectorLength;
+	this->y = this->y/vectorLength;
+	this->z = this->z/vectorLength;
 }

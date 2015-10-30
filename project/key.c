@@ -32,27 +32,21 @@ void key(unsigned char ch,int x,int y)
 	else if (ch==']')
 	ylight += 0.1;
 	else if (ch=='g'){
-	//yaw -= 5;
 	HelicopterYaw(-5);
 	}
 	else if (ch=='a'){
-	//yaw += 5;
 	HelicopterYaw(5);
 	}
 	else if (ch=='e'){
-	//pitch += 5;
-	HelicopterPitch(5);
-	}
-	else if (ch=='d'){
-	//pitch -= 5;
 	HelicopterPitch(-5);
 	}
+	else if (ch=='d'){
+	HelicopterPitch(5);
+	}
 	else if(ch=='s'){
-	//roll += 5;
 	HelicopterRoll(5);
 	}
 	else if(ch=='f'){
-	//roll -= 5;
 	HelicopterRoll(-5);
 	}
 	else if(ch =='i'){

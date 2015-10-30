@@ -6,7 +6,7 @@ public:
 	double y;
 	double z;
 	Vector(double x, double y, double z);
-	Vector dotProduct(Vector one, Vector two);
-	Vector crossProduct(Vector three, Vector one, Vector two);
-	Vector normalize(Vector one);
+	void dotProduct(Vector* one, Vector* two);
+	void crossProduct(Vector* one, Vector* two);
+	void normalize();
 };
