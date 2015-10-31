@@ -8,14 +8,16 @@
  * - How to add textures to the cylinder
  *
  * http://cs.lmu.edu/~ray/notes/flightsimulator/
- *
  * http://learnopengl.com/#!Getting-started/Camera
- *
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
+ * - Formulas for yaw,pitch,roll,strafe,fly code
  *
  * https://www.mathsisfun.com/sine-cosine-tangent.html
  * https://www.mathsisfun.com/algebra/vectors.html
  * - Know I understand what the yaw, pitch, and roll code is doing
+ *
+ * https://stackoverflow.com/questions/16571981/gluperspective-parameters-what-do-they-mean
+ * - How gluPerspective works with a world that is huge (large dim)
  *
  * Tasks To Complete
  * -------------------
