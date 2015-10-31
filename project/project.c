@@ -10,11 +10,9 @@ void Project(double fov,double asp,double dim)
    //  Undo previous transformations
    glLoadIdentity();
    //  Perspective transformation
-   if (fov)
-      gluPerspective(fov,asp,dim/4,4*dim);
-   //  Orthogonal transformation
-   else
-      glOrtho(-asp*dim,asp*dim,-dim,+dim,-dim,+dim);
+   // 2 for znear clipping plane so it is only 2 units in front
+   // 2*dim for the zfar clipping plane so it is 2*dim in front
+   gluPerspective(fov,asp,2,2*dim);
    //  Switch to manipulating the model matrix
    glMatrixMode(GL_MODELVIEW);
    //  Undo previous transformations

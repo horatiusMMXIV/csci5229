@@ -13,6 +13,10 @@
  *
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
  *
+ * https://www.mathsisfun.com/sine-cosine-tangent.html
+ * https://www.mathsisfun.com/algebra/vectors.html
+ * - Know I understand what the yaw, pitch, and roll code is doing
+ *
  * Tasks To Complete
  * -------------------
  * 1. Have helicopter automatically return to 0 for pitching, yawing, rolling, strafing, flying.
@@ -54,7 +58,7 @@ double fly=0;
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
-double dim=5.0;   //  Size of world
+double dim=500.0;   //  Size of world
 // Light values
 int distance  =   5;  // Light distance
 int smooth    =   1;  // Smooth/Flat shading
@@ -67,9 +71,11 @@ float shinyvec[1];    // Shininess (value)
 int zh        =  0;  // Light azimuth
 float ylight  =   0;  // Elevation of light
 
+float z[65][65];
+
 double littleBirdPosition[3];
 
-unsigned int littlebird[10];
+int littlebird[10];
 
 int bladeRotation = 0;
 
@@ -542,6 +548,32 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
+void DrawSky(){
+
+}
+
+void DrawLand(){
+	int i,j;
+	double x,y,z;
+	int rows = 64;
+	int columns = 64;
+	glColor3f(1,1,0);
+	for(i=0;i<rows;i++){
+		x = 16*i-512;
+		for(j=0;j<columns;j++){
+			y = 0;
+			z = 16*j-512;
+			glBegin(GL_LINE_LOOP);
+			glVertex3d(x,y,z);
+			glVertex3d(x+16,y,z);
+			glVertex3d(x+16,y,z+16);
+			glVertex3d(x,y,z+16);
+			glEnd();
+		}
+	}
+
+}
+
 void DrawHelicopterFlight(){
 	double mat[16];
 	mat[0] = directionVec->x;   mat[4] = upVec->x;   mat[ 8] = rightVec->x;   mat[12] = 0;
@@ -567,15 +599,12 @@ void display()
 	//double vectorLength = 0;
 	const double len=2.0;  //  Length of axes
 	//  Erase the window and the depth buffer
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//  Enable Z-buffering in OpenGL
-	glEnable(GL_DEPTH_TEST);
-	// Enable face culling in OpenGL
-	glEnable(GL_CULL_FACE);
-	//  Undo previous transformations
+   glClearColor(0,0.3,0.7,0);
+   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+   //  Enable Z-buffering in OpenGL
+   glEnable(GL_DEPTH_TEST);
+   glEnable(GL_CULL_FACE);
 	glLoadIdentity();
-
-	HelicopterFly(pitch/1000);
 
 	double behindX = 10*directionVec->x;
 	double behindY = 10*directionVec->y;
@@ -620,6 +649,8 @@ void display()
 	}else{
 		glDisable(GL_LIGHTING);
 	}
+
+	DrawLand();
 
 	bladeRotation += 5;
 	bladeRotation %= 360;

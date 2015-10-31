@@ -41,6 +41,8 @@ void HelicopterYaw(int angle);
 void HelicopterFly(double distance);
 void HelicopterStrafe(int distance);
 
+void DrawSky();
+void DrawLand();
 // Global Variables
 extern int axes;       //  Display axes
 
