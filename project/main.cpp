@@ -10,7 +10,7 @@
  * http://cs.lmu.edu/~ray/notes/flightsimulator/
  * http://learnopengl.com/#!Getting-started/Camera
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
- * - Formulas for yaw,pitch,roll,strafe,fly code
+ * - Formulas for yaw,pitch,,strafe,fly code
  *
  * https://www.mathsisfun.com/sine-cosine-tangent.html
  * https://www.mathsisfun.com/algebra/vectors.html
@@ -21,12 +21,12 @@
  *
  * Tasks To Complete
  * -------------------
- * 1. Have helicopter automatically return to 0 for pitching, yawing, rolling, strafing, flying.
- * 2. Set limits for the angles of the helicopter and the min height.
  *
  * Known Bugs
  * -------------------
- * 1. Rotors don't rotate now.
+ * 1. Helicopter doesn't roll properly in that when the roll is 0 the helicopter does not look level.  Happens
+ * 		when apply yaws and pitches with rolls.
+ * 2. Yawing makes the helcopter look like it is yawing around an oval.
  *
  * Resolved Bugs
  * ----------------------
@@ -43,6 +43,8 @@
  * 4. Can't look at helicopter from above with camera.
  * 	+++++I needed to add the height to all dimensions not just the y value.
  *
+ * 	5. Rotors don't rotate now.
+ *
  */
 
 #include "CSCIx229.h"
@@ -52,10 +54,12 @@
 int axes=1;       //  Display axes
 
 int yaw=0;
-double pitch=0;
+int pitch=0;
 int roll=0;
 int strafe=0;
-double fly=0;
+int fly=0;
+
+double speed=0;
 
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
@@ -86,9 +90,9 @@ Vector* upVec =        new Vector(0,1,0);
 Vector* rightVec =     new Vector(0,0,1);
 
 
-//Vector* old_directionVec = new Vector(0,0,0);
-//Vector* old_upVec =        new Vector(0,0,0);
-//Vector* old_rightVec =     new Vector(0,0,0);
+Vector* old_directionVec = new Vector(0,0,0);
+Vector* old_upVec =        new Vector(0,0,0);
+Vector* old_rightVec =     new Vector(0,0,0);
 
 
 void init(){
@@ -102,39 +106,69 @@ double dotProductAngle(Vector* one, Vector* two){
 }
 
 void HelicopterPitch(int angle){
+	old_directionVec->x = directionVec->x;
+	old_directionVec->y = directionVec->y;
+	old_directionVec->z = directionVec->z;
+	double old_pitch = pitch;
 	pitch += angle;
-	//pitch %= 360;
 
-	//old_directionVec->x = directionVec->x;
-	//old_directionVec->y = directionVec->y;
-	//old_directionVec->z = directionVec->z;
-	//
-	directionVec->x = directionVec->x*Cos(angle)+upVec->x*Sin(angle);
-	directionVec->y = directionVec->y*Cos(angle)+upVec->y*Sin(angle);
-	directionVec->z = directionVec->z*Cos(angle)+upVec->z*Sin(angle);
-	// Normalize the direction vector
-	directionVec->normalize();
-	// Calculate up vector with cross product of right and direction vectors
-	upVec->crossProduct(rightVec, directionVec);
-	// Normalize the up vector
-	upVec->normalize();
+	// If there is a new pitch angle recalculate the vectors
+	if(pitch != old_pitch){
+		//
+		directionVec->x = directionVec->x*Cos(angle)+upVec->x*Sin(angle);
+		directionVec->y = directionVec->y*Cos(angle)+upVec->y*Sin(angle);
+		directionVec->z = directionVec->z*Cos(angle)+upVec->z*Sin(angle);
+		// Normalize the direction vector
+		directionVec->normalize();
+		// Calculate up vector with cross product of right and direction vectors
+		upVec->crossProduct(rightVec, directionVec);
+		// Normalize the up vector
+		upVec->normalize();
+	}
 
-	//pitch=dotProductAngle(old_directionVec, directionVec);
+	// If there is no pitch go straight
+	if(pitch==0){
+		littleBirdPosition[0] += speed*directionVec->x;
+		littleBirdPosition[1] += speed*directionVec->y;
+		littleBirdPosition[2] += speed*directionVec->z;
+	}else{
+		littleBirdPosition[0] += speed*(directionVec->x+upVec->x)/2;
+		littleBirdPosition[1] += speed*(directionVec->y+upVec->y)/2;
+		littleBirdPosition[2] += speed*(directionVec->z+upVec->z)/2;
+	}
+
 }
 
 void HelicopterRoll(int angle){
+	old_rightVec->x = rightVec->x;
+	old_rightVec->y = rightVec->y;
+	old_rightVec->z = rightVec->z;
+	double old_roll = roll;
 	roll += angle;
-	roll %= 360;
-	//
-	rightVec->x = rightVec->x*Cos(angle)+upVec->x*Sin(angle);
-	rightVec->y = rightVec->y*Cos(angle)+upVec->y*Sin(angle);
-	rightVec->z = rightVec->z*Cos(angle)+upVec->z*Sin(angle);
-	// Normalize the right vector
-	rightVec->normalize();
-	// Calculate the up vector with cross product of right and direction vectors
-	upVec->crossProduct(rightVec, directionVec);
-	// Normalize the up vector
-	upVec->normalize();
+	roll%=180;
+	if(roll != old_roll){
+		//
+		rightVec->x = rightVec->x*Cos(angle)+upVec->x*Sin(angle);
+		rightVec->y = rightVec->y*Cos(angle)+upVec->y*Sin(angle);
+		rightVec->z = rightVec->z*Cos(angle)+upVec->z*Sin(angle);
+		// Normalize the right vector
+		rightVec->normalize();
+		// Calculate the up vector with cross product of right and direction vectors
+		upVec->crossProduct(rightVec, directionVec);
+		// Normalize the up vector
+		upVec->normalize();
+	}
+	// Move to the right
+	if(roll<0){
+		littleBirdPosition[0] += speed*(rightVec->x+upVec->x)/2;
+		littleBirdPosition[1] += speed*(rightVec->y+upVec->y)/2;
+		littleBirdPosition[2] += speed*(rightVec->z+upVec->z)/2;
+	//Move to the left
+	}else if(roll>0){
+		littleBirdPosition[0] += speed*(-rightVec->x+upVec->x)/2;
+		littleBirdPosition[1] += speed*(-rightVec->y+upVec->y)/2;
+		littleBirdPosition[2] += speed*(-rightVec->z+upVec->z)/2;
+	}
 }
 
 void HelicopterYaw(int angle){
@@ -152,14 +186,14 @@ void HelicopterYaw(int angle){
 }
 
 void HelicopterFly(double distance){
-	fly = distance;
+	fly += distance;
 	littleBirdPosition[0] += upVec->x*distance;
 	littleBirdPosition[1] += upVec->y*distance;
 	littleBirdPosition[2] += upVec->z*distance;
 }
 
 void HelicopterStrafe(int distance){
-	strafe = distance;
+	strafe += distance;
 	littleBirdPosition[0] += rightVec->x*distance;
 	littleBirdPosition[1] += rightVec->y*distance;
 	littleBirdPosition[2] += rightVec->z*distance;
@@ -593,6 +627,13 @@ void DrawHelicopterFlight(){
 	glPopMatrix();
 }
 
+void timer(int value){
+	//HelicopterYaw(0);
+	HelicopterPitch(0);
+	HelicopterRoll(0);
+	glutTimerFunc(50,timer,0);
+}
+
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
@@ -681,8 +722,8 @@ void display()
 	}
 	//  Display parameters
 	glWindowPos2i(5,5);
-	Print("Roll=%d Yaw=%d Pitch=%f Stafe=%d Fly=%f", roll,
-			  yaw, pitch,strafe,fly);
+	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%f",roll,
+			  yaw, pitch,strafe,fly,speed);
 	glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred
@@ -724,6 +765,7 @@ int main(int argc,char* argv[])
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
+	timer(0);
 	//  Pass control to GLUT so it can interact with the user
 	glutMainLoop();
 	return 0;

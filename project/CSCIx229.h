@@ -41,16 +41,20 @@ void HelicopterYaw(int angle);
 void HelicopterFly(double distance);
 void HelicopterStrafe(int distance);
 
+void timer(int value);
+
 void DrawSky();
 void DrawLand();
 // Global Variables
 extern int axes;       //  Display axes
 
 extern int yaw;
-extern double pitch;
+extern int pitch;
 extern int roll;
 extern int strafe;
-extern double fly;
+extern int fly;
+
+extern double speed;
 
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting

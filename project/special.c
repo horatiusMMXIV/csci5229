@@ -14,14 +14,16 @@ void special(int key,int x,int y)
 	else if (key == GLUT_KEY_LEFT){
 		yaw -= 5;
 	}
+	*/
 	//  Up arrow key - increase elevation by 5 degrees
-	else if (key == GLUT_KEY_UP){
-		pitch += 5;
+	if (key == GLUT_KEY_UP){
+		speed += .1;
 	}
 	//  Down arrow key - decrease elevation by 5 degrees
 	else if (key == GLUT_KEY_DOWN){
-		pitch -= 5;
+		speed -= .1;
 	}
+	/*
 	//  PageUp key - increase dim
 	else if (key == GLUT_KEY_PAGE_UP){
 		dim += 0.1;
