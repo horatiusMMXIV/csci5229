@@ -36,8 +36,8 @@ void idle();
 void reshape(int width,int height);
 
 void HelicopterPitch(int angle);
-void HelicopterRoll(int angle);
-void HelicopterYaw(int angle);
+void HelicopterRoll();
+void HelicopterYaw();
 void HelicopterFly(double distance);
 void HelicopterStrafe(int distance);
 
@@ -54,7 +54,9 @@ extern int roll;
 extern int strafe;
 extern int fly;
 
-extern double speed;
+extern int rollAngle;
+
+extern int speed;
 
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting

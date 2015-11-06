@@ -51,7 +51,7 @@
 #include "Vector.h"
 
 
-int axes=1;       //  Display axes
+int axes=0;       //  Display axes
 
 int yaw=0;
 int pitch=0;
@@ -59,7 +59,9 @@ int roll=0;
 int strafe=0;
 int fly=0;
 
-double speed=0;
+int rollAngle = 0;
+
+int speed=0;
 
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
@@ -106,6 +108,26 @@ double dotProductAngle(Vector* one, Vector* two){
 }
 
 void HelicopterPitch(int angle){
+	pitch += angle;
+	pitch %= 360;
+
+	old_directionVec->x = directionVec->x;
+	old_directionVec->y = directionVec->y;
+	old_directionVec->z = directionVec->z;
+	old_directionVec->normalize();
+
+	directionVec->x = -Cos(pitch);
+	directionVec->y = Sin(pitch);
+	directionVec->z = Cos(pitch);
+	directionVec->normalize();
+
+	rightVec->crossProduct(old_directionVec, directionVec);
+	rightVec->normalize();
+
+	upVec->crossProduct(rightVec, directionVec);
+	upVec->normalize();
+
+	/*
 	old_directionVec->x = directionVec->x;
 	old_directionVec->y = directionVec->y;
 	old_directionVec->z = directionVec->z;
@@ -131,15 +153,46 @@ void HelicopterPitch(int angle){
 		littleBirdPosition[0] += speed*directionVec->x;
 		littleBirdPosition[1] += speed*directionVec->y;
 		littleBirdPosition[2] += speed*directionVec->z;
-	}else{
+	// Go forwards and up
+	}else if(pitch < 0){
 		littleBirdPosition[0] += speed*(directionVec->x+upVec->x)/2;
 		littleBirdPosition[1] += speed*(directionVec->y+upVec->y)/2;
 		littleBirdPosition[2] += speed*(directionVec->z+upVec->z)/2;
+	// Go backwards and up
+	}else if(pitch > 0){
+		littleBirdPosition[0] += speed*(-directionVec->x+upVec->x)/2;
+		littleBirdPosition[1] += speed*(-directionVec->y+upVec->y)/2;
+		littleBirdPosition[2] += speed*(-directionVec->z+upVec->z)/2;
 	}
+	*/
 
 }
 
-void HelicopterRoll(int angle){
+void HelicopterRoll(){
+	old_directionVec->x = directionVec->x;
+	old_directionVec->y = directionVec->y;
+	old_directionVec->z = directionVec->z;
+
+	if(roll == 0){
+		directionVec->x = Cos(rollAngle);
+		directionVec->z = -Sin(rollAngle);
+	}else if(roll > 0){
+		directionVec->x = Cos(rollAngle++);
+		directionVec->z = -Sin(rollAngle++);
+	}else if(roll < 0){
+		directionVec->x = Cos(rollAngle--);
+		directionVec->z = -Sin(rollAngle--);
+	}
+
+	//upVec->crossProduct(old_directionVec,directionVec);
+	//upVec->normalize();
+
+	rightVec->crossProduct(directionVec, upVec);
+	rightVec->normalize();
+
+	yaw = rollAngle;
+
+	/*
 	old_rightVec->x = rightVec->x;
 	old_rightVec->y = rightVec->y;
 	old_rightVec->z = rightVec->z;
@@ -168,12 +221,28 @@ void HelicopterRoll(int angle){
 		littleBirdPosition[0] += speed*(-rightVec->x+upVec->x)/2;
 		littleBirdPosition[1] += speed*(-rightVec->y+upVec->y)/2;
 		littleBirdPosition[2] += speed*(-rightVec->z+upVec->z)/2;
-	}
+	}*/
 }
 
-void HelicopterYaw(int angle){
-	yaw += angle;
+void HelicopterYaw(){
 	yaw %= 360;
+
+	old_directionVec->x = directionVec->x;
+	old_directionVec->y = directionVec->y;
+	old_directionVec->z = directionVec->z;
+	old_directionVec->normalize();
+
+	directionVec->x = Cos(yaw);
+	//directionVec->y = Sin(pitch);
+	directionVec->z = -Sin(yaw);
+	directionVec->normalize();
+
+	rightVec->crossProduct(directionVec, upVec);
+	rightVec->normalize();
+
+	rollAngle = yaw;
+
+	/*
 	rightVec->x = rightVec->x*Cos(angle)+directionVec->x*Sin(angle);
 	rightVec->y = rightVec->y*Cos(angle)+directionVec->y*Sin(angle);
 	rightVec->z = rightVec->z*Cos(angle)+directionVec->z*Sin(angle);
@@ -183,6 +252,7 @@ void HelicopterYaw(int angle){
 	directionVec->crossProduct(upVec,rightVec);
 	// Normalize the direciton vector
 	directionVec->normalize();
+	*/
 }
 
 void HelicopterFly(double distance){
@@ -621,17 +691,27 @@ void DrawHelicopterFlight(){
 	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glMultMatrixd(mat);
 	//glRotated(yaw,0,1,0);
-	//glRotated(pitch,0,0,1);
-	//glRotated(roll,1,0,0);
+	glRotated(pitch,0,0,1);
+	glRotated(-roll,1,0,0);
 	helicopter(bladeRotation);
 	glPopMatrix();
 }
 
 void timer(int value){
-	//HelicopterYaw(0);
-	HelicopterPitch(0);
-	HelicopterRoll(0);
+
+	littleBirdPosition[0] += directionVec->x*(speed/10.0);
+	littleBirdPosition[1] += directionVec->y*(speed/10.0);
+	littleBirdPosition[2] += directionVec->z*(speed/10.0);
+	/* if you are hovering you can only yaw */
+	if(speed == 0){
+		HelicopterYaw();
+	}else{
+		HelicopterRoll();
+	}
+
 	glutTimerFunc(50,timer,0);
+	//  Tell GLUT it is necessary to redisplay the scene
+	glutPostRedisplay();
 }
 
 /*
@@ -642,11 +722,11 @@ void display()
 	//double vectorLength = 0;
 	const double len=2.0;  //  Length of axes
 	//  Erase the window and the depth buffer
-   glClearColor(0,0.3,0.7,0);
-   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-   //  Enable Z-buffering in OpenGL
-   glEnable(GL_DEPTH_TEST);
-   glEnable(GL_CULL_FACE);
+	glClearColor(0,0.3,0.7,0);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	//  Enable Z-buffering in OpenGL
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	glLoadIdentity();
 
 	double behindX = 10*directionVec->x;
@@ -720,10 +800,27 @@ void display()
 		glRasterPos3d(0.0,0.0,len);
 		Print("Z");
 	}
+
+	// Draw flight vectors
+	glLineWidth(3);
+	glBegin(GL_LINES);
+	glColor3f(1,0,0);
+	glVertex3f(0,0,0);
+	glVertex3d(rightVec->x, rightVec->y, rightVec->z);
+	glColor3f(0,1,0);
+	glVertex3f(0,0,0);
+	glVertex3d(directionVec->x, directionVec->y, directionVec->z);
+	glColor3f(0,0,1);
+	glVertex3f(0,0,0);
+	glVertex3d(upVec->x, upVec->y, upVec->z);
+	glEnd();
+	glLineWidth(1);
+
 	//  Display parameters
+	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
-	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%f",roll,
-			  yaw, pitch,strafe,fly,speed);
+	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%d Angle=%d",roll,
+			  yaw, pitch,strafe,fly,speed,rollAngle);
 	glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred

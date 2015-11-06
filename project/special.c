@@ -17,11 +17,11 @@ void special(int key,int x,int y)
 	*/
 	//  Up arrow key - increase elevation by 5 degrees
 	if (key == GLUT_KEY_UP){
-		speed += .1;
+		speed += 1;
 	}
 	//  Down arrow key - decrease elevation by 5 degrees
 	else if (key == GLUT_KEY_DOWN){
-		speed -= .1;
+		speed -= 1;
 	}
 	/*
 	//  PageUp key - increase dim
