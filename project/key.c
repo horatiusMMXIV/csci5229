@@ -44,21 +44,21 @@ void key(unsigned char ch,int x,int y)
 		}
 	}
 	else if (ch=='e'){
-	//HelicopterPitch(-5);
 		pitch += -5;
+		speed += 1;
 	}
 	else if (ch=='d'){
-	//HelicopterPitch(5);
 		pitch += 5;
+		speed -= 1;
 	}
-	else if(ch=='s'){
+	else if(ch=='s' && strafe == 0){
 		if(speed != 0){
 			roll += 5;
 			HelicopterRoll();
 		}
 	}
 	else if(ch=='f'){
-		if(speed != 0){
+		if(speed != 0 && strafe == 0){
 			roll += -5;
 			HelicopterRoll();
 		}
@@ -73,11 +73,17 @@ void key(unsigned char ch,int x,int y)
 	}
 	else if(ch=='j'){
 	// Strafe left
-	HelicopterStrafe(-distance);
+		if(speed == 0 && roll == 0){
+			strafe -= 1;
+			HelicopterStrafe();
+		}
 	}
 	else if(ch=='l'){
 	// Strafe right
-	HelicopterStrafe(distance);
+		if(speed == 0 && roll == 0){
+			strafe += 1;
+			HelicopterStrafe();
+		}
 	}
 	//  Reproject
 	Project(fov,asp,dim);

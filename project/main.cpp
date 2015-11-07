@@ -101,73 +101,6 @@ void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
 }
 
-double dotProductAngle(Vector* one, Vector* two){
-	double dotProductAngle=acos(one->x*two->x+one->y*two->y+one->z*two->z);
-	dotProductAngle = 180*(dotProductAngle)/3.1415926;
-	return dotProductAngle;
-}
-
-void HelicopterPitch(int angle){
-	pitch += angle;
-	pitch %= 360;
-
-	old_directionVec->x = directionVec->x;
-	old_directionVec->y = directionVec->y;
-	old_directionVec->z = directionVec->z;
-	old_directionVec->normalize();
-
-	directionVec->x = -Cos(pitch);
-	directionVec->y = Sin(pitch);
-	directionVec->z = Cos(pitch);
-	directionVec->normalize();
-
-	rightVec->crossProduct(old_directionVec, directionVec);
-	rightVec->normalize();
-
-	upVec->crossProduct(rightVec, directionVec);
-	upVec->normalize();
-
-	/*
-	old_directionVec->x = directionVec->x;
-	old_directionVec->y = directionVec->y;
-	old_directionVec->z = directionVec->z;
-	double old_pitch = pitch;
-	pitch += angle;
-
-	// If there is a new pitch angle recalculate the vectors
-	if(pitch != old_pitch){
-		//
-		directionVec->x = directionVec->x*Cos(angle)+upVec->x*Sin(angle);
-		directionVec->y = directionVec->y*Cos(angle)+upVec->y*Sin(angle);
-		directionVec->z = directionVec->z*Cos(angle)+upVec->z*Sin(angle);
-		// Normalize the direction vector
-		directionVec->normalize();
-		// Calculate up vector with cross product of right and direction vectors
-		upVec->crossProduct(rightVec, directionVec);
-		// Normalize the up vector
-		upVec->normalize();
-	}
-
-	// If there is no pitch go straight
-	if(pitch==0){
-		littleBirdPosition[0] += speed*directionVec->x;
-		littleBirdPosition[1] += speed*directionVec->y;
-		littleBirdPosition[2] += speed*directionVec->z;
-	// Go forwards and up
-	}else if(pitch < 0){
-		littleBirdPosition[0] += speed*(directionVec->x+upVec->x)/2;
-		littleBirdPosition[1] += speed*(directionVec->y+upVec->y)/2;
-		littleBirdPosition[2] += speed*(directionVec->z+upVec->z)/2;
-	// Go backwards and up
-	}else if(pitch > 0){
-		littleBirdPosition[0] += speed*(-directionVec->x+upVec->x)/2;
-		littleBirdPosition[1] += speed*(-directionVec->y+upVec->y)/2;
-		littleBirdPosition[2] += speed*(-directionVec->z+upVec->z)/2;
-	}
-	*/
-
-}
-
 void HelicopterRoll(){
 	old_directionVec->x = directionVec->x;
 	old_directionVec->y = directionVec->y;
@@ -184,44 +117,10 @@ void HelicopterRoll(){
 		directionVec->z = -Sin(rollAngle--);
 	}
 
-	//upVec->crossProduct(old_directionVec,directionVec);
-	//upVec->normalize();
-
 	rightVec->crossProduct(directionVec, upVec);
 	rightVec->normalize();
 
 	yaw = rollAngle;
-
-	/*
-	old_rightVec->x = rightVec->x;
-	old_rightVec->y = rightVec->y;
-	old_rightVec->z = rightVec->z;
-	double old_roll = roll;
-	roll += angle;
-	roll%=180;
-	if(roll != old_roll){
-		//
-		rightVec->x = rightVec->x*Cos(angle)+upVec->x*Sin(angle);
-		rightVec->y = rightVec->y*Cos(angle)+upVec->y*Sin(angle);
-		rightVec->z = rightVec->z*Cos(angle)+upVec->z*Sin(angle);
-		// Normalize the right vector
-		rightVec->normalize();
-		// Calculate the up vector with cross product of right and direction vectors
-		upVec->crossProduct(rightVec, directionVec);
-		// Normalize the up vector
-		upVec->normalize();
-	}
-	// Move to the right
-	if(roll<0){
-		littleBirdPosition[0] += speed*(rightVec->x+upVec->x)/2;
-		littleBirdPosition[1] += speed*(rightVec->y+upVec->y)/2;
-		littleBirdPosition[2] += speed*(rightVec->z+upVec->z)/2;
-	//Move to the left
-	}else if(roll>0){
-		littleBirdPosition[0] += speed*(-rightVec->x+upVec->x)/2;
-		littleBirdPosition[1] += speed*(-rightVec->y+upVec->y)/2;
-		littleBirdPosition[2] += speed*(-rightVec->z+upVec->z)/2;
-	}*/
 }
 
 void HelicopterYaw(){
@@ -233,7 +132,6 @@ void HelicopterYaw(){
 	old_directionVec->normalize();
 
 	directionVec->x = Cos(yaw);
-	//directionVec->y = Sin(pitch);
 	directionVec->z = -Sin(yaw);
 	directionVec->normalize();
 
@@ -241,18 +139,6 @@ void HelicopterYaw(){
 	rightVec->normalize();
 
 	rollAngle = yaw;
-
-	/*
-	rightVec->x = rightVec->x*Cos(angle)+directionVec->x*Sin(angle);
-	rightVec->y = rightVec->y*Cos(angle)+directionVec->y*Sin(angle);
-	rightVec->z = rightVec->z*Cos(angle)+directionVec->z*Sin(angle);
-	// Normalize the right vector
-	rightVec->normalize();
-	// Caluclate the direction vector with the cross product of the up and right vectors
-	directionVec->crossProduct(upVec,rightVec);
-	// Normalize the direciton vector
-	directionVec->normalize();
-	*/
 }
 
 void HelicopterFly(double distance){
@@ -262,11 +148,10 @@ void HelicopterFly(double distance){
 	littleBirdPosition[2] += upVec->z*distance;
 }
 
-void HelicopterStrafe(int distance){
-	strafe += distance;
-	littleBirdPosition[0] += rightVec->x*distance;
-	littleBirdPosition[1] += rightVec->y*distance;
-	littleBirdPosition[2] += rightVec->z*distance;
+void HelicopterStrafe(){
+	littleBirdPosition[0] += rightVec->x*(strafe/10.0);
+	littleBirdPosition[1] += rightVec->y*(strafe/10.0);
+	littleBirdPosition[2] += rightVec->z*(strafe/10.0);
 }
 
 /*
@@ -693,6 +578,7 @@ void DrawHelicopterFlight(){
 	//glRotated(yaw,0,1,0);
 	glRotated(pitch,0,0,1);
 	glRotated(-roll,1,0,0);
+	glRotated(strafe,1,0,0);
 	helicopter(bladeRotation);
 	glPopMatrix();
 }
@@ -702,9 +588,10 @@ void timer(int value){
 	littleBirdPosition[0] += directionVec->x*(speed/10.0);
 	littleBirdPosition[1] += directionVec->y*(speed/10.0);
 	littleBirdPosition[2] += directionVec->z*(speed/10.0);
-	/* if you are hovering you can only yaw */
+	/* if you are hovering you can only yaw or strafe */
 	if(speed == 0){
 		HelicopterYaw();
+		HelicopterStrafe();
 	}else{
 		HelicopterRoll();
 	}

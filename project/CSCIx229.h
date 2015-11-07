@@ -35,11 +35,10 @@ void key(unsigned char ch,int x,int y);
 void idle();
 void reshape(int width,int height);
 
-void HelicopterPitch(int angle);
 void HelicopterRoll();
 void HelicopterYaw();
 void HelicopterFly(double distance);
-void HelicopterStrafe(int distance);
+void HelicopterStrafe();
 
 void timer(int value);
 
