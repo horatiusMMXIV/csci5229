@@ -51,37 +51,43 @@ void key(unsigned char ch,int x,int y)
 		pitch += 5;
 		speed -= 1;
 	}
-	else if(ch=='s' && strafe == 0){
-		if(speed != 0){
+	else if(ch=='s'){
+		// Only allow roll if the helicopter is moving and there is no strafe
+		if(speed != 0 && strafe ==0){
 			roll += 5;
+			bankFactor += 1;
 			HelicopterRoll();
 		}
 	}
 	else if(ch=='f'){
+		// Only allow roll if the helicopter is moving and there is no strafe
 		if(speed != 0 && strafe == 0){
 			roll += -5;
+			bankFactor -= 1;
 			HelicopterRoll();
 		}
 	}
 	else if(ch =='i'){
-	// Fly up
-	HelicopterFly(distance);
+	// Elevate the helicopter up
+		fly += 5;
+		HelicopterFly();
 	}
 	else if(ch=='k'){
-	// Fly down
-	HelicopterFly(-distance);
+	// Elevate the helicopter down
+		fly -= 5;
+		HelicopterFly();
 	}
 	else if(ch=='j'){
 	// Strafe left
-		if(speed == 0 && roll == 0){
-			strafe -= 1;
+		if(roll == 0){
+			strafe -= 5;
 			HelicopterStrafe();
 		}
 	}
 	else if(ch=='l'){
 	// Strafe right
-		if(speed == 0 && roll == 0){
-			strafe += 1;
+		if(roll == 0){
+			strafe += 5;
 			HelicopterStrafe();
 		}
 	}

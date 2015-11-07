@@ -37,7 +37,7 @@ void reshape(int width,int height);
 
 void HelicopterRoll();
 void HelicopterYaw();
-void HelicopterFly(double distance);
+void HelicopterFly();
 void HelicopterStrafe();
 
 void timer(int value);
@@ -53,7 +53,8 @@ extern int roll;
 extern int strafe;
 extern int fly;
 
-extern int rollAngle;
+extern int bankAngle;
+extern int bankFactor;
 
 extern int speed;
 

@@ -59,7 +59,8 @@ int roll=0;
 int strafe=0;
 int fly=0;
 
-int rollAngle = 0;
+int bankAngle = 0;
+int bankFactor = 0;
 
 int speed=0;
 
@@ -102,34 +103,30 @@ void init(){
 }
 
 void HelicopterRoll(){
-	old_directionVec->x = directionVec->x;
-	old_directionVec->y = directionVec->y;
-	old_directionVec->z = directionVec->z;
+	roll %= 360;
 
-	if(roll == 0){
-		directionVec->x = Cos(rollAngle);
-		directionVec->z = -Sin(rollAngle);
-	}else if(roll > 0){
-		directionVec->x = Cos(rollAngle++);
-		directionVec->z = -Sin(rollAngle++);
+	if(roll > 0){
+		//bankAngle++;
+		bankAngle += bankFactor;
 	}else if(roll < 0){
-		directionVec->x = Cos(rollAngle--);
-		directionVec->z = -Sin(rollAngle--);
+		//bankAngle--;
+		bankAngle += bankFactor;
 	}
+
+	bankAngle %= 360;
+
+	directionVec->x = Cos(bankAngle);
+	directionVec->z = -Sin(bankAngle);
+	directionVec->normalize();
 
 	rightVec->crossProduct(directionVec, upVec);
 	rightVec->normalize();
 
-	yaw = rollAngle;
+	yaw = bankAngle;
 }
 
 void HelicopterYaw(){
 	yaw %= 360;
-
-	old_directionVec->x = directionVec->x;
-	old_directionVec->y = directionVec->y;
-	old_directionVec->z = directionVec->z;
-	old_directionVec->normalize();
 
 	directionVec->x = Cos(yaw);
 	directionVec->z = -Sin(yaw);
@@ -138,20 +135,19 @@ void HelicopterYaw(){
 	rightVec->crossProduct(directionVec, upVec);
 	rightVec->normalize();
 
-	rollAngle = yaw;
+	bankAngle = yaw;
 }
 
-void HelicopterFly(double distance){
-	fly += distance;
-	littleBirdPosition[0] += upVec->x*distance;
-	littleBirdPosition[1] += upVec->y*distance;
-	littleBirdPosition[2] += upVec->z*distance;
+void HelicopterFly(){
+	littleBirdPosition[0] += upVec->x*(fly/20.0);
+	littleBirdPosition[1] += upVec->y*(fly/20.0);
+	littleBirdPosition[2] += upVec->z*(fly/20.0);
 }
 
 void HelicopterStrafe(){
-	littleBirdPosition[0] += rightVec->x*(strafe/10.0);
-	littleBirdPosition[1] += rightVec->y*(strafe/10.0);
-	littleBirdPosition[2] += rightVec->z*(strafe/10.0);
+	littleBirdPosition[0] += rightVec->x*(strafe/20.0);
+	littleBirdPosition[1] += rightVec->y*(strafe/20.0);
+	littleBirdPosition[2] += rightVec->z*(strafe/20.0);
 }
 
 /*
@@ -591,10 +587,11 @@ void timer(int value){
 	/* if you are hovering you can only yaw or strafe */
 	if(speed == 0){
 		HelicopterYaw();
-		HelicopterStrafe();
 	}else{
 		HelicopterRoll();
 	}
+	HelicopterStrafe();
+	HelicopterFly();
 
 	glutTimerFunc(50,timer,0);
 	//  Tell GLUT it is necessary to redisplay the scene
@@ -662,7 +659,7 @@ void display()
 
 	DrawLand();
 
-	bladeRotation += 5;
+	bladeRotation += 15;
 	bladeRotation %= 360;
 	DrawHelicopterFlight();
 
@@ -707,7 +704,7 @@ void display()
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
 	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%d Angle=%d",roll,
-			  yaw, pitch,strafe,fly,speed,rollAngle);
+			  yaw, pitch,strafe,fly,speed,bankAngle);
 	glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred
