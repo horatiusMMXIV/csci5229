@@ -93,17 +93,11 @@ Vector* upVec =        new Vector(0,1,0);
 Vector* rightVec =     new Vector(0,0,1);
 
 
-Vector* old_directionVec = new Vector(0,0,0);
-Vector* old_upVec =        new Vector(0,0,0);
-Vector* old_rightVec =     new Vector(0,0,0);
-
-
 void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
 }
 
 void HelicopterRoll(){
-	roll %= 360;
 
 	if(roll > 0){
 		//bankAngle++;
@@ -112,8 +106,6 @@ void HelicopterRoll(){
 		//bankAngle--;
 		bankAngle += bankFactor;
 	}
-
-	bankAngle %= 360;
 
 	directionVec->x = Cos(bankAngle);
 	directionVec->z = -Sin(bankAngle);
@@ -126,7 +118,6 @@ void HelicopterRoll(){
 }
 
 void HelicopterYaw(){
-	yaw %= 360;
 
 	directionVec->x = Cos(yaw);
 	directionVec->z = -Sin(yaw);
@@ -584,7 +575,8 @@ void timer(int value){
 	littleBirdPosition[0] += directionVec->x*(speed/10.0);
 	littleBirdPosition[1] += directionVec->y*(speed/10.0);
 	littleBirdPosition[2] += directionVec->z*(speed/10.0);
-	/* if you are hovering you can only yaw or strafe */
+	// Since yaw and pitch manipulate the direction vector
+	// They cannot be used at the same time
 	if(speed == 0){
 		HelicopterYaw();
 	}else{
@@ -659,6 +651,7 @@ void display()
 
 	DrawLand();
 
+	// Blades rotate in a circle 15 degrees at a time
 	bladeRotation += 15;
 	bladeRotation %= 360;
 	DrawHelicopterFlight();
@@ -686,6 +679,7 @@ void display()
 	}
 
 	// Draw flight vectors
+	/*
 	glLineWidth(3);
 	glBegin(GL_LINES);
 	glColor3f(1,0,0);
@@ -699,13 +693,13 @@ void display()
 	glVertex3d(upVec->x, upVec->y, upVec->z);
 	glEnd();
 	glLineWidth(1);
+	*/
 
 	//  Display parameters
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
-	Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%d Angle=%d",roll,
-			  yaw, pitch,strafe,fly,speed,bankAngle);
-	glWindowPos2i(5,25);
+	//Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%d Angle=%d",roll,yaw, pitch,strafe,fly,speed,bankAngle);
+	//glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred
 	ErrCheck("display");

@@ -13,7 +13,7 @@ void key(unsigned char ch,int x,int y)
 	}
 	//  Reset view angle
 	else if (ch == '0'){
-		yaw=pitch=roll=strafe=0;
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=0;
 		littleBirdPosition[0]=littleBirdPosition[1]=littleBirdPosition[2]=0;
 	}
 	//  Move light
@@ -32,26 +32,35 @@ void key(unsigned char ch,int x,int y)
 	else if (ch==']')
 	ylight += 0.1;
 	else if (ch=='g'){
+		// Turn the helicopter right
+		// This can only occur when it isn't moving
 		if(speed == 0){
 			yaw += -5;
 			HelicopterYaw();
 		}
 	}
 	else if (ch=='a'){
+		// Turn the helicopter left
+		// This can only occur when it isn't moving
 		if(speed == 0){
 			yaw += 5;
 			HelicopterYaw();
 		}
 	}
 	else if (ch=='e'){
+		// Pitch the helicopter nose down
+		// Increase the forward speed
 		pitch += -5;
 		speed += 1;
 	}
 	else if (ch=='d'){
+		// Pitch the helicopter nose up
+		// Increase the reverse speed
 		pitch += 5;
 		speed -= 1;
 	}
 	else if(ch=='s'){
+		// Roll the helicopter left
 		// Only allow roll if the helicopter is moving and there is no strafe
 		if(speed != 0 && strafe ==0){
 			roll += 5;
@@ -60,6 +69,7 @@ void key(unsigned char ch,int x,int y)
 		}
 	}
 	else if(ch=='f'){
+		// Roll the helicopter right
 		// Only allow roll if the helicopter is moving and there is no strafe
 		if(speed != 0 && strafe == 0){
 			roll += -5;
