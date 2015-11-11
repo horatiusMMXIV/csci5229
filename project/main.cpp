@@ -59,6 +59,11 @@ int roll=0;
 int strafe=0;
 int fly=0;
 
+int flight = 0;
+
+int th = 0;
+int ph = 0;
+
 int bankAngle = 0;
 int bankFactor = 0;
 
@@ -350,12 +355,12 @@ void helicopter(double br){
 	glEnable(GL_TEXTURE_2D);
 
 	/* Helicopter Body */
-	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
+	//glBindTexture(GL_TEXTURE_2D,littlebird[2]);
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
 	glScalef(1,1.5,1);
-	sphere(1,1,1, 1);
+	sphere(1,1,1,1);
 	glPopMatrix();
 
 	/* Engine */
@@ -535,17 +540,18 @@ void DrawLand(){
 	double x,y,z;
 	int rows = 64;
 	int columns = 64;
-	glColor3f(1,1,0);
+	glColor3f(0,1,0);
 	for(i=0;i<rows;i++){
 		x = 16*i-512;
 		for(j=0;j<columns;j++){
 			y = 0;
 			z = 16*j-512;
 			glBegin(GL_LINE_LOOP);
+			//glBegin(GL_QUADS);
 			glVertex3d(x,y,z);
-			glVertex3d(x+16,y,z);
-			glVertex3d(x+16,y,z+16);
 			glVertex3d(x,y,z+16);
+			glVertex3d(x+16,y,z+16);
+			glVertex3d(x+16,y,z);
 			glEnd();
 		}
 	}
@@ -613,9 +619,17 @@ void display()
 	double heightY = 2*upVec->y;
 	double heightZ = 2*upVec->z;
 
-	gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
-			littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
-			upVec->x,upVec->y,upVec->z);
+	if(flight){
+		gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
+				  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
+			      upVec->x,upVec->y,upVec->z);
+	}else{
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		littleBirdPosition[0] = littleBirdPosition[1] = littleBirdPosition[2] = 0;
+		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph),10*Sin(th)*Cos(ph),
+				  0,0,0,
+				  0,Cos(ph),0);
+	}
 
 	if(light){
 		//  Translate intensity to color vectors
@@ -731,7 +745,7 @@ int main(int argc,char* argv[])
 	// Load the textures for the helicopter
 	littlebird[0] = LoadTexBMP("littlebirdenginetank.bmp");
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
-	littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
+	//littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
 	littlebird[3] = LoadTexBMP("littlebirdengine.bmp");
 	littlebird[4] = LoadTexBMP("littlebirdskidmount.bmp");
 	littlebird[5] = LoadTexBMP("littlebirdskid.bmp");

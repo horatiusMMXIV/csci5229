@@ -6,15 +6,15 @@
  */
 void key(unsigned char ch,int x,int y)
 {
-	const double distance = 1;
 	//  Exit on ESC
 	if (ch == 27){
 		exit(0);
 	}
 	//  Reset view angle
 	else if (ch == '0'){
-		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=0;
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0]=littleBirdPosition[1]=littleBirdPosition[2]=0;
+		ph=th=0;
 	}
 	//  Move light
 	else if (ch == '<')
@@ -50,14 +50,22 @@ void key(unsigned char ch,int x,int y)
 	else if (ch=='e'){
 		// Pitch the helicopter nose down
 		// Increase the forward speed
-		pitch += -5;
-		speed += 1;
+		if((speed-1)==0 && roll !=0){
+		// Don't do anything because it makes the helicopter stick
+		}else{
+			pitch += -5;
+			speed += 1;
+		}
 	}
 	else if (ch=='d'){
 		// Pitch the helicopter nose up
 		// Increase the reverse speed
-		pitch += 5;
-		speed -= 1;
+		if((speed-1)==0 && roll !=0){
+			// Don't do anything because it makes the helicopter stick
+		}else{
+			pitch += 5;
+			speed -= 1;
+		}
 	}
 	else if(ch=='s'){
 		// Roll the helicopter left
@@ -100,6 +108,9 @@ void key(unsigned char ch,int x,int y)
 			strafe += 5;
 			HelicopterStrafe();
 		}
+	}
+	else if(ch == 32){
+		flight = 1-flight;
 	}
 	//  Reproject
 	Project(fov,asp,dim);

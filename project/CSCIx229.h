@@ -53,6 +53,11 @@ extern int roll;
 extern int strafe;
 extern int fly;
 
+extern int ph;
+extern int th;
+
+extern int flight;
+
 extern int bankAngle;
 extern int bankFactor;
 
