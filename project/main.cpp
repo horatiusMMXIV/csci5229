@@ -113,7 +113,7 @@ Vector* rightVec =     new Vector(0,0,1);
 
 
 void init(){
-	littleBirdPosition[0] = 0; littleBirdPosition[1] = 0; littleBirdPosition[2] = 0;
+	littleBirdPosition[0] = 0; littleBirdPosition[1] = 1; littleBirdPosition[2] = 0;
 }
 
 void HelicopterRoll(){
@@ -363,6 +363,7 @@ void cylinder(double red, double green, double blue, double rep)
  */
 void helicopter(double br){
 	glPushMatrix();
+	glTranslatef(0,1,0);
 	glRotated(180,0,1,0);
 	glScaled(.5,.5,.5);
 
@@ -682,7 +683,7 @@ void display()
 	}else{
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0] = littleBirdPosition[1] = littleBirdPosition[2] = 0;
-		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph),10*Sin(th)*Cos(ph),
+		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+1,10*Sin(th)*Cos(ph),
 				  0,0,0,
 				  0,Cos(ph),0);
 	}
@@ -810,12 +811,18 @@ int main(int argc,char* argv[])
 	littlebird[7] = LoadTexBMP("littlebirdgear.bmp");
 
 	// Load the textures for the sky
+	/*
 	sky[0] = LoadTexBMP("sky0.bmp");
 	sky[1] = LoadTexBMP("sky1.bmp");
 	sky[2] = LoadTexBMP("sky2.bmp");
 	sky[3] = LoadTexBMP("sky3.bmp");
 	sky[4] = LoadTexBMP("sky4.bmp");
-
+	*/
+	sky[0] = LoadTexBMP("left.bmp");
+	sky[1] = LoadTexBMP("right.bmp");
+	sky[2] = LoadTexBMP("front.bmp");
+	sky[3] = LoadTexBMP("back.bmp");
+	sky[4] = LoadTexBMP("top.bmp");
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
