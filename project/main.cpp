@@ -7,6 +7,14 @@
  * https://stackoverflow.com/questions/26536570/how-do-i-texture-a-cylinder-in-opengl-created-with-triangle-strip
  * - How to add textures to the cylinder
  *
+ * Skybox images
+ * --------------
+ * By Jockum Skoglund aka hipshot
+ *	hipshot@zfight.com
+ *	www.zfight.com
+ *	Stockholm, 2005 08 25
+ *	https://forums.epicgames.com/threads/506748-My-skies-and-and-cliff-textures-(large-images
+ *
  * http://cs.lmu.edu/~ray/notes/flightsimulator/
  * http://learnopengl.com/#!Getting-started/Camera
  * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
@@ -21,6 +29,11 @@
  *
  * Tasks To Complete
  * -------------------
+ * 1. Sphere map or mercater projection for the cockpit on the helicopter
+ * 2. Sun with light source
+ * 3. terrain texture or perlin noise for terrain
+ * 	5 point stencil for normals
+ * 4. sky box for the sky
  *
  * Known Bugs
  * -------------------
@@ -51,7 +64,7 @@
 #include "Vector.h"
 
 
-int axes=0;       //  Display axes
+int axes=1;       //  Display axes
 
 int yaw=0;
 int pitch=0;
@@ -90,6 +103,7 @@ float z[65][65];
 double littleBirdPosition[3];
 
 int littlebird[10];
+int sky[5];
 
 int bladeRotation = 0;
 
@@ -355,7 +369,7 @@ void helicopter(double br){
 	glEnable(GL_TEXTURE_2D);
 
 	/* Helicopter Body */
-	//glBindTexture(GL_TEXTURE_2D,littlebird[2]);
+	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
 	glPushMatrix();
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
@@ -532,7 +546,49 @@ void helicopter(double br){
 }
 
 void DrawSky(){
-
+	glColor3f(1,1,1);
+	glEnable(GL_TEXTURE_2D);
+	// Left
+	glBindTexture(GL_TEXTURE_2D,sky[0]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,1);glVertex3f(-512,0,-512);
+	glTexCoord2d(1,1);glVertex3f(512,0,-512);
+	glTexCoord2d(1,0);glVertex3f(512,512,-512);
+	glTexCoord2d(0,0);glVertex3f(-512,512,-512);
+	glEnd();
+	// Right
+	glBindTexture(GL_TEXTURE_2D,sky[1]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,1);glVertex3f(512,0,512);
+	glTexCoord2d(1,1);glVertex3f(-512,0,512);
+	glTexCoord2d(1,0);glVertex3f(-512,512,512);
+	glTexCoord2d(0,0);glVertex3f(512,512,512);
+	glEnd();
+	// Front
+	glBindTexture(GL_TEXTURE_2D,sky[2]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,1);glVertex3f(512,0,-512);
+	glTexCoord2d(1,1);glVertex3f(512,0,512);
+	glTexCoord2d(1,0);glVertex3f(512,512,512);
+	glTexCoord2d(0,0);glVertex3f(512,512,-512);
+	glEnd();
+	// Back
+	glBindTexture(GL_TEXTURE_2D,sky[3]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,1);glVertex3f(-512,0,512);
+	glTexCoord2d(1,1);glVertex3f(-512,0,-512);
+	glTexCoord2d(1,0);glVertex3f(-512,512,-512);
+	glTexCoord2d(0,0);glVertex3f(-512,512,512);
+	glEnd();
+	// Top
+	glBindTexture(GL_TEXTURE_2D,sky[4]);
+	glBegin(GL_QUADS);
+	glTexCoord2d(0,1);glVertex3f(512,512,-512);
+	glTexCoord2d(1,1);glVertex3f(512,512,512);
+	glTexCoord2d(1,0);glVertex3f(-512,512,512);
+	glTexCoord2d(0,0);glVertex3f(-512,512,-512);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void DrawLand(){
@@ -663,6 +719,7 @@ void display()
 		glDisable(GL_LIGHTING);
 	}
 
+	DrawSky();
 	DrawLand();
 
 	// Blades rotate in a circle 15 degrees at a time
@@ -745,12 +802,20 @@ int main(int argc,char* argv[])
 	// Load the textures for the helicopter
 	littlebird[0] = LoadTexBMP("littlebirdenginetank.bmp");
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
-	//littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
+	littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
 	littlebird[3] = LoadTexBMP("littlebirdengine.bmp");
 	littlebird[4] = LoadTexBMP("littlebirdskidmount.bmp");
 	littlebird[5] = LoadTexBMP("littlebirdskid.bmp");
 	littlebird[6] = LoadTexBMP("littlebirdrotor.bmp");
 	littlebird[7] = LoadTexBMP("littlebirdgear.bmp");
+
+	// Load the textures for the sky
+	sky[0] = LoadTexBMP("sky0.bmp");
+	sky[1] = LoadTexBMP("sky1.bmp");
+	sky[2] = LoadTexBMP("sky2.bmp");
+	sky[3] = LoadTexBMP("sky3.bmp");
+	sky[4] = LoadTexBMP("sky4.bmp");
+
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
