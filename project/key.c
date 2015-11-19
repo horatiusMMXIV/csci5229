@@ -32,81 +32,101 @@ void key(unsigned char ch,int x,int y)
 	else if (ch==']')
 	ylight += 0.1;
 	else if (ch=='g'){
-		// Turn the helicopter right
-		// This can only occur when it isn't moving
-		if(speed == 0){
-			yaw += -5;
-			HelicopterYaw();
+		if(flight){
+			// Turn the helicopter right
+			// This can only occur when it isn't moving
+			if(speed == 0){
+				yaw += -5;
+				HelicopterYaw();
+			}
 		}
 	}
 	else if (ch=='a'){
-		// Turn the helicopter left
-		// This can only occur when it isn't moving
-		if(speed == 0){
-			yaw += 5;
-			HelicopterYaw();
+		if(flight){
+			// Turn the helicopter left
+			// This can only occur when it isn't moving
+			if(speed == 0){
+				yaw += 5;
+				HelicopterYaw();
+			}
 		}
 	}
 	else if (ch=='e'){
-		// Pitch the helicopter nose down
-		// Increase the forward speed
-		if((speed-1)==0 && roll !=0){
-		// Don't do anything because it makes the helicopter stick
-		}else{
-			pitch += -5;
-			speed += 1;
+		if(flight){
+			// Pitch the helicopter nose down
+			// Increase the forward speed
+			if((speed-1)==0 && roll !=0){
+			// Don't do anything because it makes the helicopter stick
+			}else{
+				pitch += -5;
+				speed += 1;
+			}
 		}
 	}
 	else if (ch=='d'){
-		// Pitch the helicopter nose up
-		// Increase the reverse speed
-		if((speed-1)==0 && roll !=0){
-			// Don't do anything because it makes the helicopter stick
-		}else{
-			pitch += 5;
-			speed -= 1;
+		if(flight){
+			// Pitch the helicopter nose up
+			// Increase the reverse speed
+			if((speed-1)==0 && roll !=0){
+				// Don't do anything because it makes the helicopter stick
+			}else{
+				pitch += 5;
+				speed -= 1;
+			}
 		}
 	}
 	else if(ch=='s'){
-		// Roll the helicopter left
-		// Only allow roll if the helicopter is moving and there is no strafe
-		if(speed != 0 && strafe ==0){
-			roll += 5;
-			bankFactor += 1;
-			HelicopterRoll();
+		if(flight == 1){
+			// Roll the helicopter left
+			// Only allow roll if the helicopter is moving and there is no strafe
+			if(speed != 0 && strafe ==0){
+				roll += 5;
+				bankFactor += 1;
+				HelicopterRoll();
+			}
 		}
 	}
 	else if(ch=='f'){
-		// Roll the helicopter right
-		// Only allow roll if the helicopter is moving and there is no strafe
-		if(speed != 0 && strafe == 0){
-			roll += -5;
-			bankFactor -= 1;
-			HelicopterRoll();
+		if(flight == 1){
+			// Roll the helicopter right
+			// Only allow roll if the helicopter is moving and there is no strafe
+			if(speed != 0 && strafe == 0){
+				roll += -5;
+				bankFactor -= 1;
+				HelicopterRoll();
+			}
 		}
 	}
 	else if(ch =='i'){
-	// Elevate the helicopter up
-		fly += 5;
-		HelicopterFly();
+		if(flight){
+			// Elevate the helicopter up
+			fly += 5;
+			HelicopterFly();
+		}
 	}
 	else if(ch=='k'){
-	// Elevate the helicopter down
-		fly -= 5;
-		HelicopterFly();
+		if(flight){
+			// Elevate the helicopter down
+			fly -= 5;
+			HelicopterFly();
+		}
 	}
 	else if(ch=='j'){
-	// Strafe left
-		if(roll == 0){
-			strafe -= 5;
-			HelicopterStrafe();
+		if(flight){
+			// Strafe left
+			if(roll == 0){
+				strafe -= 5;
+				HelicopterStrafe();
+			}
 		}
 	}
 	else if(ch=='l'){
-	// Strafe right
-		if(roll == 0){
-			strafe += 5;
-			HelicopterStrafe();
+		if(flight){
+			// Strafe right
+			if(roll == 0){
+				strafe += 5;
+				HelicopterStrafe();
+			}
 		}
 	}
 	else if(ch == 32){

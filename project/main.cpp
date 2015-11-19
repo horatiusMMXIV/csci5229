@@ -104,6 +104,7 @@ double littleBirdPosition[3];
 
 int littlebird[10];
 int sky[5];
+int ground;
 
 int bladeRotation = 0;
 
@@ -113,7 +114,7 @@ Vector* rightVec =     new Vector(0,0,1);
 
 
 void init(){
-	littleBirdPosition[0] = 0; littleBirdPosition[1] = 1; littleBirdPosition[2] = 0;
+	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
 }
 
 void HelicopterRoll(){
@@ -597,21 +598,24 @@ void DrawLand(){
 	double x,y,z;
 	int rows = 64;
 	int columns = 64;
-	glColor3f(0,1,0);
+	glEnable(GL_TEXTURE_2D);
+	glColor3f(1,1,1);
+	glBindTexture(GL_TEXTURE_2D,ground);
 	for(i=0;i<rows;i++){
 		x = 16*i-512;
 		for(j=0;j<columns;j++){
 			y = 0;
 			z = 16*j-512;
-			glBegin(GL_LINE_LOOP);
-			//glBegin(GL_QUADS);
-			glVertex3d(x,y,z);
-			glVertex3d(x,y,z+16);
-			glVertex3d(x+16,y,z+16);
-			glVertex3d(x+16,y,z);
+			//glBegin(GL_LINE_LOOP);
+			glBegin(GL_QUADS);
+			glTexCoord2d(0,1);glVertex3d(x,y,z);
+			glTexCoord2d(1,1);glVertex3d(x,y,z+16);
+			glTexCoord2d(1,0);glVertex3d(x+16,y,z+16);
+			glTexCoord2d(0,0);glVertex3d(x+16,y,z);
 			glEnd();
 		}
 	}
+	glDisable(GL_TEXTURE_2D);
 
 }
 
@@ -683,7 +687,7 @@ void display()
 	}else{
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0] = littleBirdPosition[1] = littleBirdPosition[2] = 0;
-		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+1,10*Sin(th)*Cos(ph),
+		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+2,10*Sin(th)*Cos(ph),
 				  0,0,0,
 				  0,Cos(ph),0);
 	}
@@ -811,18 +815,14 @@ int main(int argc,char* argv[])
 	littlebird[7] = LoadTexBMP("littlebirdgear.bmp");
 
 	// Load the textures for the sky
-	/*
-	sky[0] = LoadTexBMP("sky0.bmp");
-	sky[1] = LoadTexBMP("sky1.bmp");
-	sky[2] = LoadTexBMP("sky2.bmp");
-	sky[3] = LoadTexBMP("sky3.bmp");
-	sky[4] = LoadTexBMP("sky4.bmp");
-	*/
 	sky[0] = LoadTexBMP("left.bmp");
 	sky[1] = LoadTexBMP("right.bmp");
 	sky[2] = LoadTexBMP("front.bmp");
 	sky[3] = LoadTexBMP("back.bmp");
 	sky[4] = LoadTexBMP("top.bmp");
+
+	// Load the textures for the ground
+	ground = LoadTexBMP("grass.bmp");
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
