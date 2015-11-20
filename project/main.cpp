@@ -83,7 +83,7 @@ int bankFactor = 0;
 int speed=0;
 
 int fov=55;       //  Field of view (for perspective)
-int light=1;      //  Lighting
+int light=0;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=500.0;   //  Size of world
 // Light values
@@ -103,7 +103,7 @@ float z[65][65];
 double littleBirdPosition[3];
 
 int littlebird[10];
-int sky[5];
+int sky[6];
 int ground;
 
 int bladeRotation = 0;
@@ -596,26 +596,27 @@ void DrawSky(){
 void DrawLand(){
 	int i,j;
 	double x,y,z;
-	int rows = 64;
-	int columns = 64;
 	glEnable(GL_TEXTURE_2D);
+	glDepthMask(0);
 	glColor3f(1,1,1);
-	glBindTexture(GL_TEXTURE_2D,ground);
-	for(i=0;i<rows;i++){
+	//glBindTexture(GL_TEXTURE_2D,ground);
+	glBindTexture(GL_TEXTURE_2D,sky[5]);
+	for(i=0;i<64;i++){
 		x = 16*i-512;
-		for(j=0;j<columns;j++){
+		for(j=0;j<64;j++){
 			y = 0;
 			z = 16*j-512;
 			//glBegin(GL_LINE_LOOP);
 			glBegin(GL_QUADS);
-			glTexCoord2d(0,1);glVertex3d(x,y,z);
-			glTexCoord2d(1,1);glVertex3d(x,y,z+16);
-			glTexCoord2d(1,0);glVertex3d(x+16,y,z+16);
-			glTexCoord2d(0,0);glVertex3d(x+16,y,z);
+			glTexCoord2f((j)/64.,(i)/64.);glVertex3d(x,y,z);
+			glTexCoord2f((j+1)/64.,(i)/64.);glVertex3d(x,y,z+16);
+			glTexCoord2f((j+1)/64.,(i+1)/64.);glVertex3d(x+16,y,z+16);
+			glTexCoord2f((j)/64.,(i+1)/64.);glVertex3d(x+16,y,z);
 			glEnd();
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
+	glDepthMask(1);
 }
 
 void DrawHelicopterFlight(){
@@ -753,23 +754,6 @@ void display()
 		Print("Z");
 	}
 
-	// Draw flight vectors
-	/*
-	glLineWidth(3);
-	glBegin(GL_LINES);
-	glColor3f(1,0,0);
-	glVertex3f(0,0,0);
-	glVertex3d(rightVec->x, rightVec->y, rightVec->z);
-	glColor3f(0,1,0);
-	glVertex3f(0,0,0);
-	glVertex3d(directionVec->x, directionVec->y, directionVec->z);
-	glColor3f(0,0,1);
-	glVertex3f(0,0,0);
-	glVertex3d(upVec->x, upVec->y, upVec->z);
-	glEnd();
-	glLineWidth(1);
-	*/
-
 	//  Display parameters
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
@@ -819,6 +803,7 @@ int main(int argc,char* argv[])
 	sky[2] = LoadTexBMP("front.bmp");
 	sky[3] = LoadTexBMP("back.bmp");
 	sky[4] = LoadTexBMP("top.bmp");
+	sky[5] = LoadTexBMP("bottom.bmp");
 
 	// Load the textures for the ground
 	ground = LoadTexBMP("grass.bmp");
