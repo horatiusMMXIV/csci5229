@@ -553,42 +553,42 @@ void DrawSky(){
 	// Left
 	glBindTexture(GL_TEXTURE_2D,sky[0]);
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,1);glVertex3f(-512,0,-512);
-	glTexCoord2d(1,1);glVertex3f(512,0,-512);
-	glTexCoord2d(1,0);glVertex3f(512,512,-512);
-	glTexCoord2d(0,0);glVertex3f(-512,512,-512);
+	glTexCoord2d(0,1);glVertex3f(-512,-150,-512);
+	glTexCoord2d(1,1);glVertex3f(512,-150,-512);
+	glTexCoord2d(1,0);glVertex3f(512,362,-512);
+	glTexCoord2d(0,0);glVertex3f(-512,362,-512);
 	glEnd();
 	// Right
 	glBindTexture(GL_TEXTURE_2D,sky[1]);
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,1);glVertex3f(512,0,512);
-	glTexCoord2d(1,1);glVertex3f(-512,0,512);
-	glTexCoord2d(1,0);glVertex3f(-512,512,512);
-	glTexCoord2d(0,0);glVertex3f(512,512,512);
+	glTexCoord2d(0,1);glVertex3f(512,-150,512);
+	glTexCoord2d(1,1);glVertex3f(-512,-150,512);
+	glTexCoord2d(1,0);glVertex3f(-512,362,512);
+	glTexCoord2d(0,0);glVertex3f(512,362,512);
 	glEnd();
 	// Front
 	glBindTexture(GL_TEXTURE_2D,sky[2]);
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,1);glVertex3f(512,0,-512);
-	glTexCoord2d(1,1);glVertex3f(512,0,512);
-	glTexCoord2d(1,0);glVertex3f(512,512,512);
-	glTexCoord2d(0,0);glVertex3f(512,512,-512);
+	glTexCoord2d(0,1);glVertex3f(511,-150,-513);
+	glTexCoord2d(1,1);glVertex3f(511,-150,513);
+	glTexCoord2d(1,0);glVertex3f(511,362,513);
+	glTexCoord2d(0,0);glVertex3f(511,362,-513);
 	glEnd();
 	// Back
 	glBindTexture(GL_TEXTURE_2D,sky[3]);
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,1);glVertex3f(-512,0,512);
-	glTexCoord2d(1,1);glVertex3f(-512,0,-512);
-	glTexCoord2d(1,0);glVertex3f(-512,512,-512);
-	glTexCoord2d(0,0);glVertex3f(-512,512,512);
+	glTexCoord2d(0,1);glVertex3f(-511,-150,513);
+	glTexCoord2d(1,1);glVertex3f(-511,-150,-513);
+	glTexCoord2d(1,0);glVertex3f(-511,362,-513);
+	glTexCoord2d(0,0);glVertex3f(-511,362,513);
 	glEnd();
 	// Top
 	glBindTexture(GL_TEXTURE_2D,sky[4]);
 	glBegin(GL_QUADS);
-	glTexCoord2d(0,1);glVertex3f(512,512,-512);
-	glTexCoord2d(1,1);glVertex3f(512,512,512);
-	glTexCoord2d(1,0);glVertex3f(-512,512,512);
-	glTexCoord2d(0,0);glVertex3f(-512,512,-512);
+	glTexCoord2d(0,1);glVertex3f(513,361,-513);
+	glTexCoord2d(1,1);glVertex3f(513,361,513);
+	glTexCoord2d(1,0);glVertex3f(-513,361,513);
+	glTexCoord2d(0,0);glVertex3f(-513,361,-513);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 }
@@ -616,7 +616,6 @@ void DrawLand(){
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
-
 }
 
 void DrawHelicopterFlight(){
