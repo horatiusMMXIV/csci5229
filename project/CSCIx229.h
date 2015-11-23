@@ -6,6 +6,8 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
+#include <time.h>
+#include <stdlib.h>
 
 #ifdef USEGLEW
 #include <GL/glew.h>
@@ -39,6 +41,9 @@ void HelicopterRoll();
 void HelicopterYaw();
 void HelicopterFly();
 void HelicopterStrafe();
+
+void DrawTree();
+void DrawBuilding();
 
 void timer(int value);
 

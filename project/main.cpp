@@ -107,6 +107,9 @@ int sky[6];
 int tree[2];
 int building[3];
 
+int trees[2000][2];
+int buildings[500][2];
+
 
 int bladeRotation = 0;
 
@@ -117,6 +120,22 @@ Vector* rightVec =     new Vector(0,0,1);
 
 void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
+	int i;
+	for(i=0;i<2000;i++){
+		int r = rand() % 1000 + (-500);
+		trees[i][0] = r;
+		r = rand() % 1000 + (-500);
+		trees[i][1] = r;
+
+	}
+
+	for(i=0;i<500;i++){
+		int r = rand() % 1000 + (-500);
+		buildings[i][0] = r;
+		r = rand() % 1000 + (-500);
+		buildings[i][1] = r;
+	}
+
 }
 
 void HelicopterRoll(){
@@ -617,6 +636,23 @@ void DrawLand(){
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
+
+	for(i=0;i<2000;i++){
+		glPushMatrix();
+		glTranslatef(trees[i][0], 0, trees[i][1]);
+		glScaled(3,3,3);
+		DrawTree();
+		glPopMatrix();
+	}
+
+	for(i=0;i<500;i++){
+		glPushMatrix();
+		glTranslatef(buildings[i][0], 0, buildings[i][1]);
+		glScaled(2,2,2);
+		DrawBuilding();
+		glPopMatrix();
+	}
+
 }
 
 void DrawBuilding(){
@@ -831,12 +867,12 @@ void display()
 	DrawLand();
 
 	//DrawTree();
-	DrawBuilding();
+	//DrawBuilding();
 
 	// Blades rotate in a circle 15 degrees at a time
 	bladeRotation += 15;
 	bladeRotation %= 360;
-	//DrawHelicopterFlight();
+	DrawHelicopterFlight();
 
 	//  Draw axes - no lighting from here on
 	glDisable(GL_LIGHTING);
