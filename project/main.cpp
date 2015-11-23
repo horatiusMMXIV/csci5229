@@ -104,8 +104,9 @@ double littleBirdPosition[3];
 
 int littlebird[10];
 int sky[6];
-int treeTrunk;
-int treeLeaves;
+int tree[2];
+int building[3];
+
 
 int bladeRotation = 0;
 
@@ -310,13 +311,13 @@ void cube(double red, double green, double blue, double rep)
 	glTexCoord2f(0,0); glVertex3f(-1,+1,+1);
 	glTexCoord2f(rep,0); glVertex3f(+1,+1,+1);
 	glTexCoord2f(rep,rep); glVertex3f(+1,+1,-1);
-	glTexCoord2f(rep,0); glVertex3f(-1,+1,-1);
+	glTexCoord2f(0,rep); glVertex3f(-1,+1,-1);
 	//  Bottom
 	glNormal3f(0, -1, 0);
 	glTexCoord2f(0,0); glVertex3f(-1,-1,-1);
 	glTexCoord2f(rep,0); glVertex3f(+1,-1,-1);
 	glTexCoord2f(rep,rep); glVertex3f(+1,-1,+1);
-	glTexCoord2f(rep,0); glVertex3f(-1,-1,+1);
+	glTexCoord2f(0,rep); glVertex3f(-1,-1,+1);
 	//  End
 	glEnd();
 }
@@ -598,7 +599,6 @@ void DrawLand(){
 	int i,j;
 	double x,y,z;
 	glEnable(GL_TEXTURE_2D);
-	glDepthMask(0);
 	glColor3f(1,1,1);
 	//glBindTexture(GL_TEXTURE_2D,ground);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
@@ -617,13 +617,86 @@ void DrawLand(){
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
-	glDepthMask(1);
 }
 
-void DrawTrees(){
+void DrawBuilding(){
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,building[0]);
+	//Left
+	glPushMatrix();
+	glScalef(1,1,.2);
+	cube(1,1,1,2);
+	glPopMatrix();
+
+	//Front
+	glPushMatrix();
+	glTranslatef(-.85,0,.85);
+	glRotated(-90,0,1,0);
+	glScalef(1,1,.2);
+	cube(1,1,1,2);
+	glPopMatrix();
+
+	//Back
+	glPushMatrix();
+	glTranslatef(.85,0,.85);
+	glRotated(-90,0,1,0);
+	glScalef(1,1,.2);
+	cube(1,1,1,2);
+	glPopMatrix();
+
+	//Right
+	glPushMatrix();
+	glTranslatef(0,0,1.7);
+	glScalef(1,1,.2);
+	cube(1,1,1,2);
+	glPopMatrix();
+
+	//Roof
+	glBindTexture(GL_TEXTURE_2D,building[1]);
+	glPushMatrix();
+	glTranslatef(0,1,.85);
+	glScalef(1.2,.1,1.2);
+	cube(1,1,1,1);
+	glPopMatrix();
+
+	//Door
+	glBindTexture(GL_TEXTURE_2D,building[2]);
+	glPushMatrix();
+	glTranslatef(-1,.3,.85);
+	glScalef(.1,.5,.3);
+	cube(1,1,1,1);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+
+	//Back Window
+	glPushMatrix();
+	glTranslatef(1.05,.5,.8);
+	glScalef(.05,.2,.2);
+	cube(0,0,0,1);
+	glPopMatrix();
+
+	//Right Window
+	glPushMatrix();
+	glTranslatef(0,.5,1.9);
+	glRotated(-90,0,1,0);
+	glScalef(.05,.2,.2);
+	cube(0,0,0,1);
+	glPopMatrix();
+
+	//Left Window
+	glPushMatrix();
+	glTranslatef(0,.5,-.2);
+	glRotated(-90,0,1,0);
+	glScalef(.05,.2,.2);
+	cube(0,0,0,1);
+	glPopMatrix();
+}
+
+void DrawTree(){
 	glEnable(GL_TEXTURE_2D);
 	// Trunk
-	glBindTexture(GL_TEXTURE_2D,treeTrunk);
+	glBindTexture(GL_TEXTURE_2D,tree[0]);
 	glPushMatrix();
 	glRotated(-90,1,0,0);
 	glScalef(.1,.1,1);
@@ -631,7 +704,7 @@ void DrawTrees(){
 	glPopMatrix();
 
 	//Branches
-	glBindTexture(GL_TEXTURE_2D,treeLeaves);
+	glBindTexture(GL_TEXTURE_2D,tree[1]);
 	glPushMatrix();
 	glTranslatef(0,1.5,.15);
 	glRotated(-135,0,0,1);
@@ -757,7 +830,8 @@ void display()
 	DrawSky();
 	DrawLand();
 
-	DrawTrees();
+	//DrawTree();
+	DrawBuilding();
 
 	// Blades rotate in a circle 15 degrees at a time
 	bladeRotation += 15;
@@ -837,8 +911,12 @@ int main(int argc,char* argv[])
 	sky[4] = LoadTexBMP("top.bmp");
 	sky[5] = LoadTexBMP("bottom.bmp");
 
-	treeTrunk = LoadTexBMP("bark.bmp");
-	treeLeaves = LoadTexBMP("tree.bmp");
+	tree[0] = LoadTexBMP("bark.bmp");
+	tree[1] = LoadTexBMP("tree.bmp");
+
+	building[0] = LoadTexBMP("wall.bmp");
+	building[1] = LoadTexBMP("ceiling.bmp");
+	building[2] = LoadTexBMP("door.bmp");
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
