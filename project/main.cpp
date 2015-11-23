@@ -104,7 +104,8 @@ double littleBirdPosition[3];
 
 int littlebird[10];
 int sky[6];
-int ground;
+int treeTrunk;
+int treeLeaves;
 
 int bladeRotation = 0;
 
@@ -601,9 +602,9 @@ void DrawLand(){
 	glColor3f(1,1,1);
 	//glBindTexture(GL_TEXTURE_2D,ground);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
-	for(i=0;i<64;i++){
+	for(i=0;i<65;i++){
 		x = 16*i-512;
-		for(j=0;j<64;j++){
+		for(j=0;j<65;j++){
 			y = 0;
 			z = 16*j-512;
 			//glBegin(GL_LINE_LOOP);
@@ -617,6 +618,35 @@ void DrawLand(){
 	}
 	glDisable(GL_TEXTURE_2D);
 	glDepthMask(1);
+}
+
+void DrawTrees(){
+	glEnable(GL_TEXTURE_2D);
+	// Trunk
+	glBindTexture(GL_TEXTURE_2D,treeTrunk);
+	glPushMatrix();
+	glRotated(-90,1,0,0);
+	glScalef(.1,.1,1);
+	cylinder(1,1,1,1);
+	glPopMatrix();
+
+	//Branches
+	glBindTexture(GL_TEXTURE_2D,treeLeaves);
+	glPushMatrix();
+	glTranslatef(0,1.5,.15);
+	glRotated(-135,0,0,1);
+	glScalef(1.2,1.2,.3);
+	triangle(1,1,1,1);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(.15,1.5,0);
+	glRotated(90,0,1,0);
+	glRotated(-135,0,0,1);
+	glScalef(1.2,1.2,.3);
+	triangle(1,1,1,1);
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
 }
 
 void DrawHelicopterFlight(){
@@ -727,10 +757,12 @@ void display()
 	DrawSky();
 	DrawLand();
 
+	DrawTrees();
+
 	// Blades rotate in a circle 15 degrees at a time
 	bladeRotation += 15;
 	bladeRotation %= 360;
-	DrawHelicopterFlight();
+	//DrawHelicopterFlight();
 
 	//  Draw axes - no lighting from here on
 	glDisable(GL_LIGHTING);
@@ -805,8 +837,8 @@ int main(int argc,char* argv[])
 	sky[4] = LoadTexBMP("top.bmp");
 	sky[5] = LoadTexBMP("bottom.bmp");
 
-	// Load the textures for the ground
-	ground = LoadTexBMP("grass.bmp");
+	treeTrunk = LoadTexBMP("bark.bmp");
+	treeLeaves = LoadTexBMP("tree.bmp");
 
 	//  Check if any errors have occurred
 	ErrCheck("init");
