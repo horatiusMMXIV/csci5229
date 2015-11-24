@@ -79,6 +79,8 @@ int ph = 0;
 int bankAngle = 0;
 int bankFactor = 0;
 
+double explosion = 0;
+
 int e = 0;
 
 int speed=0;
@@ -637,7 +639,7 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
-void explodedHelicopter(){
+void explodedHelicopter(double d){
 	glPushMatrix();
 	glTranslatef(0,1,0);
 	glRotated(180,0,1,0);
@@ -649,7 +651,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
 	glPushMatrix();
 	srand(1);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(90, 1, 0, 0);
 	glScalef(1,1.5,1);
@@ -660,7 +662,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[3]);
 	glPushMatrix();
 	srand(2);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(90, 0, 1, 0);
 	glScalef(.2, .2, .5);
 	cylinder(1, 1, 1, 2);
@@ -670,7 +672,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
 	glPushMatrix();
 	srand(3);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(90, 0, 1, 0);
 	glScalef(.2, .2, 3);
 	cylinder(1,1,1,2);
@@ -678,7 +680,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(4);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(45, 0, 0, 1);
 	glScalef(.5, 1, .1);
 	triangle(1, 1, 1, 2);
@@ -688,7 +690,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
 	glPushMatrix();
 	srand(5);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-45, 0, 0, 1);
 	glScalef(1, 1, .1);
 	triangle(1, 1, 1, 2);
@@ -696,7 +698,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(6);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-90, 1, 0, 0);
 	glRotatef(-45, 0, 0, 1);
 	glScalef(1,1,.1);
@@ -705,7 +707,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(7);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-45, 0, 0, 1);
 	glScalef(.4, .4, .1);
 	triangle(1, 1, 1,2);
@@ -713,7 +715,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(8);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-45, 0, 0, 1);
 	glScalef(.4, .4, .1);
 	triangle(1, 1, 1,2);
@@ -723,7 +725,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
 	glPushMatrix();
 	srand(9);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(.07, .07, .1);
 	cube(1, 1, 1,2);
 	glPopMatrix();
@@ -732,14 +734,14 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
 	glPushMatrix();
 	srand(10);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(.4, .05, .08);
 	cube(1, 1, 1,2);
 	glPopMatrix();
 
 	glPushMatrix();
 	srand(11);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(.4, .05, .08);
 	cube(1, 1, 1,2);
 	glPopMatrix();
@@ -748,7 +750,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
 	glPushMatrix();
 	srand(12);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(.8, .3, .3);
 	cube(1, 1, 1,2);
 	glPopMatrix();
@@ -756,7 +758,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
 	glPushMatrix();
 	srand(13);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(.1, .18, .1);
 	cube(1, 1, 1,2);
 	glPopMatrix();
@@ -765,14 +767,14 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
 	glPushMatrix();
 	srand(14);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(2, .05, .2);
 	cube(1, 1, 1,2);
 	glPopMatrix();
 
 	glPushMatrix();
 	srand(15);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(2, .05, .2);
 	cube(1, 1, 1,2);
 	glPopMatrix();
@@ -782,7 +784,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
 	glPushMatrix();
 	srand(16);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-30, 1, 0, 0);
 	glRotatef(75, 0, 0, 1);
 	glScalef(.3, .06, .06);
@@ -791,7 +793,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(17);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(-30, 1, 0, 0);
 	glRotatef(75, 0, 0, 1);
 	glScalef(.3, .06, .06);
@@ -802,7 +804,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
 	glPushMatrix();
 	srand(18);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(30, 1, 0, 0);
 	glRotatef(75, 0, 0, 1);
 	glScalef(.3, .06, .06);
@@ -811,7 +813,7 @@ void explodedHelicopter(){
 
 	glPushMatrix();
 	srand(19);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glRotatef(30, 1, 0, 0);
 	glRotatef(75, 0, 0, 1);
 	glScalef(.3, .06, .06);
@@ -822,7 +824,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
 	glPushMatrix();
 	srand(21);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(1, .06, .06);
 	cube(1, 1, 1,3);
 	glPopMatrix();
@@ -831,7 +833,7 @@ void explodedHelicopter(){
 	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
 	glPushMatrix();
 	srand(22);
-	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glScalef(1, .06, .06);
 	cube(1, 1, 1,3);
 	glPopMatrix();
@@ -1111,8 +1113,10 @@ void drawScene(){
 		bladeRotation %= 360;
 		DrawHelicopterFlight();
 	}else{
+		//double t = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+		explosion += .1;
 		glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
-		explodedHelicopter();
+		explodedHelicopter(explosion);
 	}
 }
 
