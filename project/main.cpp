@@ -82,7 +82,7 @@ int bankFactor = 0;
 int speed=0;
 
 int fov=55;       //  Field of view (for perspective)
-int light=0;      //  Lighting
+int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=500.0;   //  Size of world
 // Light values
@@ -634,6 +634,8 @@ void helicopter(double br){
 }
 
 void DrawSky(){
+	glDisable(GL_LIGHTING);
+	glPushMatrix();
 	glColor3f(1,1,1);
 	glEnable(GL_TEXTURE_2D);
 	// Left
@@ -677,25 +679,73 @@ void DrawSky(){
 	glTexCoord2d(0,0);glVertex3f(-513,361,-513);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+	glEnable(GL_LIGHTING);
 }
 
 void DrawLand(){
+	Vector* v1 = new Vector(0,0,0);
+	Vector* v2 = new Vector(0,0,0);
+	Vector* v3 = new Vector(0,0,0);
+	Vector* v4 = new Vector(0,0,0);
+	Vector* t1 = new Vector(0,0,0);
+	Vector* t2 = new Vector(0,0,0);
+	Vector* t3 = new Vector(0,0,0);
+	Vector* t4 = new Vector(0,0,0);
+	Vector* t5 = new Vector(0,0,0);
+	glPushMatrix();
 	int i,j;
 	double x,y,z;
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1,1,1);
-	//glBindTexture(GL_TEXTURE_2D,ground);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
 	for(i=0;i<65;i++){
 		x = 16*i-512;
 		for(j=0;j<65;j++){
 			y = 0;
 			z = 16*j-512;
-			//glBegin(GL_LINE_LOOP);
+
+			v1->x = x; v1->y = heightMap[i][j]; v1->z = z;
+			v2->x = x; v2->y = heightMap[i][j+1]; v2->z = z+16;
+			v3->x = x+16; v3->y = heightMap[i+1][j+1]; v3->z = z+16;
+			v4->x = x+16; v4->y = heightMap[i+1][j]; v4->z = z;
+
+			t1->x = v4->x-v1->x; t1->y = v4->y-v1->y; t1->z = v4->z-v1->z;
+			t2->x = v2->x-v1->x; t2->y = v2->y-v1->y; t2->z = v2->z-v1->z;
+			t1->crossProduct(t1, t2);
+			t1->normalize();
+
+			t2->x = v1->x-v2->x; t2->y = v1->y-v2->y; t2->z = v1->z-v2->z;
+			t3->x = v3->x-v2->x; t3->y = v3->y-v2->y; t3->z = v3->z-v2->z;
+			t2->crossProduct(t2, t3);
+			t2->normalize();
+
+			t3->x = v2->x-v3->x; t3->y = v2->y-v3->y; t3->z = v2->z-v3->z;
+			t4->x = v4->x-v3->x; t4->y = v4->y-v3->y; t4->z = v4->z-v3->z;
+			t3->crossProduct(t3, t4);
+			t3->normalize();
+
+			t4->x = v3->x-v4->x; t4->y = v3->y-v4->y; t4->z = v3->z-v4->z;
+			t5->x = v1->x-v4->x; t5->y = v1->y-v4->y; t5->z = v1->z-v4->z;
+			t4->crossProduct(t4, t5);
+			t4->normalize();
+
+			t5->x = (t1->x+t2->x+t3->x+t4->x)/4;
+			t5->y = (t1->y+t2->y+t3->y+t4->y)/4;
+			t5->z = (t1->z+t2->z+t3->z+t4->z)/4;
+
+			t5->normalize();
+			//glNormal3f(t5->x, t5->y, t5->z);
+			glNormal3f(0, 1, 0);
+
 			glBegin(GL_QUADS);
+			//glNormal3f(t1->x,t1->y,t1->z);
 			glTexCoord2f((j)/64.,(i)/64.);glVertex3d(x,heightMap[i][j],z);
+			//glNormal3f(t1->x,t1->y,t1->z);
 			glTexCoord2f((j+1)/64.,(i)/64.);glVertex3d(x,heightMap[i][j+1],z+16);
+			//glNormal3f(t1->x,t1->y,t1->z);
 			glTexCoord2f((j+1)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[i+1][j+1],z+16);
+			//glNormal3f(t1->x,t1->y,t1->z);
 			glTexCoord2f((j)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[i+1][j],z);
 			glEnd();
 		}
@@ -717,6 +767,7 @@ void DrawLand(){
 		DrawBuilding();
 		glPopMatrix();
 	}
+	glPopMatrix();
 
 }
 
@@ -896,37 +947,33 @@ void display()
 				  0,Cos(ph),0);
 	}
 
-	if(light){
-		//  Translate intensity to color vectors
-		float Ambient[]   = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
-		float Diffuse[]   = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
-		float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
-		//  Light position
-		float Position[]  = {distance*Cos(zh),ylight,distance*Sin(zh),1.0};
-		//  Draw light position as ball (still no lighting here)
-		glColor3f(1,1,1);
-		glPushMatrix();
-		glTranslatef(Position[0],Position[1],Position[2]);
-		glScalef(0.1, 0.1, 0.1);
-		sphere(1.0, 1.0, 1.0, 1);
-		glPopMatrix();
-		//  OpenGL should normalize normal vectors
-		glEnable(GL_NORMALIZE);
-		//  Enable lighting
-		glEnable(GL_LIGHTING);
-		//  glColor sets ambient and diffuse color materials
-		glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
-		glEnable(GL_COLOR_MATERIAL);
-		//  Enable light 0
-		glEnable(GL_LIGHT0);
-		//  Set ambient, diffuse, specular components and position of light 0
-		glLightfv(GL_LIGHT0,GL_AMBIENT ,Ambient);
-		glLightfv(GL_LIGHT0,GL_DIFFUSE ,Diffuse);
-		glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
-		glLightfv(GL_LIGHT0,GL_POSITION,Position);
-	}else{
-		glDisable(GL_LIGHTING);
-	}
+	//  Translate intensity to color vectors
+	float Ambient[]   = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
+	float Diffuse[]   = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
+	float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
+	//  Light position
+	float Position[]  = {-225,400,0,1.0};
+	//  Draw light position as ball (still no lighting here)
+	glColor3f(1,1,1);
+	glPushMatrix();
+	glTranslatef(Position[0],Position[1],Position[2]);
+	//glScalef(20, 20, 20);
+	sphere(1.0, 1.0, .0, 1);
+	glPopMatrix();
+	//  OpenGL should normalize normal vectors
+	glEnable(GL_NORMALIZE);
+	//  Enable lighting
+	glEnable(GL_LIGHTING);
+	//  glColor sets ambient and diffuse color materials
+	glColorMaterial(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE);
+	glEnable(GL_COLOR_MATERIAL);
+	//  Enable light 0
+	glEnable(GL_LIGHT0);
+	//  Set ambient, diffuse, specular components and position of light 0
+	glLightfv(GL_LIGHT0,GL_AMBIENT ,Ambient);
+	glLightfv(GL_LIGHT0,GL_DIFFUSE ,Diffuse);
+	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
+	glLightfv(GL_LIGHT0,GL_POSITION,Position);
 
 	DrawSky();
 	DrawLand();
