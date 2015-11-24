@@ -79,6 +79,8 @@ int ph = 0;
 int bankAngle = 0;
 int bankFactor = 0;
 
+int e = 0;
+
 int speed=0;
 
 int fov=55;       //  Field of view (for perspective)
@@ -186,6 +188,7 @@ Vector* rightVec =     new Vector(0,0,1);
 
 void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
+	// Randomly generate the position of the trees
 	int i;
 	for(i=0;i<2000;i++){
 		int r = rand() % 1000 + (-500);
@@ -195,6 +198,7 @@ void init(){
 
 	}
 
+	// Randomly generate the position of the buildings
 	for(i=0;i<500;i++){
 		int r = rand() % 1000 + (-500);
 		buildings[i][0] = r;
@@ -546,7 +550,7 @@ void helicopter(double br){
 	glPopMatrix();
 
 	/* Main Rotor Mast */
-	glBindTexture(GL_TEXTURE_2D,littlebird[0]);
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
 	glPushMatrix();
 	glTranslatef(.4, .8, 0);
 	glScalef(.8, .3, .3);
@@ -633,6 +637,209 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
+void explodedHelicopter(){
+	glPushMatrix();
+	glTranslatef(0,1,0);
+	glRotated(180,0,1,0);
+	glScaled(.5,.5,.5);
+
+	glEnable(GL_TEXTURE_2D);
+
+	/* Helicopter Body */
+	glBindTexture(GL_TEXTURE_2D,littlebird[2]);
+	glPushMatrix();
+	srand(1);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(90, 0, 1, 0);
+	glRotatef(90, 1, 0, 0);
+	glScalef(1,1.5,1);
+	sphere(1,1,1,1);
+	glPopMatrix();
+
+	/* Engine */
+	glBindTexture(GL_TEXTURE_2D,littlebird[3]);
+	glPushMatrix();
+	srand(2);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(90, 0, 1, 0);
+	glScalef(.2, .2, .5);
+	cylinder(1, 1, 1, 2);
+	glPopMatrix();
+
+	/* Tail Bloom */
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
+	glPushMatrix();
+	srand(3);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(90, 0, 1, 0);
+	glScalef(.2, .2, 3);
+	cylinder(1,1,1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(4);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(45, 0, 0, 1);
+	glScalef(.5, 1, .1);
+	triangle(1, 1, 1, 2);
+	glPopMatrix();
+
+	/* Tail Fins */
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
+	glPushMatrix();
+	srand(5);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-45, 0, 0, 1);
+	glScalef(1, 1, .1);
+	triangle(1, 1, 1, 2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(6);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-90, 1, 0, 0);
+	glRotatef(-45, 0, 0, 1);
+	glScalef(1,1,.1);
+	triangle(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(7);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-45, 0, 0, 1);
+	glScalef(.4, .4, .1);
+	triangle(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(8);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-45, 0, 0, 1);
+	glScalef(.4, .4, .1);
+	triangle(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Tail Gearbox */
+	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
+	glPushMatrix();
+	srand(9);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(.07, .07, .1);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Tail Rotor Blades */
+	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
+	glPushMatrix();
+	srand(10);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(.4, .05, .08);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(11);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(.4, .05, .08);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Main Rotor Mast */
+	glBindTexture(GL_TEXTURE_2D,littlebird[1]);
+	glPushMatrix();
+	srand(12);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(.8, .3, .3);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	glBindTexture(GL_TEXTURE_2D,littlebird[7]);
+	glPushMatrix();
+	srand(13);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(.1, .18, .1);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Main Rotor Blades */
+	glBindTexture(GL_TEXTURE_2D,littlebird[6]);
+	glPushMatrix();
+	srand(14);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(2, .05, .2);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(15);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(2, .05, .2);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Skids */
+	/* Left Skid Mounts */
+	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
+	glPushMatrix();
+	srand(16);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(17);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(-30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Right Skid Mounts */
+	glBindTexture(GL_TEXTURE_2D,littlebird[4]);
+	glPushMatrix();
+	srand(18);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	glPushMatrix();
+	srand(19);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glRotatef(30, 1, 0, 0);
+	glRotatef(75, 0, 0, 1);
+	glScalef(.3, .06, .06);
+	cube(1, 1, 1,2);
+	glPopMatrix();
+
+	/* Right Skid */
+	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
+	glPushMatrix();
+	srand(21);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(1, .06, .06);
+	cube(1, 1, 1,3);
+	glPopMatrix();
+
+	/* Left Skid */
+	glBindTexture(GL_TEXTURE_2D,littlebird[5]);
+	glPushMatrix();
+	srand(22);
+	glTranslatef((rand()%10+(-5)),(rand()%10+(-5)),(rand()%10+(-5)));
+	glScalef(1, .06, .06);
+	cube(1, 1, 1,3);
+	glPopMatrix();
+
+	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
+}
+
 void DrawSky(){
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -683,74 +890,58 @@ void DrawSky(){
 	glEnable(GL_LIGHTING);
 }
 
+int checkCollision(){
+	// Collision with sides or top of scene
+	int radius = 1;
+	int realX = littleBirdPosition[0]+radius;
+	int realY = littleBirdPosition[1]+radius;
+	int realZ = littleBirdPosition[2]+radius;
+	//Collision with max y-axis
+	if(realY>350.0){
+		// Stop the helicopter from moving upwards
+		e = 1;
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return 1;
+	}
+	// Collision with min or max of x-axis
+	if(realX<-500 || realX>500){
+		e = 1;
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return 1;
+	}
+	// Collision with min or max of z-axis
+	if(realZ<-500 || realZ>500){
+		e = 1;
+		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return 1;
+	}
+	return 0;
+}
+
 void DrawLand(){
-	Vector* v1 = new Vector(0,0,0);
-	Vector* v2 = new Vector(0,0,0);
-	Vector* v3 = new Vector(0,0,0);
-	Vector* v4 = new Vector(0,0,0);
-	Vector* t1 = new Vector(0,0,0);
-	Vector* t2 = new Vector(0,0,0);
-	Vector* t3 = new Vector(0,0,0);
-	Vector* t4 = new Vector(0,0,0);
-	Vector* t5 = new Vector(0,0,0);
 	glPushMatrix();
 	int i,j;
 	double x,y,z;
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1,1,1);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
-	for(i=0;i<65;i++){
+	// Draw the ground from -512,-512 (x,z) row by row
+	for(i=0;i<64;i++){
 		x = 16*i-512;
-		for(j=0;j<65;j++){
+		for(j=0;j<64;j++){
 			y = 0;
 			z = 16*j-512;
-
-			v1->x = x; v1->y = heightMap[i][j]; v1->z = z;
-			v2->x = x; v2->y = heightMap[i][j+1]; v2->z = z+16;
-			v3->x = x+16; v3->y = heightMap[i+1][j+1]; v3->z = z+16;
-			v4->x = x+16; v4->y = heightMap[i+1][j]; v4->z = z;
-
-			t1->x = v4->x-v1->x; t1->y = v4->y-v1->y; t1->z = v4->z-v1->z;
-			t2->x = v2->x-v1->x; t2->y = v2->y-v1->y; t2->z = v2->z-v1->z;
-			t1->crossProduct(t1, t2);
-			t1->normalize();
-
-			t2->x = v1->x-v2->x; t2->y = v1->y-v2->y; t2->z = v1->z-v2->z;
-			t3->x = v3->x-v2->x; t3->y = v3->y-v2->y; t3->z = v3->z-v2->z;
-			t2->crossProduct(t2, t3);
-			t2->normalize();
-
-			t3->x = v2->x-v3->x; t3->y = v2->y-v3->y; t3->z = v2->z-v3->z;
-			t4->x = v4->x-v3->x; t4->y = v4->y-v3->y; t4->z = v4->z-v3->z;
-			t3->crossProduct(t3, t4);
-			t3->normalize();
-
-			t4->x = v3->x-v4->x; t4->y = v3->y-v4->y; t4->z = v3->z-v4->z;
-			t5->x = v1->x-v4->x; t5->y = v1->y-v4->y; t5->z = v1->z-v4->z;
-			t4->crossProduct(t4, t5);
-			t4->normalize();
-
-			t5->x = (t1->x+t2->x+t3->x+t4->x)/4;
-			t5->y = (t1->y+t2->y+t3->y+t4->y)/4;
-			t5->z = (t1->z+t2->z+t3->z+t4->z)/4;
-
-			t5->normalize();
-			//glNormal3f(t5->x, t5->y, t5->z);
-			glNormal3f(0, 1, 0);
-
 			glBegin(GL_QUADS);
-			//glNormal3f(t1->x,t1->y,t1->z);
-			glTexCoord2f((j)/64.,(i)/64.);glVertex3d(x,heightMap[i][j],z);
-			//glNormal3f(t1->x,t1->y,t1->z);
-			glTexCoord2f((j+1)/64.,(i)/64.);glVertex3d(x,heightMap[i][j+1],z+16);
-			//glNormal3f(t1->x,t1->y,t1->z);
-			glTexCoord2f((j+1)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[i+1][j+1],z+16);
-			//glNormal3f(t1->x,t1->y,t1->z);
-			glTexCoord2f((j)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[i+1][j],z);
+			glNormal3f(0, 1, 0);
+			glTexCoord2f((j)/64.,(i)/64.);glVertex3d(x,heightMap[64-i][j],z);
+			glTexCoord2f((j+1)/64.,(i)/64.);glVertex3d(x,heightMap[64-i][j+1],z+16);
+			glTexCoord2f((j+1)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[64-(i+1)][j+1],z+16);
+			glTexCoord2f((j)/64.,(i+1)/64.);glVertex3d(x+16,heightMap[64-(i+1)][j],z);
 			glEnd();
 		}
 	}
 	glDisable(GL_TEXTURE_2D);
+	glPopMatrix();
 
 	for(i=0;i<2000;i++){
 		glPushMatrix();
@@ -767,7 +958,6 @@ void DrawLand(){
 		DrawBuilding();
 		glPopMatrix();
 	}
-	glPopMatrix();
 
 }
 
@@ -884,7 +1074,6 @@ void DrawHelicopterFlight(){
 	glPushMatrix();
 	glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	glMultMatrixd(mat);
-	//glRotated(yaw,0,1,0);
 	glRotated(pitch,0,0,1);
 	glRotated(-roll,1,0,0);
 	glRotated(strafe,1,0,0);
@@ -912,13 +1101,26 @@ void timer(int value){
 	glutPostRedisplay();
 }
 
+void drawScene(){
+	DrawSky();
+	DrawLand();
+
+	if(e==0){
+		// Blades rotate in a circle 15 degrees at a time
+		bladeRotation += 15;
+		bladeRotation %= 360;
+		DrawHelicopterFlight();
+	}else{
+		glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
+		explodedHelicopter();
+	}
+}
+
 /*
  *  OpenGL (GLUT) calls this routine to display the scene
  */
 void display()
 {
-	//double vectorLength = 0;
-	const double len=2.0;  //  Length of axes
 	//  Erase the window and the depth buffer
 	glClearColor(0,0.3,0.7,0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
@@ -936,6 +1138,7 @@ void display()
 	double heightZ = 2*upVec->z;
 
 	if(flight){
+		ph=th=0;
 		gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
 				  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 			      upVec->x,upVec->y,upVec->z);
@@ -957,7 +1160,6 @@ void display()
 	glColor3f(1,1,1);
 	glPushMatrix();
 	glTranslatef(Position[0],Position[1],Position[2]);
-	//glScalef(20, 20, 20);
 	sphere(1.0, 1.0, .0, 1);
 	glPopMatrix();
 	//  OpenGL should normalize normal vectors
@@ -975,41 +1177,14 @@ void display()
 	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
 	glLightfv(GL_LIGHT0,GL_POSITION,Position);
 
-	DrawSky();
-	DrawLand();
+	checkCollision();
+	drawScene();
 
-	// Blades rotate in a circle 15 degrees at a time
-	bladeRotation += 15;
-	bladeRotation %= 360;
-	DrawHelicopterFlight();
-
-	//  Draw axes - no lighting from here on
 	glDisable(GL_LIGHTING);
 	glColor3f(1,1,1);
-	if(axes){
-		//  Draw axes
-		glBegin(GL_LINES);
-		glVertex3d(0.0,0.0,0.0);
-		glVertex3d(len,0.0,0.0);
-		glVertex3d(0.0,0.0,0.0);
-		glVertex3d(0.0,len,0.0);
-		glVertex3d(0.0,0.0,0.0);
-		glVertex3d(0.0,0.0,len);
-		glEnd();
-		//  Label axes
-		glRasterPos3d(len,0.0,0.0);
-		Print("X");
-		glRasterPos3d(0.0,len,0.0);
-		Print("Y");
-		glRasterPos3d(0.0,0.0,len);
-		Print("Z");
-	}
-
 	//  Display parameters
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
-	//Print("Roll=%d Yaw=%d Pitch=%d Stafe=%d Fly=%d Speed=%d Angle=%d",roll,yaw, pitch,strafe,fly,speed,bankAngle);
-	//glWindowPos2i(5,25);
 	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
@@ -1026,9 +1201,9 @@ int main(int argc,char* argv[])
 	init();
 	//  Initialize GLUT
 	glutInit(&argc,argv);
-	//  Request double buffered, true color window with Z buffering at 600x600
+	//  Request double buffered, true color window with Z buffering at 800x800
 	glutInitDisplayMode(GLUT_RGB | GLUT_DEPTH | GLUT_DOUBLE);
-	glutInitWindowSize(700,700);
+	glutInitWindowSize(800,800);
 	glutCreateWindow("Robert Werthman Project");
 	//  Set callbacks
 	glutDisplayFunc(display);
@@ -1039,7 +1214,6 @@ int main(int argc,char* argv[])
 	glutIdleFunc(idle);
 
 	// Load the textures for the helicopter
-	littlebird[0] = LoadTexBMP("littlebirdenginetank.bmp");
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
 	littlebird[2] = LoadTexBMP("littlebirdcockpit.bmp");
 	littlebird[3] = LoadTexBMP("littlebirdengine.bmp");
@@ -1056,9 +1230,11 @@ int main(int argc,char* argv[])
 	sky[4] = LoadTexBMP("top.bmp");
 	sky[5] = LoadTexBMP("bottom.bmp");
 
+	// Load the textures for the trees
 	tree[0] = LoadTexBMP("bark.bmp");
 	tree[1] = LoadTexBMP("tree.bmp");
 
+	// Load the textures for the buildings
 	building[0] = LoadTexBMP("wall.bmp");
 	building[1] = LoadTexBMP("ceiling.bmp");
 	building[2] = LoadTexBMP("door.bmp");

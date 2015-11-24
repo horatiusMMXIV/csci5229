@@ -12,25 +12,18 @@ void key(unsigned char ch,int x,int y)
 	}
 	//  Reset view angle
 	else if (ch == '0'){
+		e = 0;
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0]=littleBirdPosition[1]=littleBirdPosition[2]=0;
 		ph=th=0;
 	}
-	//  Move light
-	else if (ch == '<')
-	zh += 1;
-	else if (ch == '>')
-	zh -= 1;
 	//  Change field of view angle
-	else if (ch == '-' && ch>1)
-	fov--;
-	else if (ch == '+' && ch<179)
-	fov++;
-	//  Light elevation
-	else if (ch=='[')
-	ylight -= 0.1;
-	else if (ch==']')
-	ylight += 0.1;
+	else if (ch == '-' && ch>1){
+		fov--;
+	}
+	else if (ch == '+' && ch<179){
+		fov++;
+	}
 	else if (ch=='g'){
 		if(flight){
 			// Turn the helicopter right

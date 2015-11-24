@@ -45,6 +45,8 @@ void HelicopterStrafe();
 void DrawTree();
 void DrawBuilding();
 
+int checkCollision();
+
 void timer(int value);
 
 void DrawSky();
@@ -58,6 +60,7 @@ extern int roll;
 extern int strafe;
 extern int fly;
 
+extern int e;
 extern int ph;
 extern int th;
 
