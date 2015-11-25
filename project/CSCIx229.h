@@ -45,7 +45,7 @@ void HelicopterStrafe();
 void DrawTree();
 void DrawBuilding();
 
-int checkCollision();
+void checkCollision();
 
 void timer(int value);
 
@@ -61,6 +61,7 @@ extern int strafe;
 extern int fly;
 
 extern int e;
+extern double explosion;
 extern int ph;
 extern int th;
 

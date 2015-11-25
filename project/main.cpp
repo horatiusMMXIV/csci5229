@@ -892,32 +892,64 @@ void DrawSky(){
 	glEnable(GL_LIGHTING);
 }
 
-int checkCollision(){
+void checkCollision(){
 	// Collision with sides or top of scene
-	int radius = 1;
-	int realX = littleBirdPosition[0]+radius;
-	int realY = littleBirdPosition[1]+radius;
-	int realZ = littleBirdPosition[2]+radius;
-	//Collision with max y-axis
-	if(realY>350.0){
+	int xH = littleBirdPosition[0];
+	int yH = littleBirdPosition[1];
+	int zH = littleBirdPosition[2];
+	//Collision with min or max y-axis
+	if(yH>350.0 || yH<1){
 		// Stop the helicopter from moving upwards
 		e = 1;
-		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		return 1;
+		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return;
 	}
 	// Collision with min or max of x-axis
-	if(realX<-500 || realX>500){
+	if(xH<-500 || xH>500){
 		e = 1;
-		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		return 1;
+		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return;
 	}
 	// Collision with min or max of z-axis
-	if(realZ<-500 || realZ>500){
+	if(zH<-500 || zH>500){
 		e = 1;
-		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		return 1;
+		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		return;
 	}
-	return 0;
+
+	// Detect a collision with a tree
+	double x,z;
+	int i;
+	double y = 5.0;
+	for(i=0;i<2000;i++){
+		x = trees[i][0];
+		z = trees[i][1];
+		if(xH<=(x+2)&&xH>=(x-2)){
+			if(zH<=(z+2)&&zH>=(z-2)){
+				if(yH<=y){
+					e = 1;
+					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+					return;
+				}
+			}
+		}
+	}
+
+	// Detect a collision with a house
+	y = 2.5;
+	for(i=0;i<500;i++){
+		x = buildings[i][0];
+		z = buildings[i][1];
+		if(xH<=(x+2)&&xH>=(x-2)){
+			if(zH<=(z+2)&&zH>=(z-2)){
+				if(yH<=y){
+					e = 1;
+					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+					return;
+				}
+			}
+		}
+	}
 }
 
 void DrawLand(){
@@ -945,6 +977,7 @@ void DrawLand(){
 	glDisable(GL_TEXTURE_2D);
 	glPopMatrix();
 
+	// Draw the trees in the scene
 	for(i=0;i<2000;i++){
 		glPushMatrix();
 		glTranslatef(trees[i][0], 0, trees[i][1]);
@@ -953,6 +986,7 @@ void DrawLand(){
 		glPopMatrix();
 	}
 
+	// Draw the houses in the scene
 	for(i=0;i<500;i++){
 		glPushMatrix();
 		glTranslatef(buildings[i][0], 0, buildings[i][1]);
@@ -1137,9 +1171,9 @@ void display()
 	double behindY = 10*directionVec->y;
 	double behindZ = 10*directionVec->z;
 
-	double heightX = 2*upVec->x;
-	double heightY = 2*upVec->y;
-	double heightZ = 2*upVec->z;
+	double heightX = 3*upVec->x;
+	double heightY = 3*upVec->y;
+	double heightZ = 3*upVec->z;
 
 	if(flight){
 		ph=th=0;
@@ -1148,9 +1182,10 @@ void display()
 			      upVec->x,upVec->y,upVec->z);
 	}else{
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		littleBirdPosition[0] = littleBirdPosition[1] = littleBirdPosition[2] = 0;
-		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+2,10*Sin(th)*Cos(ph),
-				  0,0,0,
+		littleBirdPosition[0] = littleBirdPosition[2] = 0;
+		littleBirdPosition[1] = 2;
+		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+5,10*Sin(th)*Cos(ph),
+				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 				  0,Cos(ph),0);
 	}
 
