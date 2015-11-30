@@ -79,7 +79,7 @@ extern double dim;   //  Size of world
 // Light values
 extern int distance;  // Light distance
 extern int smooth;  // Smooth/Flat shading
-extern int emission;  // Emission intensity (%)
+//extern float emission;  // Emission intensity (%)
 extern int ambient;  // Ambient intensity (%)
 extern int diffuse;  // Diffuse intensity (%)
 extern int specular;  // Specular intensity (%)

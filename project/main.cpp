@@ -92,7 +92,7 @@ double dim=500.0;   //  Size of world
 // Light values
 int distance  =   5;  // Light distance
 int smooth    =   1;  // Smooth/Flat shading
-int emission  =   0;  // Emission intensity (%)
+//float emission  =   0.0;  // Emission intensity (%)
 int ambient   =  30;  // Ambient intensity (%)
 int diffuse   = 100;  // Diffuse intensity (%)
 int specular  =   0;  // Specular intensity (%)
@@ -270,11 +270,11 @@ static void Vertex(int th,int ph, double rep)
 *  Draw a sphere
 * 	with color red, green, blue
 */
-void sphere(double red, double green, double blue, double rep)
+void sphere(float red, float green, float blue, double rep)
 {
 	int th,ph;
 	float color[] = {red,green,blue,1.0};
-	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+	float Emission[]  = {0.0,0.0,0.0,1.0};
 
 
 	glColor3f(red, green, blue);
@@ -299,10 +299,10 @@ void sphere(double red, double green, double blue, double rep)
  * 	with color red, green, blue
  * 	and texture repetitions rep
  */
-void triangle(double red, double green, double blue, double rep)
+void triangle(float red, float green, float blue, double rep)
 {
 	float color[] = {red, green, blue, 1};
-	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+	float Emission[]  = {0.0,0.0,0.0,1.0};
 
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
@@ -359,10 +359,10 @@ void triangle(double red, double green, double blue, double rep)
  *     with color red, green, blue
  *
  */
-void cube(double red, double green, double blue, double rep)
+void cube(float red, float green, float blue, double rep)
 {
 	float color[] = {red, green, blue, 1};
-	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+	float Emission[]  = {0.0,0.0,0.0,1.0};
 
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
@@ -415,11 +415,11 @@ void cube(double red, double green, double blue, double rep)
 /*
  *  Draw a cylinder
  */
-void cylinder(double red, double green, double blue, double rep)
+void cylinder(float red, float green, float blue, double rep)
 {
 	int th;
 	float color[] = {red, green, blue, 1};
-	float Emission[]  = {0.0,0.0,0.01*emission,1.0};
+	float Emission[]  = {0.0,0.0,0.0,1.0};
 
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
@@ -955,7 +955,7 @@ void checkCollision(){
 void DrawLand(){
 	glPushMatrix();
 	int i,j;
-	double x,y,z;
+	double x,z;
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1,1,1);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
@@ -963,7 +963,6 @@ void DrawLand(){
 	for(i=0;i<64;i++){
 		x = 16*i-512;
 		for(j=0;j<64;j++){
-			y = 0;
 			z = 16*j-512;
 			glBegin(GL_QUADS);
 			glNormal3f(0, 1, 0);
@@ -1190,9 +1189,9 @@ void display()
 	}
 
 	//  Translate intensity to color vectors
-	float Ambient[]   = {0.01*ambient ,0.01*ambient ,0.01*ambient ,1.0};
-	float Diffuse[]   = {0.01*diffuse ,0.01*diffuse ,0.01*diffuse ,1.0};
-	float Specular[]  = {0.01*specular,0.01*specular,0.01*specular,1.0};
+	float Ambient[]   = {0.01*30 ,0.01*30 ,0.01*300 ,1.0};
+	float Diffuse[]   = {0.01*100 ,0.01*100 ,0.01*100 ,1.0};
+	float Specular[]  = {0.0,0.0,0.0,1.0};
 	//  Light position
 	float Position[]  = {-225,400,0,1.0};
 	//  Draw light position as ball (still no lighting here)
