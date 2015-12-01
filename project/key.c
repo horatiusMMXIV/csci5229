@@ -15,7 +15,8 @@ void key(unsigned char ch,int x,int y)
 		e=flight=explosion= 0;
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0]=littleBirdPosition[1]=littleBirdPosition[2]=0;
-		ph=th=fov=0;
+		ph=th=0;
+		fov=55;
 	}
 	//  Change field of view angle
 	else if (ch == '-' && ch>1){
