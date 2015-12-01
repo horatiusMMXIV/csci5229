@@ -7,56 +7,10 @@
  * https://stackoverflow.com/questions/26536570/how-do-i-texture-a-cylinder-in-opengl-created-with-triangle-strip
  * - How to add textures to the cylinder
  *
- * Skybox images
- * --------------
- * By Jockum Skoglund aka hipshot
- *	hipshot@zfight.com
- *	www.zfight.com
- *	Stockholm, 2005 08 25
- *	https://forums.epicgames.com/threads/506748-My-skies-and-and-cliff-textures-(large-images
- *
- * http://cs.lmu.edu/~ray/notes/flightsimulator/
- * http://learnopengl.com/#!Getting-started/Camera
- * https://code.google.com/p/gords-flight-sim/source/browse/trunk/camera.cpp?spec=svn4&r=4
- * - Formulas for yaw,pitch,,strafe,fly code
- *
- * https://www.mathsisfun.com/sine-cosine-tangent.html
- * https://www.mathsisfun.com/algebra/vectors.html
- * - Know I understand what the yaw, pitch, and roll code is doing
  *
  * https://stackoverflow.com/questions/16571981/gluperspective-parameters-what-do-they-mean
  * - How gluPerspective works with a world that is huge (large dim)
  *
- * Tasks To Complete
- * -------------------
- * 1. Sphere map or mercater projection for the cockpit on the helicopter
- * 2. Sun with light source
- * 3. terrain texture or perlin noise for terrain
- * 	5 point stencil for normals
- * 4. sky box for the sky
- *
- * Known Bugs
- * -------------------
- * 1. Helicopter doesn't roll properly in that when the roll is 0 the helicopter does not look level.  Happens
- * 		when apply yaws and pitches with rolls.
- * 2. Yawing makes the helcopter look like it is yawing around an oval.
- *
- * Resolved Bugs
- * ----------------------
- * 1. I have to use glrotate on the helicopter in order to use glmultmatrix otherwise it faces in the wrong direction.
- * 	+++++The way I had the matrix used in glmultmatrix was not an identity matrix so it was inverting the look of the helicopter.
- *
- * 2. I can't just use glrotate to move the helicopter around.
- * 	+++++glrotate is used to rotate the object like it was really pitching, rolling, and yawing.  This shows more realistic
- * 	flight.
- *
- * 3. After pitching, yawing, rolling, strafing, and flying going back to 0 doesn't get me to my original position.
- * 	+++++This is because I add doubles that change to the these variables.
- *
- * 4. Can't look at helicopter from above with camera.
- * 	+++++I needed to add the height to all dimensions not just the y value.
- *
- * 	5. Rotors don't rotate now.
  *
  */
 
