@@ -17,53 +17,60 @@
 #include "CSCIx229.h"
 #include "Vector.h"
 
-int axes=1;       //  Display axes
-
+/* Variables for helicopter flight */
 int yaw=0;
 int pitch=0;
 int roll=0;
 int strafe=0;
 int fly=0;
+int bankAngle = 0;
+int bankFactor = 0;
+int speed=0;
 
+/* Variable to specify whether the helicopter
+ * flies or not.
+ */
 int flight = 0;
 
+/* Variables to view helicopter in non-flying
+ * mode.
+ */
 int th = 0;
 int ph = 0;
 
-int bankAngle = 0;
-int bankFactor = 0;
+/* Variable for the rotation of the helicopter
+ * blades.
+ */
+int bladeRotation = 0;
 
+/* Variables used when the helicopter explodes */
 double explosion = 0;
-
 int e = 0;
 
-int speed=0;
+
 
 int fov=55;       //  Field of view (for perspective)
 int light=1;      //  Lighting
 double asp=1;     //  Aspect ratio
 double dim=500.0;   //  Size of world
-// Light values
-int distance  =   5;  // Light distance
-int smooth    =   1;  // Smooth/Flat shading
-//float emission  =   0.0;  // Emission intensity (%)
-int ambient   =  30;  // Ambient intensity (%)
-int diffuse   = 100;  // Diffuse intensity (%)
-int specular  =   0;  // Specular intensity (%)
-int shininess =   0;  // Shininess (power of two)
-float shinyvec[1];    // Shininess (value)
-int zh        =  0;  // Light azimuth
-float ylight  =   0;  // Elevation of light
 
-float z[65][65];
-
+/* Position array of the helicopter */
 double littleBirdPosition[3];
 
+/* Arrays for the textures of each object */
 int littlebird[10];
 int sky[6];
 int tree[2];
 int building[3];
 
+/* Vectors for the helicopter flight */
+Vector* directionVec = new Vector(1,0,0);
+Vector* upVec =        new Vector(0,1,0);
+Vector* rightVec =     new Vector(0,0,1);
+
+/* Arrays for the tree, building and
+ * heights in the scene.
+ */
 int trees[2000][2];
 int buildings[500][2];
 int heightMap[65][65]={
@@ -134,14 +141,11 @@ int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
 		};
 
-
-int bladeRotation = 0;
-
-Vector* directionVec = new Vector(1,0,0);
-Vector* upVec =        new Vector(0,1,0);
-Vector* rightVec =     new Vector(0,0,1);
-
-
+/*
+ * This function sets the little bird position
+ * and randomly generates the coordinates for the
+ * trees and buildings.
+ */
 void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
 	// Randomly generate the position of the trees
@@ -163,6 +167,9 @@ void init(){
 	}
 }
 
+/*
+ * This functions rolls the helicopter.
+ */
 void HelicopterRoll(){
 
 	if(roll > 0){
@@ -183,6 +190,9 @@ void HelicopterRoll(){
 	yaw = bankAngle;
 }
 
+/*
+ * This function rotates the helicopter left or right.
+ */
 void HelicopterYaw(){
 
 	directionVec->x = Cos(yaw);
@@ -195,12 +205,18 @@ void HelicopterYaw(){
 	bankAngle = yaw;
 }
 
+/*
+ * This funciton moves the helicopter up or down.
+ */
 void HelicopterFly(){
 	littleBirdPosition[0] += upVec->x*(fly/20.0);
 	littleBirdPosition[1] += upVec->y*(fly/20.0);
 	littleBirdPosition[2] += upVec->z*(fly/20.0);
 }
 
+/*
+ * This function moves the helicopter left or right.
+ */
 void HelicopterStrafe(){
 	littleBirdPosition[0] += rightVec->x*(strafe/20.0);
 	littleBirdPosition[1] += rightVec->y*(strafe/20.0);
@@ -221,8 +237,9 @@ static void Vertex(int th,int ph, double rep)
 }
 
 /*
-*  Draw a sphere
+*  This funciton draws a sphere
 * 	with color red, green, blue
+* 	and texture repetition rep.
 */
 void sphere(float red, float green, float blue, double rep)
 {
@@ -232,7 +249,6 @@ void sphere(float red, float green, float blue, double rep)
 
 
 	glColor3f(red, green, blue);
-	glMaterialfv(GL_FRONT,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT,GL_EMISSION,Emission);
 
@@ -249,16 +265,15 @@ void sphere(float red, float green, float blue, double rep)
 }
 
 /*
- * Draw a triangle
+ * This function draws a triangle wedge
  * 	with color red, green, blue
- * 	and texture repetitions rep
+ * 	and texture repetition rep.
  */
 void triangle(float red, float green, float blue, double rep)
 {
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.0,1.0};
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
@@ -309,8 +324,9 @@ void triangle(float red, float green, float blue, double rep)
 }
 
 /*
- *  Draw a cube
- *     with color red, green, blue
+ *  This function draws a cube
+ *  with color red, green, blue
+ *  and texture repetition rep.
  *
  */
 void cube(float red, float green, float blue, double rep)
@@ -318,7 +334,6 @@ void cube(float red, float green, float blue, double rep)
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.0,1.0};
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
@@ -367,7 +382,9 @@ void cube(float red, float green, float blue, double rep)
 }
 
 /*
- *  Draw a cylinder
+ *  This function draws a cylinder
+ *  with color red, green, blue
+ *  and texture repetition rep.
  */
 void cylinder(float red, float green, float blue, double rep)
 {
@@ -375,7 +392,7 @@ void cylinder(float red, float green, float blue, double rep)
 	float color[] = {red, green, blue, 1};
 	float Emission[]  = {0.0,0.0,0.0,1.0};
 
-	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,shinyvec);
+
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,color);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emission);
 
@@ -405,8 +422,8 @@ void cylinder(float red, float green, float blue, double rep)
 }
 
 /*
- * Draw entire helicopter
- *	with blade rotation (br)
+ * This function draws entire helicopter
+ *	with blade rotation (br).
  */
 void helicopter(double br){
 	glPushMatrix();
@@ -593,6 +610,11 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
+/*
+ * This function draws pieces of the helicopter
+ * moving in random directions after it hits
+ * something.
+ */
 void explodedHelicopter(double d){
 	glPushMatrix();
 	glTranslatef(0,1,0);
@@ -796,6 +818,9 @@ void explodedHelicopter(double d){
 	glPopMatrix();
 }
 
+/*
+ * This function draws a sky box.
+ */
 void DrawSky(){
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
@@ -846,6 +871,10 @@ void DrawSky(){
 	glEnable(GL_LIGHTING);
 }
 
+/*
+ * This funciton detects collisions with trees, buildings,
+ * and sky box limits.
+ */
 void checkCollision(){
 	// Collision with sides or top of scene
 	int xH = littleBirdPosition[0];
@@ -906,6 +935,10 @@ void checkCollision(){
 	}
 }
 
+/*
+ * This function draws the trees, buildings, and
+ * terrain made of squares.
+ */
 void DrawLand(){
 	glPushMatrix();
 	int i,j;
@@ -913,7 +946,8 @@ void DrawLand(){
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1,1,1);
 	glBindTexture(GL_TEXTURE_2D,sky[5]);
-	// Draw the ground from -512,-512 (x,z) row by row
+	// Draw the ground from -512,-512 (x,z) with
+	// 16x16 squares.
 	for(i=0;i<64;i++){
 		x = 16*i-512;
 		for(j=0;j<64;j++){
@@ -950,6 +984,9 @@ void DrawLand(){
 
 }
 
+/*
+ * This function draws a building in the landscape.
+ */
 void DrawBuilding(){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,building[0]);
@@ -1024,6 +1061,9 @@ void DrawBuilding(){
 	glPopMatrix();
 }
 
+/*
+ * This function draws a tree in the landscape.
+ */
 void DrawTree(){
 	glEnable(GL_TEXTURE_2D);
 	// Trunk
@@ -1053,6 +1093,10 @@ void DrawTree(){
 	glDisable(GL_TEXTURE_2D);
 }
 
+/*
+ * This function draws the movement of the helicopter
+ * relative to the camera.
+ */
 void DrawHelicopterFlight(){
 	double mat[16];
 	mat[0] = directionVec->x;   mat[4] = upVec->x;   mat[ 8] = rightVec->x;   mat[12] = 0;
@@ -1070,6 +1114,11 @@ void DrawHelicopterFlight(){
 	glPopMatrix();
 }
 
+/*
+ * This function is used to keep the helicopter moving
+ * when certain values are greater than or less
+ * than one.
+ */
 void timer(int value){
 
 	littleBirdPosition[0] += directionVec->x*(speed/10.0);
@@ -1084,12 +1133,14 @@ void timer(int value){
 	}
 	HelicopterStrafe();
 	HelicopterFly();
-
 	glutTimerFunc(50,timer,0);
 	//  Tell GLUT it is necessary to redisplay the scene
 	glutPostRedisplay();
 }
 
+/*
+ * This function draws the sky and terrain.
+ */
 void drawScene(){
 	DrawSky();
 	DrawLand();
@@ -1100,7 +1151,7 @@ void drawScene(){
 		bladeRotation %= 360;
 		DrawHelicopterFlight();
 	}else{
-		//double t = glutGet(GLUT_ELAPSED_TIME)/1000.0;
+		// e will be set to 1 if a collision is detected
 		explosion += .1;
 		glTranslated(littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
 		explodedHelicopter(explosion);
@@ -1129,11 +1180,13 @@ void display()
 	double heightZ = 3*upVec->z;
 
 	if(flight){
+		// Fly the helicopter around the scene
 		ph=th=0;
 		gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
 				  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
 			      upVec->x,upVec->y,upVec->z);
 	}else{
+		// Look at the helicopter from different angles
 		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 		littleBirdPosition[0] = littleBirdPosition[2] = 0;
 		littleBirdPosition[1] = 2;
@@ -1142,9 +1195,13 @@ void display()
 				  0,Cos(ph),0);
 	}
 
+	/* Code for where the light source will be.
+	 * The light source acts like a sun and is outside
+	 * of the sky box.
+	 */
 	//  Translate intensity to color vectors
-	float Ambient[]   = {0.01*30 ,0.01*30 ,0.01*300 ,1.0};
-	float Diffuse[]   = {0.01*100 ,0.01*100 ,0.01*100 ,1.0};
+	float Ambient[]   = {0.01*30,0.01*30,0.01*30,1.0};
+	float Diffuse[]   = {0.01*100,0.01*100,0.01*100,1.0};
 	float Specular[]  = {0.0,0.0,0.0,1.0};
 	//  Light position
 	float Position[]  = {-225,400,0,1.0};
@@ -1203,7 +1260,7 @@ int main(int argc,char* argv[])
 	glutSpecialFunc(special);
 	glutKeyboardFunc(key);
 	//  Tell GLUT to call "idle" when there is nothing else to do
-	glutIdleFunc(idle);
+	//glutIdleFunc(idle);
 
 	// Load the textures for the helicopter
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");

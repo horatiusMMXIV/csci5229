@@ -31,63 +31,39 @@ void Fatal(const char* format , ...);
 unsigned int LoadTexBMP(const char* file);
 void Project(double fov,double asp,double dim);
 void ErrCheck(const char* where);
-int  LoadOBJ(const char* file);
 void special(int key,int x,int y);
 void key(unsigned char ch,int x,int y);
-void idle();
 void reshape(int width,int height);
 
 void HelicopterRoll();
 void HelicopterYaw();
 void HelicopterFly();
 void HelicopterStrafe();
-
 void DrawTree();
 void DrawBuilding();
-
 void checkCollision();
-
 void timer(int value);
-
 void DrawSky();
 void DrawLand();
-// Global Variables
-extern int axes;       //  Display axes
 
+// Global Variables
 extern int yaw;
 extern int pitch;
 extern int roll;
 extern int strafe;
 extern int fly;
-
 extern int e;
 extern double explosion;
 extern int ph;
 extern int th;
-
 extern int flight;
-
 extern int bankAngle;
 extern int bankFactor;
-
 extern int speed;
-
 extern int fov;       //  Field of view (for perspective)
 extern int light;      //  Lighting
 extern double asp;     //  Aspect ratio
 extern double dim;   //  Size of world
-// Light values
-extern int distance;  // Light distance
-extern int smooth;  // Smooth/Flat shading
-//extern float emission;  // Emission intensity (%)
-extern int ambient;  // Ambient intensity (%)
-extern int diffuse;  // Diffuse intensity (%)
-extern int specular;  // Specular intensity (%)
-extern int shininess;  // Shininess (power of two)
-extern float shinyvec[1];    // Shininess (value)
-extern int zh;  // Light azimuth
-extern float ylight;  // Elevation of light
-
 extern double littleBirdPosition[3];
 
 

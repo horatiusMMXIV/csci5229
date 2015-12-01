@@ -1,25 +1,39 @@
 Robert Werthman
 CSCI 5229
-HW6
+Project
 
 
 Key bindings
-  f			 Toggles helicopter's flight
-  l          Toggles lighting
-  m          Toggles light movement
-  x          Toggle axes
-  arrows     Change view angle
-  PgDn/PgUp  Zoom in and out
-  []         Lower/raise light
-  +/-        Change field of view of perspective
-  </>		 Manually move the light/helicopter 
-  0          Reset view angle
-  ESC        Exit
+	spacebar	Toggle Helicopter flight
+	g			Yaw the helicopter right (when no pitch or roll)
+	a			Yaw the helicopter left (when no pitch or roll)
+	e			Pitch the helicopter nose down
+	d			Pitch the helicopter nose up
+	s			Roll the helicopter left (when there is no strafe)
+	f			Roll the helicopter right (when there is no strafe)
+	i			Elevate the helicopter
+	k			Lower the helicopter
+	j			Strafe the helicopter left
+	l			Strafe the helicopter right
+  	arrows		Change view angle when helicopter flight is not toggled
+  	+/-			Change field of view
+  	0			Reset everything
+  	ESC			Exit
   
-  This assignment took me 10 hours to complete.
+Other things to note
+---------------------
+1. When running into objects or end of scene the helicopter blows up.
+2. There are no normals or collision detection for hills.
 
-  Known Bug
-  ---------
-  I could not figure out how to get the image of the cockpit to not be distorted on the sphere.  
-  I tried to make my own UV mapped image of the cockpit with a single side view of a real little bird cockpit but it obviously didn't work out.
-  Do you have any suggestion for the future to make this looks better?
+Future Work
+--------------
+1. Shoot orbs out of helicopter and blow up objects. (likely)
+2. Have trees and buildings at correct elevations. (not likely)
+3. Get normals correct for hills. (not likely)
+4. Implement perlin noise for terrain. (not likely)
+
+**** Question ****
+------------
+How can I speed up the frame rate?  By decreasing the size of the scene?
+The size of the scene made it so I couldn't have shadows because it slowed
+everything down too much.
