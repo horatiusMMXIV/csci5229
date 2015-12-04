@@ -45,6 +45,8 @@ void checkCollision();
 void timer(int value);
 void DrawSky();
 void DrawLand();
+void ShootCannon();
+void CreateBullet();
 
 // Global Variables
 extern int yaw;
@@ -65,6 +67,8 @@ extern int light;      //  Lighting
 extern double asp;     //  Aspect ratio
 extern double dim;   //  Size of world
 extern double littleBirdPosition[3];
+extern double bullets[10][7];
+extern int bulletIndex;
 
 
 #ifdef __cplusplus

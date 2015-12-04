@@ -124,7 +124,16 @@ void key(unsigned char ch,int x,int y)
 		}
 	}
 	else if(ch == 32){
-		flight = 1-flight;
+		//flight = 1-flight;
+		if(bulletIndex < 9){
+			bulletIndex += 1;
+			CreateBullet();
+			//ShootCannon();
+		}else{
+			bulletIndex = 0;
+			CreateBullet();
+			//ShootCannon();
+		}
 	}
 	//  Reproject
 	Project(fov,asp,dim);

@@ -32,8 +32,10 @@ Future Work
 3. Get normals correct for hills. (not likely)
 4. Implement perlin noise for terrain. (not likely)
 
-**** Question ****
-------------
-How can I speed up the frame rate?  By decreasing the size of the scene?
-The size of the scene made it so I couldn't have shadows because it slowed
-everything down too much.
+What I looked at or tried to implement
+---------------------------------------
+1. Billboarding to increase framerate (unsuccessful due to it being too complicated)
+2. Perlin noise to generate terrain (unsuccessful due to it being too complicated)
+3. Shadows (unsuccessful due to framerate)
+4. Normals for hills (unsuccessful due to it being too complicated)
+5. Trees and buildings at correct elevations (unsuccessful due to it being too complicated)

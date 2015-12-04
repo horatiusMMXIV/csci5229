@@ -31,7 +31,7 @@ int speed=0;
 /* Variable to specify whether the helicopter
  * flies or not.
  */
-int flight = 0;
+int flight = 1;
 
 /* Variables to view helicopter in non-flying
  * mode.
@@ -72,8 +72,14 @@ Vector* rightVec =     new Vector(0,0,1);
 /* Arrays for the tree, building and
  * heights in the scene.
  */
-int trees[2000][2];
-int buildings[500][2];
+int numBuildings = 250;
+int numTrees = 1000;
+
+double bullets[10][7];
+int bulletIndex = 0;
+
+int trees[1000][2];
+int buildings[250][2];
 int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
 		{ 1,1,1,1,1,1,1,1,1,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
@@ -151,7 +157,7 @@ void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
 	// Randomly generate the position of the trees
 	int i;
-	for(i=0;i<2000;i++){
+	for(i=0;i<numTrees;i++){
 		int r = rand() % 1000 + (-500);
 		trees[i][0] = r;
 		r = rand() % 1000 + (-500);
@@ -160,11 +166,16 @@ void init(){
 	}
 
 	// Randomly generate the position of the buildings
-	for(i=0;i<500;i++){
+	for(i=0;i<numBuildings;i++){
 		int r = rand() % 1000 + (-500);
 		buildings[i][0] = r;
 		r = rand() % 1000 + (-500);
 		buildings[i][1] = r;
+	}
+
+	// Initialize the bullets array
+	for(i=0;i<9;i++){
+		bullets[i][6] = 0;
 	}
 }
 
@@ -819,6 +830,35 @@ void explodedHelicopter(double d){
 	glPopMatrix();
 }
 
+void CreateBullet(){
+	bullets[bulletIndex][0] = littleBirdPosition[0];
+	bullets[bulletIndex][1] = littleBirdPosition[1];
+	bullets[bulletIndex][2] = littleBirdPosition[2];
+	double Ex = Cos(yaw)*Cos(pitch);
+	double Ey = Sin(pitch);
+	double Ez = -Sin(yaw)*Cos(pitch);
+	bullets[bulletIndex][3] = Ex;
+	bullets[bulletIndex][4] = Ey;
+	bullets[bulletIndex][5] = Ez;
+	bullets[bulletIndex][6] = 1;
+}
+
+void ShootCannon(){
+	int i;
+	for(i=0;i<9;i++){
+		if(bullets[i][6]>0){
+			bullets[i][0] += bullets[i][3]*5;
+			bullets[i][1] += bullets[i][4]*5;
+			bullets[i][2] += bullets[i][5]*5;
+			glPushMatrix();
+			glTranslatef(bullets[i][0], bullets[i][1], bullets[i][2]);
+			glScalef(.2,.2,.2);
+			sphere(0,0,0,0);
+			glPopMatrix();
+		}
+	}
+}
+
 /*
  * This function draws a sky box.
  */
@@ -905,7 +945,7 @@ void checkCollision(){
 	double x,z;
 	int i;
 	double y = 5.0;
-	for(i=0;i<2000;i++){
+	for(i=0;i<numTrees;i++){
 		x = trees[i][0];
 		z = trees[i][1];
 		if(xH<=(x+2)&&xH>=(x-2)){
@@ -921,7 +961,7 @@ void checkCollision(){
 
 	// Detect a collision with a house
 	y = 2.5;
-	for(i=0;i<500;i++){
+	for(i=0;i<numBuildings;i++){
 		x = buildings[i][0];
 		z = buildings[i][1];
 		if(xH<=(x+2)&&xH>=(x-2)){
@@ -966,7 +1006,7 @@ void DrawLand(){
 	glPopMatrix();
 
 	// Draw the trees in the scene
-	for(i=0;i<2000;i++){
+	for(i=0;i<numTrees;i++){
 		glPushMatrix();
 		glTranslatef(trees[i][0], 0, trees[i][1]);
 		glScaled(3,3,3);
@@ -975,7 +1015,7 @@ void DrawLand(){
 	}
 
 	// Draw the houses in the scene
-	for(i=0;i<500;i++){
+	for(i=0;i<numBuildings;i++){
 		glPushMatrix();
 		glTranslatef(buildings[i][0], 0, buildings[i][1]);
 		glScaled(2,2,2);
@@ -1121,7 +1161,6 @@ void DrawHelicopterFlight(){
  * than one.
  */
 void timer(int value){
-
 	littleBirdPosition[0] += directionVec->x*(speed/10.0);
 	littleBirdPosition[1] += directionVec->y*(speed/10.0);
 	littleBirdPosition[2] += directionVec->z*(speed/10.0);
@@ -1227,6 +1266,7 @@ void display()
 	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
 	glLightfv(GL_LIGHT0,GL_POSITION,Position);
 
+	ShootCannon();
 	checkCollision();
 	drawScene();
 
@@ -1260,8 +1300,6 @@ int main(int argc,char* argv[])
 	glutReshapeFunc(reshape);
 	glutSpecialFunc(special);
 	glutKeyboardFunc(key);
-	//  Tell GLUT to call "idle" when there is nothing else to do
-	//glutIdleFunc(idle);
 
 	// Load the textures for the helicopter
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
