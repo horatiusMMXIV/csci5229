@@ -78,7 +78,7 @@ int numTrees = 1000;
 double bullets[10][7];
 int bulletIndex = 0;
 
-int trees[1000][3];
+double trees[1000][4];
 double buildings[250][4];
 int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
@@ -163,6 +163,7 @@ void init(){
 		r = rand() % 1000 + (-500);
 		trees[i][1] = r;
 		trees[i][2] = 0;
+		trees[i][3] = 0;
 
 	}
 
@@ -625,6 +626,36 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
+void ExplodedTree(double d){
+	glEnable(GL_TEXTURE_2D);
+	// Trunk
+	glBindTexture(GL_TEXTURE_2D,tree[0]);
+	glPushMatrix();
+	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
+	glRotated(-90,1,0,0);
+	glScalef(.1,.1,1);
+	cylinder(1,1,1,1);
+	glPopMatrix();
+
+	//Branches
+	glBindTexture(GL_TEXTURE_2D,tree[1]);
+	glPushMatrix();
+	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
+	glRotated(-135,0,0,1);
+	glScalef(1.2,1.2,.3);
+	triangle(1,1,1,1);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
+	glRotated(90,0,1,0);
+	glRotated(-135,0,0,1);
+	glScalef(1.2,1.2,.3);
+	triangle(1,1,1,1);
+	glPopMatrix();
+	glDisable(GL_TEXTURE_2D);
+}
+
 void ExplodedBuilding(double d){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,building[0]);
@@ -1044,6 +1075,7 @@ void checkCollision(){
 		if(xH<=(x+2)&&xH>=(x-2)){
 			if(zH<=(z+2)&&zH>=(z-2)){
 				if(yH<=y){
+					trees[i][2] = 1;
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 					return;
@@ -1101,11 +1133,20 @@ void DrawLand(){
 
 	// Draw the trees in the scene
 	for(i=0;i<numTrees;i++){
-		glPushMatrix();
-		glTranslatef(trees[i][0], 0, trees[i][1]);
-		glScaled(3,3,3);
-		DrawTree();
-		glPopMatrix();
+		if(trees[i][2]<1){
+			glPushMatrix();
+			glTranslatef(trees[i][0], 0, trees[i][1]);
+			glScaled(3,3,3);
+			DrawTree();
+			glPopMatrix();
+		}else{
+			trees[i][3] += .05;
+			glPushMatrix();
+			glTranslatef(trees[i][0], 0, trees[i][1]);
+			glScaled(3,3,3);
+			ExplodedTree(trees[i][3]);
+			glPopMatrix();
+		}
 	}
 
 	// Draw the houses in the scene
@@ -1117,7 +1158,7 @@ void DrawLand(){
 			DrawBuilding();
 			glPopMatrix();
 		}else{
-			buildings[i][3] += .1;
+			buildings[i][3] += .05;
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
 			glScaled(2,2,2);
