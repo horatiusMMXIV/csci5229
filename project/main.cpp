@@ -79,7 +79,7 @@ double bullets[10][7];
 int bulletIndex = 0;
 
 double trees[1000][5];
-double buildings[250][4];
+double buildings[250][5];
 int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
 		{ 1,1,1,1,1,1,1,1,1,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
@@ -164,7 +164,7 @@ void init(){
 		trees[i][1] = r;
 		trees[i][2] = 0;
 		trees[i][3] = 0;
-		trees[i][4] = 5;
+		trees[i][4] = 1;
 
 	}
 
@@ -176,6 +176,7 @@ void init(){
 		buildings[i][1] = r;
 		buildings[i][2] = 0;
 		buildings[i][3] = 0;
+		buildings[i][4] = .5;
 	}
 
 	// Initialize the bullets array
@@ -632,7 +633,6 @@ void ExplodedTree(double d, double height){
 	// Trunk
 	glBindTexture(GL_TEXTURE_2D,tree[0]);
 	glPushMatrix();
-	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
 	glRotated(-90,1,0,0);
 	glScalef(.1,.1,1);
 	cylinder(1,1,1,1);
@@ -641,14 +641,14 @@ void ExplodedTree(double d, double height){
 	//Branches
 	glBindTexture(GL_TEXTURE_2D,tree[1]);
 	glPushMatrix();
-	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
+	glTranslatef(0*d,height+1,-1*d);
 	glRotated(-135,0,0,1);
 	glScalef(1.2,1.2,.3);
 	triangle(1,1,1,1);
 	glPopMatrix();
 
 	glPushMatrix();
-	glTranslatef(((rand()%8+(-4))*d),((rand()%8+(-4))*d),((rand()%8+(-4)))*d);
+	glTranslatef(-1*d,height+1,0*d);
 	glRotated(90,0,1,0);
 	glRotated(-135,0,0,1);
 	glScalef(1.2,1.2,.3);
@@ -657,19 +657,21 @@ void ExplodedTree(double d, double height){
 	glDisable(GL_TEXTURE_2D);
 }
 
-void ExplodedBuilding(double d){
+void ExplodedBuilding(double d, double height){
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,building[0]);
 	//Left
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(-1*d, height,0);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
 	glPopMatrix();
 
 	//Front
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(1*d, height,0);
 	glRotated(-90,0,1,0);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
@@ -677,7 +679,8 @@ void ExplodedBuilding(double d){
 
 	//Back
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(0,height,1*d);
 	glRotated(-90,0,1,0);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
@@ -685,7 +688,8 @@ void ExplodedBuilding(double d){
 
 	//Right
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(0,height,-1*d);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
 	glPopMatrix();
@@ -693,7 +697,8 @@ void ExplodedBuilding(double d){
 	//Roof
 	glBindTexture(GL_TEXTURE_2D,building[1]);
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(1*d,height+.1,-1*d);
 	glScalef(1.2,.1,1.2);
 	cube(1,1,1,1);
 	glPopMatrix();
@@ -701,7 +706,8 @@ void ExplodedBuilding(double d){
 	//Door
 	glBindTexture(GL_TEXTURE_2D,building[2]);
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(-1*d,height,1*d);
 	glScalef(.1,.5,.3);
 	cube(1,1,1,1);
 	glPopMatrix();
@@ -710,14 +716,16 @@ void ExplodedBuilding(double d){
 
 	//Back Window
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(-1*d,height,-1*d);
 	glScalef(.05,.2,.2);
 	cube(0,0,0,1);
 	glPopMatrix();
 
 	//Right Window
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(1*d,height,1*d);
 	glRotated(-90,0,1,0);
 	glScalef(.05,.2,.2);
 	cube(0,0,0,1);
@@ -725,7 +733,8 @@ void ExplodedBuilding(double d){
 
 	//Left Window
 	glPushMatrix();
-	glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
+	glTranslatef(0,height,0);
 	glRotated(-90,0,1,0);
 	glScalef(.05,.2,.2);
 	cube(0,0,0,1);
@@ -1114,7 +1123,7 @@ void checkCollision(){
 				z = trees[i][1];
 				if(xH<=(x+2)&&xH>=(x-2)){
 					if(zH<=(z+2)&&zH>=(z-2)){
-						if(yH<=y){
+						if(yH<=y&&yH>= -1){
 							trees[i][2] = 1;
 							return;
 						}
@@ -1129,7 +1138,7 @@ void checkCollision(){
 				z = buildings[i][1];
 				if(xH<=(x+2)&&xH>=(x-2)){
 					if(zH<=(z+2)&&zH>=(z-2)){
-						if(yH<=y){
+						if(yH<=y&&yH>=-2){
 							buildings[i][2] = 1;
 							return;
 						}
@@ -1178,8 +1187,10 @@ void DrawLand(){
 			DrawTree();
 			glPopMatrix();
 		}else{
-			trees[i][3] += .01;
-			trees[i][4] -= .01;
+			if(trees[i][4] > 0){
+				trees[i][3] += .1;
+				trees[i][4] -= .1;
+			}
 			glPushMatrix();
 			glTranslatef(trees[i][0], 0, trees[i][1]);
 			glScaled(3,3,3);
@@ -1190,18 +1201,21 @@ void DrawLand(){
 
 	// Draw the houses in the scene
 	for(i=0;i<numBuildings;i++){
-		if(buildings[i][2] < 1){
+		if(buildings[i][2]<1){
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
 			glScaled(2,2,2);
 			DrawBuilding();
 			glPopMatrix();
 		}else{
-			buildings[i][3] += .01;
+			if(buildings[i][4] > 0){
+				buildings[i][3] += .1;
+				buildings[i][4] -= .1;
+			}
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
 			glScaled(2,2,2);
-			ExplodedBuilding(buildings[i][3]);
+			ExplodedBuilding(buildings[i][3], buildings[i][4]);
 			glPopMatrix();
 		}
 	}
