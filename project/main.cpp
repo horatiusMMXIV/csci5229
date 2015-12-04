@@ -1042,9 +1042,9 @@ void DrawSky(){
  */
 void checkCollision(){
 	// Collision with sides or top of scene
-	int xH = littleBirdPosition[0];
-	int yH = littleBirdPosition[1];
-	int zH = littleBirdPosition[2];
+	double xH = littleBirdPosition[0];
+	double yH = littleBirdPosition[1];
+	double zH = littleBirdPosition[2];
 	//Collision with min or max y-axis
 	if(yH>350.0 || yH<1){
 		// Stop the helicopter from moving upwards
@@ -1065,9 +1065,9 @@ void checkCollision(){
 		return;
 	}
 
-	// Detect a collision with a tree
+	// Detect a collision with a tree by helicopter
 	double x,z;
-	int i;
+	int i,j;
 	double y = 5.0;
 	for(i=0;i<numTrees;i++){
 		x = trees[i][0];
@@ -1084,7 +1084,7 @@ void checkCollision(){
 		}
 	}
 
-	// Detect a collision with a house
+	// Detect a collision with a house by helicopter
 	y = 2.5;
 	for(i=0;i<numBuildings;i++){
 		x = buildings[i][0];
@@ -1096,6 +1096,43 @@ void checkCollision(){
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 					return;
+				}
+			}
+		}
+	}
+
+	for(j=0;j<9;j++){
+		if(bullets[j][6]>00){
+			double xH = bullets[j][0];
+			double yH = bullets[j][1];
+			double zH = bullets[j][2];
+			// Detect a collision with a tree by bullet
+			y = 5.0;
+			for(i=0;i<numTrees;i++){
+				x = trees[i][0];
+				z = trees[i][1];
+				if(xH<=(x+2)&&xH>=(x-2)){
+					if(zH<=(z+2)&&zH>=(z-2)){
+						if(yH<=y){
+							trees[i][2] = 1;
+							return;
+						}
+					}
+				}
+			}
+
+			// Detect a collision with a house by bullet
+			y = 2.5;
+			for(i=0;i<numBuildings;i++){
+				x = buildings[i][0];
+				z = buildings[i][1];
+				if(xH<=(x+2)&&xH>=(x-2)){
+					if(zH<=(z+2)&&zH>=(z-2)){
+						if(yH<=y){
+							buildings[i][2] = 1;
+							return;
+						}
+					}
 				}
 			}
 		}
