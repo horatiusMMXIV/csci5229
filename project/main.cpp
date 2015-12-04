@@ -78,7 +78,7 @@ int numTrees = 1000;
 double bullets[10][7];
 int bulletIndex = 0;
 
-double trees[1000][4];
+double trees[1000][5];
 double buildings[250][4];
 int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
@@ -164,6 +164,7 @@ void init(){
 		trees[i][1] = r;
 		trees[i][2] = 0;
 		trees[i][3] = 0;
+		trees[i][4] = 5;
 
 	}
 
@@ -626,7 +627,7 @@ void helicopter(double br){
 	glPopMatrix();
 }
 
-void ExplodedTree(double d){
+void ExplodedTree(double d, double height){
 	glEnable(GL_TEXTURE_2D);
 	// Trunk
 	glBindTexture(GL_TEXTURE_2D,tree[0]);
@@ -1177,11 +1178,12 @@ void DrawLand(){
 			DrawTree();
 			glPopMatrix();
 		}else{
-			trees[i][3] += .05;
+			trees[i][3] += .01;
+			trees[i][4] -= .01;
 			glPushMatrix();
 			glTranslatef(trees[i][0], 0, trees[i][1]);
 			glScaled(3,3,3);
-			ExplodedTree(trees[i][3]);
+			ExplodedTree(trees[i][3], trees[i][4]);
 			glPopMatrix();
 		}
 	}
@@ -1195,7 +1197,7 @@ void DrawLand(){
 			DrawBuilding();
 			glPopMatrix();
 		}else{
-			buildings[i][3] += .05;
+			buildings[i][3] += .01;
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
 			glScaled(2,2,2);
