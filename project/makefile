@@ -11,12 +11,12 @@ CLEAN=del *.exe *.o *.a
 else
 #  OSX
 ifeq "$(shell uname)" "Darwin"
-CFLG=-O3 -Wall -Wno-deprecated-declarations
-LIBS=-framework GLUT -framework OpenGL
+CFLG=-O3 -Wall -Wno-deprecated-declarations `sdl-config --cflags`
+LIBS=`sdl-config --libs` -lSDL -lSDL_mixer -framework GLUT -framework OpenGL
 #  Linux/Unix/Solaris
 else
 CFLG=-O3 -Wall
-LIBS=-lglut -lGLU -lGL -lm
+LIBS=-lSDL -lSDL_mixer -lglut -lGLU -lGL -lm
 endif
 #  OSX/Linux/Unix/Solaris
 CLEAN=rm -f $(EXE) *.o *.a
@@ -31,11 +31,10 @@ print.o: print.c CSCIx229.h
 project.o: project.c CSCIx229.h
 errcheck.o: errcheck.c CSCIx229.h
 key.o: key.c CSCIx229.h
-special.o: special.c CSCIx229.h
 reshape.o: reshape.c CSCIx229.h
 
 #  Create archive
-CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o key.o special.o reshape.o
+CSCIx229.a:fatal.o loadtexbmp.o print.o project.o errcheck.o key.o reshape.o
 	ar -rcs $@ $^
 
 # Compile rules

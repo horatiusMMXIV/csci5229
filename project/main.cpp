@@ -18,6 +18,9 @@
 #include "CSCIx229.h"
 #include "Vector.h"
 
+//The sound effects that will be used
+Mix_Chunk *shot = NULL;
+
 /* Variables for helicopter flight */
 int yaw=0;
 int pitch=0;
@@ -27,17 +30,6 @@ int fly=0;
 int bankAngle = 0;
 int bankFactor = 0;
 int speed=0;
-
-/* Variable to specify whether the helicopter
- * flies or not.
- */
-int flight = 1;
-
-/* Variables to view helicopter in non-flying
- * mode.
- */
-int th = 0;
-int ph = 0;
 
 /* Variable for the rotation of the helicopter
  * blades.
@@ -78,8 +70,8 @@ int numTrees = 1000;
 double bullets[10][7];
 int bulletIndex = 0;
 
-double trees[1000][5];
-double buildings[250][5];
+double trees[1000][6];
+double buildings[250][6];
 int heightMap[65][65]={
 		{ 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
 		{ 1,1,1,1,1,1,1,1,1,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0},
@@ -156,27 +148,31 @@ int heightMap[65][65]={
 void init(){
 	littleBirdPosition[0] = 0; littleBirdPosition[1] = 2; littleBirdPosition[2] = 0;
 	// Randomly generate the position of the trees
-	int i;
+	int i,r,rot;
 	for(i=0;i<numTrees;i++){
-		int r = rand() % 1000 + (-500);
+		rot = rand()%360;
+		r = rand() % 1000 + (-500);
 		trees[i][0] = r;
 		r = rand() % 1000 + (-500);
 		trees[i][1] = r;
 		trees[i][2] = 0;
 		trees[i][3] = 0;
 		trees[i][4] = 1;
+		trees[i][5] = rot;
 
 	}
 
 	// Randomly generate the position of the buildings
 	for(i=0;i<numBuildings;i++){
-		int r = rand() % 1000 + (-500);
+		rot = rand()%360;
+		r = rand() % 1000 + (-500);
 		buildings[i][0] = r;
 		r = rand() % 1000 + (-500);
 		buildings[i][1] = r;
 		buildings[i][2] = 0;
 		buildings[i][3] = 0;
 		buildings[i][4] = .5;
+		buildings[i][5] = rot;
 	}
 
 	// Initialize the bullets array
@@ -662,7 +658,6 @@ void ExplodedBuilding(double d, double height){
 	glBindTexture(GL_TEXTURE_2D,building[0]);
 	//Left
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(-1*d, height,0);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
@@ -670,7 +665,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Front
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(1*d, height,0);
 	glRotated(-90,0,1,0);
 	glScalef(1,1,.2);
@@ -679,7 +673,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Back
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(0,height,1*d);
 	glRotated(-90,0,1,0);
 	glScalef(1,1,.2);
@@ -688,7 +681,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Right
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(0,height,-1*d);
 	glScalef(1,1,.2);
 	cube(1,1,1,2);
@@ -697,7 +689,6 @@ void ExplodedBuilding(double d, double height){
 	//Roof
 	glBindTexture(GL_TEXTURE_2D,building[1]);
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(1*d,height+.1,-1*d);
 	glScalef(1.2,.1,1.2);
 	cube(1,1,1,1);
@@ -706,7 +697,6 @@ void ExplodedBuilding(double d, double height){
 	//Door
 	glBindTexture(GL_TEXTURE_2D,building[2]);
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(-1*d,height,1*d);
 	glScalef(.1,.5,.3);
 	cube(1,1,1,1);
@@ -716,7 +706,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Back Window
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(-1*d,height,-1*d);
 	glScalef(.05,.2,.2);
 	cube(0,0,0,1);
@@ -724,7 +713,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Right Window
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(1*d,height,1*d);
 	glRotated(-90,0,1,0);
 	glScalef(.05,.2,.2);
@@ -733,7 +721,6 @@ void ExplodedBuilding(double d, double height){
 
 	//Left Window
 	glPushMatrix();
-	//glTranslatef(((rand()%10+(-5))*+d),((rand()%10+(-5))*d),((rand()%10+(-5)))*d);
 	glTranslatef(0,height,0);
 	glRotated(-90,0,1,0);
 	glScalef(.05,.2,.2);
@@ -1136,8 +1123,8 @@ void checkCollision(){
 			for(i=0;i<numBuildings;i++){
 				x = buildings[i][0];
 				z = buildings[i][1];
-				if(xH<=(x+2)&&xH>=(x-2)){
-					if(zH<=(z+2)&&zH>=(z-2)){
+				if(xH<=(x+3)&&xH>=(x-3)){
+					if(zH<=(z+3)&&zH>=(z-3)){
 						if(yH<=y&&yH>=-2){
 							buildings[i][2] = 1;
 							return;
@@ -1183,6 +1170,7 @@ void DrawLand(){
 		if(trees[i][2]<1){
 			glPushMatrix();
 			glTranslatef(trees[i][0], 0, trees[i][1]);
+			glRotatef(trees[i][5],0,1,0);
 			glScaled(3,3,3);
 			DrawTree();
 			glPopMatrix();
@@ -1193,6 +1181,7 @@ void DrawLand(){
 			}
 			glPushMatrix();
 			glTranslatef(trees[i][0], 0, trees[i][1]);
+			glRotatef(trees[i][5],0,1,0);
 			glScaled(3,3,3);
 			ExplodedTree(trees[i][3], trees[i][4]);
 			glPopMatrix();
@@ -1204,6 +1193,7 @@ void DrawLand(){
 		if(buildings[i][2]<1){
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
+			glRotatef(buildings[i][5],0,1,0);
 			glScaled(2,2,2);
 			DrawBuilding();
 			glPopMatrix();
@@ -1214,6 +1204,7 @@ void DrawLand(){
 			}
 			glPushMatrix();
 			glTranslatef(buildings[i][0], 0, buildings[i][1]);
+			glRotatef(buildings[i][5],0,1,0);
 			glScaled(2,2,2);
 			ExplodedBuilding(buildings[i][3], buildings[i][4]);
 			glPopMatrix();
@@ -1416,21 +1407,10 @@ void display()
 	double heightY = 3*upVec->y;
 	double heightZ = 3*upVec->z;
 
-	if(flight){
-		// Fly the helicopter around the scene
-		ph=th=0;
-		gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
-				  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
-			      upVec->x,upVec->y,upVec->z);
-	}else{
-		// Look at the helicopter from different angles
-		yaw=pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		littleBirdPosition[0] = littleBirdPosition[2] = 0;
-		littleBirdPosition[1] = 2;
-		gluLookAt(-10*Cos(th)*Cos(ph),10*Sin(ph)+5,10*Sin(th)*Cos(ph),
-				littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
-				  0,Cos(ph),0);
-	}
+	// Fly the helicopter around the scene
+	gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
+			  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
+			  upVec->x,upVec->y,upVec->z);
 
 	/* Code for where the light source will be.
 	 * The light source acts like a sun and is outside
@@ -1485,6 +1465,7 @@ void display()
  */
 int main(int argc,char* argv[])
 {
+	Mix_Music* music;
 	init();
 	//  Initialize GLUT
 	glutInit(&argc,argv);
@@ -1495,8 +1476,18 @@ int main(int argc,char* argv[])
 	//  Set callbacks
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
-	glutSpecialFunc(special);
 	glutKeyboardFunc(key);
+
+	//  Initialize audio
+	if (Mix_OpenAudio(44100,AUDIO_S16SYS,2,4096)) Fatal("Cannot initialize audio\n");
+	//  Load "the helicopter"
+	music = Mix_LoadMUS("helicopter.wav");
+	if (!music) Fatal("Cannot load helicopter.wav\n");
+	//  Play (looping)
+	Mix_PlayMusic(music,-1);
+
+	shot = Mix_LoadWAV( "shot.wav" );
+	if (!music) Fatal("Cannot load shot.wav\n");
 
 	// Load the textures for the helicopter
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
@@ -1529,6 +1520,9 @@ int main(int argc,char* argv[])
 	timer(0);
 	//  Pass control to GLUT so it can interact with the user
 	glutMainLoop();
+	//  Shut down SDL
+	Mix_CloseAudio();
+	SDL_Quit();
 	return 0;
 }
 

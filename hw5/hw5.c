@@ -1,7 +1,7 @@
 /*
  * Robert Werthman
  * CSCI 5229
- * HW 5
+ * hw5
  *
  * hw5.c
  *

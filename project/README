@@ -4,18 +4,17 @@ Project
 
 
 Key bindings
-	spacebar	Toggle Helicopter flight
+	spacebar	Shoot helicopter weapon
 	g			Yaw the helicopter right (when no pitch or roll)
 	a			Yaw the helicopter left (when no pitch or roll)
-	e			Pitch the helicopter nose down
-	d			Pitch the helicopter nose up
+	e			Pitch the helicopter nose down (move forward)
+	d			Pitch the helicopter nose up (move backward)
 	s			Roll the helicopter left (when there is no strafe)
 	f			Roll the helicopter right (when there is no strafe)
 	i			Elevate the helicopter
 	k			Lower the helicopter
 	j			Strafe the helicopter left
 	l			Strafe the helicopter right
-  	arrows		Change view angle when helicopter flight is not toggled
   	+/-			Change field of view
   	0			Reset everything
   	ESC			Exit

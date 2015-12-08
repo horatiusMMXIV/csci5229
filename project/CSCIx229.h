@@ -15,8 +15,12 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #include <GLUT/glut.h>
+#include "SDL.h"
+#include "SDL_mixer.h"
 #else
 #include <GL/glut.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 #endif
 
 #define Cos(th) cos(3.1415926/180*(th))
@@ -56,8 +60,6 @@ extern int strafe;
 extern int fly;
 extern int e;
 extern double explosion;
-extern int ph;
-extern int th;
 extern int flight;
 extern int bankAngle;
 extern int bankFactor;
@@ -69,6 +71,7 @@ extern double dim;   //  Size of world
 extern double littleBirdPosition[3];
 extern double bullets[10][7];
 extern int bulletIndex;
+extern Mix_Chunk *shot;
 
 
 #ifdef __cplusplus
