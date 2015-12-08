@@ -18,6 +18,8 @@
 #include "CSCIx229.h"
 #include "Vector.h"
 
+int mode=0;    //  Display mode
+
 // Sound that will perpectaully play
 Mix_Music* music = NULL;
 
@@ -197,6 +199,7 @@ void init(){
 	if (!music) Fatal("Cannot load bomb.wav\n");
 	//  Play (looping)
 	Mix_PlayMusic(music,-1);
+	Mix_PauseMusic();
 }
 
 /*
@@ -1065,27 +1068,33 @@ void checkCollision(){
 		// Stop the helicopter from moving upwards
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		Mix_PlayChannel(-1,bomb,0);
-		// Pause music playback
-		Mix_PauseMusic();
+		if(mode==5){
+			Mix_PlayChannel(-1,bomb,0);
+			// Pause music playback
+			Mix_PauseMusic();
+		}
 		return;
 	}
 	// Collision with min or max of x-axis
 	if(xH<-500 || xH>500){
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		Mix_PlayChannel(-1,bomb,0);
-		// Pause music playback
-		Mix_PauseMusic();
+		if(mode==5){
+			Mix_PlayChannel(-1,bomb,0);
+			// Pause music playback
+			Mix_PauseMusic();
+		}
 		return;
 	}
 	// Collision with min or max of z-axis
 	if(zH<-500 || zH>500){
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-		Mix_PlayChannel(-1,bomb,0);
-		// Pause music playback
-		Mix_PauseMusic();
+		if(mode==5){
+			Mix_PlayChannel(-1,bomb,0);
+			// Pause music playback
+			Mix_PauseMusic();
+		}
 		return;
 	}
 
@@ -1102,9 +1111,11 @@ void checkCollision(){
 					trees[i][2] = 1;
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-					Mix_PlayChannel(-1,bomb,0);
-					// Pause music playback
-					Mix_PauseMusic();
+					if(mode==5){
+						Mix_PlayChannel(-1,bomb,0);
+						// Pause music playback
+						Mix_PauseMusic();
+					}
 					return;
 				}
 			}
@@ -1122,9 +1133,11 @@ void checkCollision(){
 					buildings[i][2] = 1;
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
-					Mix_PlayChannel(-1,bomb,0);
-					// Pause music playback
-					Mix_PauseMusic();
+					if(mode==5){
+						Mix_PlayChannel(-1,bomb,0);
+						// Pause music playback
+						Mix_PauseMusic();
+					}
 					return;
 				}
 			}
@@ -1145,8 +1158,10 @@ void checkCollision(){
 					if(zH<=(z+2)&&zH>=(z-2)){
 						if(yH<=y&&yH>= -1){
 							trees[i][2] = 1;
-							// Pause music playback
-							Mix_PlayChannel(-1,bomb,0);
+							if(mode==5){
+								// Pause music playback
+								Mix_PlayChannel(-1,bomb,0);
+							}
 							return;
 						}
 					}
@@ -1162,7 +1177,10 @@ void checkCollision(){
 					if(zH<=(z+3)&&zH>=(z-3)){
 						if(yH<=y&&yH>=-2){
 							buildings[i][2] = 1;
-							Mix_PlayChannel(-1,bomb,0);
+							if(mode==5){
+								// Pause music playback
+								Mix_PlayChannel(-1,bomb,0);
+							}
 							return;
 						}
 					}
@@ -1442,7 +1460,6 @@ void display()
 	double heightX = 3*upVec->x;
 	double heightY = 3*upVec->y;
 	double heightZ = 3*upVec->z;
-
 	// Fly the helicopter around the scene
 	gluLookAt(littleBirdPosition[0]-behindX+heightX,littleBirdPosition[1]-behindY+heightY,littleBirdPosition[2]-behindZ+heightZ,
 			  littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],
@@ -1478,10 +1495,36 @@ void display()
 	glLightfv(GL_LIGHT0,GL_DIFFUSE ,Diffuse);
 	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
 	glLightfv(GL_LIGHT0,GL_POSITION,Position);
-
-	ShootCannon();
-	checkCollision();
-	drawScene();
+	
+	if(mode==0){
+		// Pause music playback
+		Mix_PauseMusic();
+		// Blades rotate in a circle 15 degrees at a time
+		bladeRotation += 15;
+		bladeRotation %= 360;
+		DrawHelicopterFlight();
+	}else if(mode==1){
+		DrawSky();
+		// Blades rotate in a circle 15 degrees at a time
+		bladeRotation += 15;
+		bladeRotation %= 360;
+		DrawHelicopterFlight();
+	}else if(mode==2){
+		drawScene();
+	}else if(mode==3){
+		checkCollision();
+		drawScene();
+	}else if(mode==4){
+		ShootCannon();
+		checkCollision();
+		drawScene();
+	}else if(mode==5){
+		ShootCannon();
+		checkCollision();
+		drawScene();
+		Mix_ResumeMusic();
+	}
+	
 
 	glDisable(GL_LIGHTING);
 	glColor3f(1,1,1);

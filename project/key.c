@@ -17,8 +17,10 @@ void key(unsigned char ch,int x,int y)
 		littleBirdPosition[0]=littleBirdPosition[2]=0;
 		littleBirdPosition[1]=2;
 		fov=55;
-		// resume music playback
-		Mix_ResumeMusic();
+		if(mode==5){
+			// resume music playback
+			Mix_ResumeMusic();
+		}
 	}
 	//  Change field of view angle
 	else if (ch == '-' && ch>1){
@@ -106,7 +108,9 @@ void key(unsigned char ch,int x,int y)
 		}
 	}
 	else if(ch == 32){
-		Mix_PlayChannel(-1,shot,0);
+		if(mode==5){
+			Mix_PlayChannel(-1,shot,0);
+		}
 		if(bulletIndex < 9){
 			CreateBullet();
 			bulletIndex += 1;
@@ -114,6 +118,10 @@ void key(unsigned char ch,int x,int y)
 			bulletIndex = 0;
 			CreateBullet();
 		}
+	}
+	else if(ch =='m'){
+	//  Toggle display modes
+      mode = (mode+1)%MODE; 
 	}
 	//  Reproject
 	Project(fov,asp,dim);

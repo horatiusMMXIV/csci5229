@@ -53,6 +53,8 @@ void ShootCannon();
 void CreateBullet();
 
 // Global Variables
+#define MODE 6
+extern int mode;
 extern int yaw;
 extern int pitch;
 extern int roll;
