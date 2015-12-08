@@ -72,6 +72,7 @@ extern double littleBirdPosition[3];
 extern double bullets[10][7];
 extern int bulletIndex;
 extern Mix_Chunk *shot;
+extern Mix_Chunk *bomb;
 
 
 #ifdef __cplusplus

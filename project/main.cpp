@@ -20,6 +20,7 @@
 
 //The sound effects that will be used
 Mix_Chunk *shot = NULL;
+Mix_Chunk *bomb = NULL;
 
 /* Variables for helicopter flight */
 int yaw=0;
@@ -1075,6 +1076,7 @@ void checkCollision(){
 					trees[i][2] = 1;
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+					Mix_PlayChannel(-1,bomb,0);
 					return;
 				}
 			}
@@ -1092,6 +1094,7 @@ void checkCollision(){
 					buildings[i][2] = 1;
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+					Mix_PlayChannel(-1,bomb,0);
 					return;
 				}
 			}
@@ -1112,6 +1115,7 @@ void checkCollision(){
 					if(zH<=(z+2)&&zH>=(z-2)){
 						if(yH<=y&&yH>= -1){
 							trees[i][2] = 1;
+							Mix_PlayChannel(-1,bomb,0);
 							return;
 						}
 					}
@@ -1127,6 +1131,7 @@ void checkCollision(){
 					if(zH<=(z+3)&&zH>=(z-3)){
 						if(yH<=y&&yH>=-2){
 							buildings[i][2] = 1;
+							Mix_PlayChannel(-1,bomb,0);
 							return;
 						}
 					}
@@ -1488,6 +1493,8 @@ int main(int argc,char* argv[])
 
 	shot = Mix_LoadWAV( "shot.wav" );
 	if (!music) Fatal("Cannot load shot.wav\n");
+	bomb = Mix_LoadWAV( "bomb.wav" );
+	if (!music) Fatal("Cannot load bomb.wav\n");
 
 	// Load the textures for the helicopter
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
