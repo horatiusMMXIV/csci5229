@@ -19,6 +19,9 @@
 #include "Vector.h"
 
 int mode=0;    //  Display mode
+char* text[] = {"Flight", "Sky Box", "Ground", "Collision Detection",
+					"Weapon", "Sound"};
+						
 
 // Sound that will perpectaully play
 Mix_Music* music = NULL;
@@ -1550,7 +1553,7 @@ void display()
 	//  Display parameters
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
-	Print("X=%f Y=%f Z=%f Mode=%d",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2], mode);
+	Print("X=%f Y=%f Z=%f Mode=%d %s",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2],mode,text[mode]);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible

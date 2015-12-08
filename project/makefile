@@ -11,11 +11,11 @@ CLEAN=del *.exe *.o *.a
 else
 #  OSX
 ifeq "$(shell uname)" "Darwin"
-CFLG=-O3 -Wall -Wno-deprecated-declarations `sdl-config --cflags`
+CFLG=-O3 -Wall -Wno-deprecated-declarations -Wno-write-strings `sdl-config --cflags`
 LIBS=`sdl-config --libs` -lSDL_mixer -framework GLUT -framework OpenGL
 #  Linux/Unix/Solaris
 else
-CFLG=-O3 -Wall `sdl-config --cflags`
+CFLG=-O3 -Wall -Wno-write-strings `sdl-config --cflags`
 LIBS=`sdl-config --libs` -lSDL_mixer -lglut -lGLU -lGL -lm
 endif
 #  OSX/Linux/Unix/Solaris
