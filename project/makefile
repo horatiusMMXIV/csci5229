@@ -12,11 +12,11 @@ else
 #  OSX
 ifeq "$(shell uname)" "Darwin"
 CFLG=-O3 -Wall -Wno-deprecated-declarations `sdl-config --cflags`
-LIBS=`sdl-config --libs` -lSDL -lSDL_mixer -framework GLUT -framework OpenGL
+LIBS=`sdl-config --libs` -lSDL_mixer -framework GLUT -framework OpenGL
 #  Linux/Unix/Solaris
 else
 CFLG=-O3 -Wall
-LIBS=-lSDL -lSDL_mixer -lglut -lGLU -lGL -lm
+LIBS=-lSDL_mixer -lglut -lGLU -lGL -lm
 endif
 #  OSX/Linux/Unix/Solaris
 CLEAN=rm -f $(EXE) *.o *.a

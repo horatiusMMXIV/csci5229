@@ -15,11 +15,11 @@
 #define GL_GLEXT_PROTOTYPES
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#include "SDL.h"
+//#include "SDL.h"
 #include "SDL_mixer.h"
 #else
 #include <GL/glut.h>
-#include <SDL/SDL.h>
+//#include <SDL/SDL.h>
 #include <SDL/SDL_mixer.h>
 #endif
 

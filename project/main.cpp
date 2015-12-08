@@ -18,6 +18,9 @@
 #include "CSCIx229.h"
 #include "Vector.h"
 
+// Sound that will perpectaully play
+Mix_Music* music = NULL;
+
 //The sound effects that will be used
 Mix_Chunk *shot = NULL;
 Mix_Chunk *bomb = NULL;
@@ -180,6 +183,20 @@ void init(){
 	for(i=0;i<9;i++){
 		bullets[i][6] = 0;
 	}
+
+	//  Initialize audio
+	if (Mix_OpenAudio(44100,AUDIO_S16SYS,2,4096)) Fatal("Cannot initialize audio\n");	
+	//  Load the helicopter sound
+	music = Mix_LoadMUS("helicopter.wav");
+	if (!music) Fatal("Cannot load helicopter.wav\n");
+	// Load the shooting bullet sound
+	shot = Mix_LoadWAV( "shot.wav" );
+	if (!music) Fatal("Cannot load shot.wav\n");
+	// Load the sound of an explosion
+	bomb = Mix_LoadWAV( "bomb.wav" );
+	if (!music) Fatal("Cannot load bomb.wav\n");
+	//  Play (looping)
+	Mix_PlayMusic(music,-1);
 }
 
 /*
@@ -1048,18 +1065,27 @@ void checkCollision(){
 		// Stop the helicopter from moving upwards
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		Mix_PlayChannel(-1,bomb,0);
+		// Pause music playback
+		Mix_PauseMusic();
 		return;
 	}
 	// Collision with min or max of x-axis
 	if(xH<-500 || xH>500){
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		Mix_PlayChannel(-1,bomb,0);
+		// Pause music playback
+		Mix_PauseMusic();
 		return;
 	}
 	// Collision with min or max of z-axis
 	if(zH<-500 || zH>500){
 		e = 1;
 		pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
+		Mix_PlayChannel(-1,bomb,0);
+		// Pause music playback
+		Mix_PauseMusic();
 		return;
 	}
 
@@ -1077,6 +1103,8 @@ void checkCollision(){
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 					Mix_PlayChannel(-1,bomb,0);
+					// Pause music playback
+					Mix_PauseMusic();
 					return;
 				}
 			}
@@ -1095,6 +1123,8 @@ void checkCollision(){
 					e = 1;
 					pitch=roll=strafe=fly=bankFactor=bankAngle=speed=0;
 					Mix_PlayChannel(-1,bomb,0);
+					// Pause music playback
+					Mix_PauseMusic();
 					return;
 				}
 			}
@@ -1115,6 +1145,7 @@ void checkCollision(){
 					if(zH<=(z+2)&&zH>=(z-2)){
 						if(yH<=y&&yH>= -1){
 							trees[i][2] = 1;
+							// Pause music playback
 							Mix_PlayChannel(-1,bomb,0);
 							return;
 						}
@@ -1470,7 +1501,6 @@ void display()
  */
 int main(int argc,char* argv[])
 {
-	Mix_Music* music;
 	init();
 	//  Initialize GLUT
 	glutInit(&argc,argv);
@@ -1482,19 +1512,6 @@ int main(int argc,char* argv[])
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);
 	glutKeyboardFunc(key);
-
-	//  Initialize audio
-	if (Mix_OpenAudio(44100,AUDIO_S16SYS,2,4096)) Fatal("Cannot initialize audio\n");
-	//  Load "the helicopter"
-	music = Mix_LoadMUS("helicopter.wav");
-	if (!music) Fatal("Cannot load helicopter.wav\n");
-	//  Play (looping)
-	Mix_PlayMusic(music,-1);
-
-	shot = Mix_LoadWAV( "shot.wav" );
-	if (!music) Fatal("Cannot load shot.wav\n");
-	bomb = Mix_LoadWAV( "bomb.wav" );
-	if (!music) Fatal("Cannot load bomb.wav\n");
 
 	// Load the textures for the helicopter
 	littlebird[1] = LoadTexBMP("littlebirdenginetank.bmp");
@@ -1527,9 +1544,8 @@ int main(int argc,char* argv[])
 	timer(0);
 	//  Pass control to GLUT so it can interact with the user
 	glutMainLoop();
-	//  Shut down SDL
+	//  Shut down SDL_mixer
 	Mix_CloseAudio();
-	SDL_Quit();
 	return 0;
 }
 

@@ -17,6 +17,8 @@ void key(unsigned char ch,int x,int y)
 		littleBirdPosition[0]=littleBirdPosition[2]=0;
 		littleBirdPosition[1]=2;
 		fov=55;
+		// resume music playback
+		Mix_ResumeMusic();
 	}
 	//  Change field of view angle
 	else if (ch == '-' && ch>1){
