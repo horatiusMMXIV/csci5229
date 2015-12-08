@@ -1446,7 +1446,7 @@ void drawScene(){
 void display()
 {
 	//  Erase the window and the depth buffer
-	glClearColor(0,0.3,0.7,0);
+	glClearColor(0,0,0,0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	//  Enable Z-buffering in OpenGL
 	glEnable(GL_DEPTH_TEST);
@@ -1496,13 +1496,33 @@ void display()
 	glLightfv(GL_LIGHT0,GL_SPECULAR,Specular);
 	glLightfv(GL_LIGHT0,GL_POSITION,Position);
 	
+	glDisable(GL_LIGHTING);
+	
 	if(mode==0){
+		const double len=2.0; // Length of axes
 		// Pause music playback
 		Mix_PauseMusic();
 		// Blades rotate in a circle 15 degrees at a time
 		bladeRotation += 15;
 		bladeRotation %= 360;
 		DrawHelicopterFlight();
+		glColor3f(1,1,1);
+		//  Draw axes
+		glBegin(GL_LINES);
+		glVertex3d(0.0,0.0,0.0);
+		glVertex3d(len,0.0,0.0);
+		glVertex3d(0.0,0.0,0.0);
+		glVertex3d(0.0,len,0.0);
+		glVertex3d(0.0,0.0,0.0);
+		glVertex3d(0.0,0.0,len);
+		glEnd();
+		//  Label axes
+		glRasterPos3d(len,0.0,0.0);
+		Print("X");
+		glRasterPos3d(0.0,len,0.0);
+		Print("Y");
+		glRasterPos3d(0.0,0.0,len);
+		Print("Z");
 	}else if(mode==1){
 		DrawSky();
 		// Blades rotate in a circle 15 degrees at a time
@@ -1525,13 +1545,12 @@ void display()
 		Mix_ResumeMusic();
 	}
 	
-
 	glDisable(GL_LIGHTING);
 	glColor3f(1,1,1);
 	//  Display parameters
 	glColor3f(1,1,1);
 	glWindowPos2i(5,5);
-	Print("X=%f Y=%f Z=%f",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2]);
+	Print("X=%f Y=%f Z=%f Mode=%d",littleBirdPosition[0],littleBirdPosition[1],littleBirdPosition[2], mode);
 	// Check for any errors that have occurred
 	ErrCheck("display");
 	//  Render the scene and make it visible

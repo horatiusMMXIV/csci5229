@@ -4,6 +4,7 @@ Project
 
 
 Key bindings
+	m			Toggle between the different modes (5 being the final one)
 	spacebar	Shoot helicopter weapon
 	g			Yaw the helicopter right (when no pitch or roll)
 	a			Yaw the helicopter left (when no pitch or roll)
@@ -18,18 +19,6 @@ Key bindings
   	+/-			Change field of view
   	0			Reset everything
   	ESC			Exit
-  
-Other things to note
----------------------
-1. When running into objects or end of scene the helicopter blows up.
-2. There are no normals or collision detection for hills.
-
-Future Work
---------------
-1. Shoot orbs out of helicopter and blow up objects. (likely)
-2. Have trees and buildings at correct elevations. (not likely)
-3. Get normals correct for hills. (not likely)
-4. Implement perlin noise for terrain. (not likely)
 
 What I looked at or tried to implement
 ---------------------------------------
